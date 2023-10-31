@@ -562,6 +562,7 @@ export interface ApiChildChild extends Schema.CollectionType {
     center: Attribute.Relation<'api::child.child', 'oneToOne', 'api::center.center'>;
     statusLog: Attribute.Component<'status.status-change', true>;
     slot: Attribute.Relation<'api::child.child', 'oneToOne', 'api::slot.slot'>;
+    childHash: Attribute.String & Attribute.Unique;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::child.child', 'oneToOne', 'admin::user'> & Attribute.Private;

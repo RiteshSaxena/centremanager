@@ -87,6 +87,11 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::slot.slot"
+    },
+    "childHash": {
+      "type": "string",
+      "required": false,
+      "unique": true
     }
   }
 }
