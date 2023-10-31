@@ -518,13 +518,14 @@ export interface ApiCenterCenter extends Schema.CollectionType {
     singularName: 'center';
     pluralName: 'centers';
     displayName: 'Center';
+    description: '';
   };
   options: {
     draftAndPublish: false;
   };
   attributes: {
     name: Attribute.String & Attribute.Required;
-    Region: Attribute.String;
+    region: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::center.center', 'oneToOne', 'admin::user'> & Attribute.Private;

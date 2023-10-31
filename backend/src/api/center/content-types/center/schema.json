@@ -4,7 +4,8 @@
   "info": {
     "singularName": "center",
     "pluralName": "centers",
-    "displayName": "Center"
+    "displayName": "Center",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -15,7 +16,7 @@
       "type": "string",
       "required": true
     },
-    "Region": {
+    "region": {
       "type": "string"
     }
   }
