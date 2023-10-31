@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "log_books",
+  "info": {
+    "singularName": "log-book",
+    "pluralName": "log-books",
+    "displayName": "LogBook",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "SignIn",
+        "SignOut"
+      ]
+    },
+    "signature": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "child": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::child.child"
+    },
+    "time": {
+      "type": "datetime"
+    },
+    "parent": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::parent.parent"
+    }
+  }
+}

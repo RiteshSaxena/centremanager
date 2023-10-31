@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "centers",
+  "info": {
+    "singularName": "center",
+    "pluralName": "centers",
+    "displayName": "Center"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "Region": {
+      "type": "string"
+    }
+  }
+}

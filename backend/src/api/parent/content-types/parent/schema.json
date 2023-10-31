@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "parents",
+  "info": {
+    "singularName": "parent",
+    "pluralName": "parents",
+    "displayName": "Parent"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "firstName": {
+      "type": "string",
+      "required": true
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "contactNumber": {
+      "type": "string"
+    },
+    "children": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::child.child",
+      "mappedBy": "parents"
+    }
+  }
+}
