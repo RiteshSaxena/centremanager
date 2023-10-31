@@ -4,7 +4,8 @@
   "info": {
     "singularName": "parent",
     "pluralName": "parents",
-    "displayName": "Parent"
+    "displayName": "Parent",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -29,6 +30,11 @@
       "relation": "manyToMany",
       "target": "api::child.child",
       "mappedBy": "parents"
+    },
+    "center": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::center.center"
     }
   }
 }

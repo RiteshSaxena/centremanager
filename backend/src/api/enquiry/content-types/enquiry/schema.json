@@ -4,7 +4,8 @@
   "info": {
     "singularName": "enquiry",
     "pluralName": "enquiries",
-    "displayName": "Enquiry"
+    "displayName": "Enquiry",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -27,18 +28,6 @@
     },
     "notes": {
       "type": "string"
-    },
-    "statusChange1": {
-      "type": "string"
-    },
-    "statusChange1Date": {
-      "type": "datetime"
-    },
-    "statusChange2": {
-      "type": "string"
-    },
-    "statusChange2Date": {
-      "type": "datetime"
     },
     "child": {
       "type": "relation",

@@ -39,6 +39,11 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::parent.parent"
+    },
+    "center": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::center.center"
     }
   }
 }

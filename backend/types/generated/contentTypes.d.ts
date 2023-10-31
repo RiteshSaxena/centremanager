@@ -555,6 +555,12 @@ export interface ApiChildChild extends Schema.CollectionType {
     parents: Attribute.Relation<'api::child.child', 'manyToMany', 'api::parent.parent'>;
     school: Attribute.Relation<'api::child.child', 'oneToOne', 'api::school.school'>;
     schoolYear: Attribute.String;
+    status: Attribute.Enumeration<['enquiry', 'enrolled', 'exited']>;
+    enrollmentDate: Attribute.DateTime;
+    purchaseDate: Attribute.DateTime;
+    center: Attribute.Relation<'api::child.child', 'oneToOne', 'api::center.center'>;
+    statusLog: Attribute.Component<'status.status-change', true>;
+    slot: Attribute.Relation<'api::child.child', 'oneToOne', 'api::slot.slot'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::child.child', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -568,6 +574,7 @@ export interface ApiEnquiryEnquiry extends Schema.CollectionType {
     singularName: 'enquiry';
     pluralName: 'enquiries';
     displayName: 'Enquiry';
+    description: '';
   };
   options: {
     draftAndPublish: false;
@@ -578,10 +585,6 @@ export interface ApiEnquiryEnquiry extends Schema.CollectionType {
     formType: Attribute.String;
     referralCode: Attribute.String;
     notes: Attribute.String;
-    statusChange1: Attribute.String;
-    statusChange1Date: Attribute.DateTime;
-    statusChange2: Attribute.String;
-    statusChange2Date: Attribute.DateTime;
     child: Attribute.Relation<'api::enquiry.enquiry', 'oneToOne', 'api::child.child'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -607,6 +610,7 @@ export interface ApiLogBookLogBook extends Schema.CollectionType {
     child: Attribute.Relation<'api::log-book.log-book', 'oneToOne', 'api::child.child'>;
     time: Attribute.DateTime;
     parent: Attribute.Relation<'api::log-book.log-book', 'oneToOne', 'api::parent.parent'>;
+    center: Attribute.Relation<'api::log-book.log-book', 'oneToOne', 'api::center.center'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::log-book.log-book', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -620,6 +624,7 @@ export interface ApiParentParent extends Schema.CollectionType {
     singularName: 'parent';
     pluralName: 'parents';
     displayName: 'Parent';
+    description: '';
   };
   options: {
     draftAndPublish: false;
@@ -630,6 +635,7 @@ export interface ApiParentParent extends Schema.CollectionType {
     email: Attribute.Email;
     contactNumber: Attribute.String;
     children: Attribute.Relation<'api::parent.parent', 'manyToMany', 'api::child.child'>;
+    center: Attribute.Relation<'api::parent.parent', 'oneToOne', 'api::center.center'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::parent.parent', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -655,6 +661,32 @@ export interface ApiSchoolSchool extends Schema.CollectionType {
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::school.school', 'oneToOne', 'admin::user'> & Attribute.Private;
     updatedBy: Attribute.Relation<'api::school.school', 'oneToOne', 'admin::user'> & Attribute.Private;
+  };
+}
+
+export interface ApiSlotSlot extends Schema.CollectionType {
+  collectionName: 'slots';
+  info: {
+    singularName: 'slot';
+    pluralName: 'slots';
+    displayName: 'Slot';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    center: Attribute.Relation<'api::slot.slot', 'oneToOne', 'api::center.center'>;
+    timings: Attribute.Component<'slot.slot-timings', true> &
+      Attribute.Required &
+      Attribute.SetMinMax<{
+        min: 1;
+      }>;
+    name: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::slot.slot', 'oneToOne', 'admin::user'> & Attribute.Private;
+    updatedBy: Attribute.Relation<'api::slot.slot', 'oneToOne', 'admin::user'> & Attribute.Private;
   };
 }
 
@@ -699,6 +731,7 @@ declare module '@strapi/types' {
       'api::log-book.log-book': ApiLogBookLogBook;
       'api::parent.parent': ApiParentParent;
       'api::school.school': ApiSchoolSchool;
+      'api::slot.slot': ApiSlotSlot;
       'api::subject.subject': ApiSubjectSubject;
     }
   }

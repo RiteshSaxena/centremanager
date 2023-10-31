@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "slots",
+  "info": {
+    "singularName": "slot",
+    "pluralName": "slots",
+    "displayName": "Slot",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "center": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::center.center"
+    },
+    "timings": {
+      "type": "component",
+      "repeatable": true,
+      "component": "slot.slot-timings",
+      "required": true,
+      "min": 1
+    },
+    "name": {
+      "type": "string"
+    }
+  }
+}

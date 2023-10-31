@@ -58,6 +58,35 @@
     },
     "schoolYear": {
       "type": "string"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "enquiry",
+        "enrolled",
+        "exited"
+      ]
+    },
+    "enrollmentDate": {
+      "type": "datetime"
+    },
+    "purchaseDate": {
+      "type": "datetime"
+    },
+    "center": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::center.center"
+    },
+    "statusLog": {
+      "type": "component",
+      "repeatable": true,
+      "component": "status.status-change"
+    },
+    "slot": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::slot.slot"
     }
   }
 }
