@@ -40,6 +40,11 @@
     "postcode": {
       "type": "string"
     },
+    "center": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::center.center"
+    },
     "subjects": {
       "type": "relation",
       "relation": "oneToMany",
@@ -56,15 +61,24 @@
       "relation": "oneToOne",
       "target": "api::school.school"
     },
+    "enquiry": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::enquiry.enquiry"
+    },
     "schoolYear": {
       "type": "string"
     },
     "status": {
       "type": "enumeration",
       "enum": [
-        "enquiry",
-        "enrolled",
-        "exited"
+        "New",
+        "No Further Contact",
+        "Future Follow Up",
+        "Enrolment meeting no show",
+        "Attended enrolment meeting but didn't enrol",
+        "Send to KSiS",
+        "Send to KSiS (Free Trial)"
       ]
     },
     "enrollmentDate": {
@@ -72,11 +86,6 @@
     },
     "purchaseDate": {
       "type": "datetime"
-    },
-    "center": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::center.center"
     },
     "statusLog": {
       "type": "component",

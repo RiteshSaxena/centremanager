@@ -552,14 +552,25 @@ export interface ApiChildChild extends Schema.CollectionType {
     streetName: Attribute.String;
     city: Attribute.String;
     postcode: Attribute.String;
+    center: Attribute.Relation<'api::child.child', 'oneToOne', 'api::center.center'>;
     subjects: Attribute.Relation<'api::child.child', 'oneToMany', 'api::subject.subject'>;
     parents: Attribute.Relation<'api::child.child', 'manyToMany', 'api::parent.parent'>;
     school: Attribute.Relation<'api::child.child', 'oneToOne', 'api::school.school'>;
+    enquiry: Attribute.Relation<'api::child.child', 'oneToOne', 'api::enquiry.enquiry'>;
     schoolYear: Attribute.String;
-    status: Attribute.Enumeration<['enquiry', 'enrolled', 'exited']>;
+    status: Attribute.Enumeration<
+      [
+        'New',
+        'No Further Contact',
+        'Future Follow Up',
+        'Enrolment meeting no show',
+        "Attended enrolment meeting but didn't enrol",
+        'Send to KSiS',
+        'Send to KSiS (Free Trial)'
+      ]
+    >;
     enrollmentDate: Attribute.DateTime;
     purchaseDate: Attribute.DateTime;
-    center: Attribute.Relation<'api::child.child', 'oneToOne', 'api::center.center'>;
     statusLog: Attribute.Component<'status.status-change', true>;
     slot: Attribute.Relation<'api::child.child', 'oneToOne', 'api::slot.slot'>;
     childHash: Attribute.String & Attribute.Unique;
@@ -587,7 +598,6 @@ export interface ApiEnquiryEnquiry extends Schema.CollectionType {
     formType: Attribute.String;
     referralCode: Attribute.String;
     notes: Attribute.String;
-    child: Attribute.Relation<'api::enquiry.enquiry', 'oneToOne', 'api::child.child'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::enquiry.enquiry', 'oneToOne', 'admin::user'> & Attribute.Private;
