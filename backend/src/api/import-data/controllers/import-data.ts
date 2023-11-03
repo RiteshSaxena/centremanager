@@ -117,7 +117,7 @@ export default {
         //Parents
         const parentFirstName = records[i][13].trim();
         const parentLastName = records[i][14].trim();
-        const parentEmail = records[i][15].trim();
+        const parentEmail = records[i][15].trim().toLowerCase();
         const parentContactNumber = records[i][16];
         const parentMobileNumber = records[i][17];
 
@@ -143,7 +143,16 @@ export default {
         const statusChange2 = records[i][25];
         const dateStatusChange2 = records[i][26];
 
-        if (childFirstName && parentFirstName && parentEmail && (parentContactNumber || parentMobileNumber.length)) {
+        if (
+          childFirstName &&
+          childFirstName.length > 0 &&
+          parentFirstName &&
+          parentEmail.length > 0 &&
+          parentEmail &&
+          parentEmail.length > 0 &&
+          ((parentContactNumber && parentContactNumber.length > 0) ||
+            (parentMobileNumber.length && parentMobileNumber.length > 0))
+        ) {
           const contNumber = (parentContactNumber ? parentContactNumber : parentMobileNumber)
             .trim()
             .replace(/^\s+|\s+$/g, '')
@@ -263,7 +272,6 @@ export default {
 
       let centreId = '';
       for (let i = 0; i < childArr.length; i++) {
-
         const child = childArr[i];
 
         const existingChild = await strapi.query('api::child.child').findOne({ where: { childHash: child.childHash } });
@@ -357,7 +365,7 @@ export default {
           if (child.enquiry) {
             if (child.enquiry.enquiryDate) {
               var dateParts = child.enquiry.enquiryDate.split('/');
-              child.enquiry.enquiryDate = dateParts[1] + '/' + dateParts[0] + '/' + dateParts[2];
+              child.enquiry.enquiryDate = new Date(dateParts[1] + '/' + dateParts[0] + '/' + dateParts[2]);
             }
 
             const newEnquiry = await strapi.query('api::enquiry.enquiry').create({
@@ -366,6 +374,7 @@ export default {
                 referralCode: child.enquiry.referralCode,
                 notes: child.enquiry.notes,
                 center: centreId,
+                enquiryDate: child.enquiry.enquiryDate,
               },
             });
             newChild['enquiry'] = newEnquiry.id;
