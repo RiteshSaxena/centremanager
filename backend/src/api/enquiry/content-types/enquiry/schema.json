@@ -28,11 +28,6 @@
     },
     "notes": {
       "type": "string"
-    },
-    "child": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::child.child"
     }
   }
 }
