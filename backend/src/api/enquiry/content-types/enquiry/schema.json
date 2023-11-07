@@ -28,6 +28,12 @@
     },
     "notes": {
       "type": "string"
+    },
+    "child": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::child.child",
+      "inversedBy": "enquiries"
     }
   }
 }

@@ -17,15 +17,32 @@
       "relation": "oneToOne",
       "target": "api::center.center"
     },
-    "timings": {
-      "type": "component",
-      "repeatable": true,
-      "component": "slot.slot-timings",
-      "required": true,
-      "min": 1
-    },
     "name": {
       "type": "string"
+    },
+    "day": {
+      "type": "enumeration",
+      "enum": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
+    },
+    "startTime": {
+      "type": "time"
+    },
+    "endTime": {
+      "type": "time"
+    },
+    "children": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::child.child",
+      "mappedBy": "slots"
     }
   }
 }

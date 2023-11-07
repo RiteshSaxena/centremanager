@@ -1,13 +1,14 @@
 {
   "collectionName": "components_status_status_changes",
   "info": {
-    "displayName": "StatusChange"
+    "displayName": "StatusChange",
+    "description": ""
   },
   "options": {},
   "attributes": {
     "from": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "to": {
       "type": "string",

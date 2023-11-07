@@ -480,7 +480,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
   options: {
     draftAndPublish: false;
-    timestamps: true;
   };
   attributes: {
     username: Attribute.String &
@@ -505,6 +504,9 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
     confirmed: Attribute.Boolean & Attribute.DefaultTo<false>;
     blocked: Attribute.Boolean & Attribute.DefaultTo<false>;
     role: Attribute.Relation<'plugin::users-permissions.user', 'manyToOne', 'plugin::users-permissions.role'>;
+    firstName: Attribute.String & Attribute.Required;
+    lastName: Attribute.String;
+    center: Attribute.Relation<'plugin::users-permissions.user', 'oneToOne', 'api::center.center'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'plugin::users-permissions.user', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -556,7 +558,6 @@ export interface ApiChildChild extends Schema.CollectionType {
     subjects: Attribute.Relation<'api::child.child', 'oneToMany', 'api::subject.subject'>;
     parents: Attribute.Relation<'api::child.child', 'manyToMany', 'api::parent.parent'>;
     school: Attribute.Relation<'api::child.child', 'oneToOne', 'api::school.school'>;
-    enquiry: Attribute.Relation<'api::child.child', 'oneToOne', 'api::enquiry.enquiry'>;
     schoolYear: Attribute.String;
     status: Attribute.Enumeration<
       [
@@ -566,14 +567,18 @@ export interface ApiChildChild extends Schema.CollectionType {
         'Enrolment meeting no show',
         "Attended enrolment meeting but didn't enrol",
         'Send to KSiS',
-        'Send to KSiS (Free Trial)'
+        'Send to KSiS (Free Trial)',
+        'Enrolled',
+        'Exited'
       ]
-    >;
+    > &
+      Attribute.DefaultTo<'New'>;
     enrollmentDate: Attribute.DateTime;
-    purchaseDate: Attribute.DateTime;
+    paymentDate: Attribute.DateTime;
     statusLog: Attribute.Component<'status.status-change', true>;
-    slot: Attribute.Relation<'api::child.child', 'oneToOne', 'api::slot.slot'>;
     childHash: Attribute.String & Attribute.Unique;
+    slots: Attribute.Relation<'api::child.child', 'manyToMany', 'api::slot.slot'>;
+    enquiries: Attribute.Relation<'api::child.child', 'oneToMany', 'api::enquiry.enquiry'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::child.child', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -598,6 +603,7 @@ export interface ApiEnquiryEnquiry extends Schema.CollectionType {
     formType: Attribute.String;
     referralCode: Attribute.String;
     notes: Attribute.String;
+    child: Attribute.Relation<'api::enquiry.enquiry', 'manyToOne', 'api::child.child'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::enquiry.enquiry', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -689,12 +695,11 @@ export interface ApiSlotSlot extends Schema.CollectionType {
   };
   attributes: {
     center: Attribute.Relation<'api::slot.slot', 'oneToOne', 'api::center.center'>;
-    timings: Attribute.Component<'slot.slot-timings', true> &
-      Attribute.Required &
-      Attribute.SetMinMax<{
-        min: 1;
-      }>;
     name: Attribute.String;
+    day: Attribute.Enumeration<['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']>;
+    startTime: Attribute.Time;
+    endTime: Attribute.Time;
+    children: Attribute.Relation<'api::slot.slot', 'manyToMany', 'api::child.child'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::slot.slot', 'oneToOne', 'admin::user'> & Attribute.Private;

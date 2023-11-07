@@ -61,11 +61,6 @@
       "relation": "oneToOne",
       "target": "api::school.school"
     },
-    "enquiry": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::enquiry.enquiry"
-    },
     "schoolYear": {
       "type": "string"
     },
@@ -78,13 +73,16 @@
         "Enrolment meeting no show",
         "Attended enrolment meeting but didn't enrol",
         "Send to KSiS",
-        "Send to KSiS (Free Trial)"
-      ]
+        "Send to KSiS (Free Trial)",
+        "Enrolled",
+        "Exited"
+      ],
+      "default": "New"
     },
     "enrollmentDate": {
       "type": "datetime"
     },
-    "purchaseDate": {
+    "paymentDate": {
       "type": "datetime"
     },
     "statusLog": {
@@ -92,15 +90,22 @@
       "repeatable": true,
       "component": "status.status-change"
     },
-    "slot": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::slot.slot"
-    },
     "childHash": {
       "type": "string",
       "required": false,
       "unique": true
+    },
+    "slots": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::slot.slot",
+      "inversedBy": "children"
+    },
+    "enquiries": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::enquiry.enquiry",
+      "mappedBy": "child"
     }
   }
 }
