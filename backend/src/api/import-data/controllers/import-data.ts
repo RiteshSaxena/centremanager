@@ -212,6 +212,9 @@ export default {
           } else {
             child.parents = [parentId];
             child.status = statusChange2 ? statusChange2 : statusChange1;
+            if (!child.status) {
+              child.status = 'New';
+            }
             child.statusLog = [];
             if (statusChange1) {
               child.statusLog.push({
