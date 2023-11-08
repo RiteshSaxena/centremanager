@@ -528,6 +528,8 @@ export interface ApiCenterCenter extends Schema.CollectionType {
   attributes: {
     name: Attribute.String & Attribute.Required;
     region: Attribute.String;
+    displayText: Attribute.String;
+    logo: Attribute.Media;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::center.center', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -578,36 +580,14 @@ export interface ApiChildChild extends Schema.CollectionType {
     statusLog: Attribute.Component<'status.status-change', true>;
     childHash: Attribute.String & Attribute.Unique;
     slots: Attribute.Relation<'api::child.child', 'manyToMany', 'api::slot.slot'>;
-    enquiries: Attribute.Relation<'api::child.child', 'oneToMany', 'api::enquiry.enquiry'>;
+    enquiryDate: Attribute.DateTime;
+    formType: Attribute.String;
+    referralCode: Attribute.String;
+    notes: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::child.child', 'oneToOne', 'admin::user'> & Attribute.Private;
     updatedBy: Attribute.Relation<'api::child.child', 'oneToOne', 'admin::user'> & Attribute.Private;
-  };
-}
-
-export interface ApiEnquiryEnquiry extends Schema.CollectionType {
-  collectionName: 'enquiries';
-  info: {
-    singularName: 'enquiry';
-    pluralName: 'enquiries';
-    displayName: 'Enquiry';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    enquiryDate: Attribute.Date;
-    center: Attribute.Relation<'api::enquiry.enquiry', 'oneToOne', 'api::center.center'>;
-    formType: Attribute.String;
-    referralCode: Attribute.String;
-    notes: Attribute.String;
-    child: Attribute.Relation<'api::enquiry.enquiry', 'manyToOne', 'api::child.child'>;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::enquiry.enquiry', 'oneToOne', 'admin::user'> & Attribute.Private;
-    updatedBy: Attribute.Relation<'api::enquiry.enquiry', 'oneToOne', 'admin::user'> & Attribute.Private;
   };
 }
 
@@ -744,7 +724,6 @@ declare module '@strapi/types' {
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'api::center.center': ApiCenterCenter;
       'api::child.child': ApiChildChild;
-      'api::enquiry.enquiry': ApiEnquiryEnquiry;
       'api::log-book.log-book': ApiLogBookLogBook;
       'api::parent.parent': ApiParentParent;
       'api::school.school': ApiSchoolSchool;

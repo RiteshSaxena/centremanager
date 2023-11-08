@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "A Strapi application",
   "scripts": {
-    "develop": "strapi develop",
+    "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi",
@@ -26,7 +26,9 @@
     "@strapi/plugin-i18n": "4.15.0",
     "@strapi/plugin-users-permissions": "4.15.0",
     "@strapi/strapi": "4.15.0",
+    "@strapi/utils": "^4.15.0",
     "csv-parse": "^5.5.2",
+    "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "mysql2": "^3.6.3"
   },

@@ -18,6 +18,16 @@
     },
     "region": {
       "type": "string"
+    },
+    "displayText": {
+      "type": "string"
+    },
+    "logo": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

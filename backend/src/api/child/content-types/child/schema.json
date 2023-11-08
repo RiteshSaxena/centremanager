@@ -101,11 +101,17 @@
       "target": "api::slot.slot",
       "inversedBy": "children"
     },
-    "enquiries": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::enquiry.enquiry",
-      "mappedBy": "child"
+    "enquiryDate": {
+      "type": "datetime"
+    },
+    "formType": {
+      "type": "string"
+    },
+    "referralCode": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
     }
   }
 }

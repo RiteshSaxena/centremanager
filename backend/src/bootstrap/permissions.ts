@@ -1,7 +1,8 @@
 import { Strapi } from '@strapi/strapi';
 
 const PERMISSIONS = [
-  //   { action: 'plugin::users-permissions.auth.postEmailConfirmation', role: 'public' },
+  { action: 'api::import-data.import-data.importData', role: 'public' },
+  { action: 'api::log-book.log-book.search', role: 'public' },
 ];
 
 const syncPermissions = async (strapi: Strapi) => {
