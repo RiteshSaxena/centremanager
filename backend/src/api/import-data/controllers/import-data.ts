@@ -115,11 +115,18 @@ export default {
         const parentEmail = records[i][15].trim().toLowerCase();
         const parentContactNumber = records[i][16];
         const parentMobileNumber = records[i][17];
-        const parentNumber = (parentContactNumber ? parentContactNumber : parentMobileNumber)
+        let parentNumber = (parentContactNumber ? parentContactNumber : parentMobileNumber)
           .trim()
           .replace(/^\s+|\s+$/g, '')
           .replace('+44', '');
-        const parentPrimaryNumber = parentNumber.indexOf('0') == 0 ? parentNumber : '0' + parentNumber;
+
+        if (parentNumber.startsWith('0')) {
+          parentNumber = parentNumber.substring(1);
+        }
+
+        if (parentNumber) {
+          parentNumber = '+44' + parentNumber;
+        }
 
         let parentId: null | number | string = null;
 
@@ -127,7 +134,7 @@ export default {
           filters: {
             firstName: parentFirstName,
             email: parentEmail,
-            contactNumber: parentPrimaryNumber,
+            contactNumber: parentNumber,
             center: centerId as any,
           },
           limit: 1,
@@ -141,7 +148,7 @@ export default {
               firstName: parentFirstName,
               lastName: parentLastName,
               email: parentEmail,
-              contactNumber: parentPrimaryNumber,
+              contactNumber: parentNumber,
               center: centerId,
             },
           });
@@ -172,7 +179,7 @@ export default {
         const enquiryDate = moment(records[i][0].trim(), 'DD/MM/YYYY HH:mm').toDate();
         const notes = records[i][22].trim();
 
-        const hashString = childFirstName + parentFirstName + parentEmail + parentPrimaryNumber;
+        const hashString = childFirstName + parentFirstName + parentEmail + parentNumber;
         const md5hash = createHash('md5').update(hashString).digest('hex');
 
         const existingChild = await strapi.query('api::child.child').findOne({ where: { childHash: md5hash } });
