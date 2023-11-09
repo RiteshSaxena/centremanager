@@ -38,6 +38,7 @@
     <SignInModal
       v-model:show="signInModal"
       :selected-user="selectedUser"
+      :loading="signing"
       @onSubmit="handleOnSubmit"
     />
   </div>
@@ -64,6 +65,7 @@ const logBookStore = useLogBookStore();
 const scanQRModal = ref(false);
 const guestSignInModal = ref(false);
 const signInModal = ref(false);
+const signing = ref(false);
 
 const search = ref('');
 const signedInFilter = ref('');
@@ -105,21 +107,26 @@ const onSelectGuardian = (item: SearchResult) => {
 };
 
 const handleOnSubmit = async (data: any) => {
-  const payload: any = {
-    ...data
-  };
-  if (selectedUser.value?.type === 'staff') {
-    payload.staff = selectedUser.value.id;
-    payload.isStaff = true;
-  }
-  if (selectedUser.value?.type === 'parent') {
-    payload.parent = selectedUser.value.id;
-    payload.isStudent = true;
-    payload.student = selectedStudentId.value;
-  }
-  const res = await logBookStore.signIn(payload);
+  try {
+    signing.value = true;
+    const payload: any = {
+      ...data
+    };
+    if (selectedUser.value?.type === 'staff') {
+      payload.staff = selectedUser.value.id;
+      payload.isStaff = true;
+    }
+    if (selectedUser.value?.type === 'parent') {
+      payload.parent = selectedUser.value.id;
+      payload.isStudent = true;
+      payload.student = selectedStudentId.value;
+    }
+    const res = await logBookStore.signIn(payload);
 
-  console.log(res);
-  signInModal.value = false;
+    console.log(res);
+    signInModal.value = false;
+  } finally {
+    signing.value = false;
+  }
 };
 </script>

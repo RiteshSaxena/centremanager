@@ -6,7 +6,7 @@ const PERMISSIONS = [
   { action: 'api::log-book.log-book.guestSign', role: 'public' },
   { action: 'api::log-book.log-book.sign', role: 'public' },
   { action: 'api::parent.parent.create', role: 'public' },
-  { action: 'plugin::upload.upload', role: 'public' },
+  { action: 'plugin::upload.content-api.upload', role: 'public' },
 ];
 
 const syncPermissions = async (strapi: Strapi) => {
