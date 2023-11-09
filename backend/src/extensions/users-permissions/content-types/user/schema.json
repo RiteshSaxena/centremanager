@@ -76,6 +76,9 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::center.center"
+    },
+    "phoneNumber": {
+      "type": "string"
     }
   }
 }

@@ -1,20 +1,33 @@
 import { defineStore } from 'pinia';
 import axios from '@/axios';
+import type { SearchResult } from '@/types';
+
+interface AddParentPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  child: number;
+}
 
 export const searchStore = defineStore('search', {
   state: () => ({
-    results: [] as any[],
+    results: [] as SearchResult[],
     loading: false
   }),
   actions: {
     async search(text: string) {
       try {
         this.loading = true;
-        const res = await axios.post('/log-book/search', { text });
+        const res = await axios.post<SearchResult[]>('/log-book/search', { text });
         this.results = [...res.data];
       } finally {
         this.loading = false;
       }
+    },
+    async addParent(payload: AddParentPayload) {
+      const res = await axios.post('/parents', payload);
+      return res.data;
     }
   },
   getters: {

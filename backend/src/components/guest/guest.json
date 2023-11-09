@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_guest_guests",
+  "info": {
+    "displayName": "Guest"
+  },
+  "options": {},
+  "attributes": {
+    "firstName": {
+      "type": "string",
+      "required": true
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    }
+  }
+}

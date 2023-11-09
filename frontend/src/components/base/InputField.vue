@@ -1,11 +1,35 @@
 <script setup lang="ts">
-defineProps({
-  placeholder: String
-});
+withDefaults(
+  defineProps<{
+    placeholder?: string;
+    type?: string;
+    required?: boolean;
+    modelValue: string;
+  }>(),
+  {
+    placeholder: '',
+    type: 'text',
+    required: false
+  }
+);
+
+const emit = defineEmits(['update:modelValue']);
+
+const onInput = (e: Event) => {
+  emit('update:modelValue', (e.target as HTMLInputElement).value);
+};
 </script>
 
 <template>
-  <input type="text" class="form-control" :placeholder="placeholder" :aria-label="placeholder" />
+  <input
+    :type="type"
+    class="form-control"
+    :placeholder="placeholder"
+    :aria-label="placeholder"
+    :required="required"
+    :value="modelValue"
+    @input="onInput"
+  />
 </template>
 
 <style scoped lang="scss">

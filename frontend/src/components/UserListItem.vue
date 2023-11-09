@@ -1,13 +1,37 @@
 <script setup lang="ts">
+import type { SearchResult } from '@/types';
+import { computed } from 'vue';
 
+const props = defineProps<{
+  item: SearchResult;
+}>();
+
+defineEmits(['click']);
+
+const iconColorClass = computed(() => {
+  if (props.item?.type) {
+    if (props.item.type === 'student') {
+      if (props.item.gender === 'Male') {
+        return 'icon-male';
+      } else if (props.item.gender === 'Female') {
+        return 'icon-female';
+      }
+    }
+  }
+  return 'icon-general';
+});
 </script>
 
 <template>
-  <div class="child-list-item d-flex align-items-center gap-3">
-    <i class="fa-solid fa-user"></i>
+  <div class="child-list-item d-flex align-items-center gap-3" @click="$emit('click')">
+    <i class="fa-solid fa-user" :class="iconColorClass"></i>
     <div>
-      <span class="name">Name</span>
-      <span class="desc">Phone</span>
+      <span class="name">{{ item?.firstName }} {{ item?.lastName }}</span>
+      <span class="desc" v-if="item?.type === 'student'">
+        Student {{ item?.schoolYear ? '- ' + item?.schoolYear : '' }}
+      </span>
+      <span class="desc" v-if="item?.type === 'staff'"> Staff - {{ item?.email }} </span>
+      <span class="desc" v-if="item?.type === 'parent'"> {{ (item as any)?.contactNumber }} </span>
     </div>
   </div>
 </template>
@@ -34,5 +58,14 @@
   .name {
     font-weight: 700;
   }
+}
+.icon-male {
+  color: #3488ce;
+}
+.icon-female {
+  color: #eb72ff;
+}
+.icon-general {
+  color: #b5b5b5;
 }
 </style>

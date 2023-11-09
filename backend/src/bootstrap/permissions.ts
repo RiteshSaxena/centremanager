@@ -3,6 +3,10 @@ import { Strapi } from '@strapi/strapi';
 const PERMISSIONS = [
   { action: 'api::import-data.import-data.importData', role: 'public' },
   { action: 'api::log-book.log-book.search', role: 'public' },
+  { action: 'api::log-book.log-book.guestSign', role: 'public' },
+  { action: 'api::log-book.log-book.sign', role: 'public' },
+  { action: 'api::parent.parent.create', role: 'public' },
+  { action: 'plugin::upload.upload', role: 'public' },
 ];
 
 const syncPermissions = async (strapi: Strapi) => {

@@ -27,7 +27,7 @@
         "images"
       ]
     },
-    "child": {
+    "student": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::child.child"
@@ -44,6 +44,32 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::center.center"
+    },
+    "guest": {
+      "type": "component",
+      "repeatable": false,
+      "component": "guest.guest"
+    },
+    "isGuest": {
+      "type": "boolean",
+      "default": false
+    },
+    "isParentWithStudent": {
+      "type": "boolean",
+      "default": false
+    },
+    "isStudent": {
+      "type": "boolean",
+      "default": false
+    },
+    "isStaff": {
+      "type": "boolean",
+      "default": false
+    },
+    "staff": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
     }
   }
 }

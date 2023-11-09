@@ -507,6 +507,7 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
     firstName: Attribute.String & Attribute.Required;
     lastName: Attribute.String;
     center: Attribute.Relation<'plugin::users-permissions.user', 'oneToOne', 'api::center.center'>;
+    phoneNumber: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'plugin::users-permissions.user', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -605,10 +606,16 @@ export interface ApiLogBookLogBook extends Schema.CollectionType {
   attributes: {
     type: Attribute.Enumeration<['SignIn', 'SignOut']>;
     signature: Attribute.Media;
-    child: Attribute.Relation<'api::log-book.log-book', 'oneToOne', 'api::child.child'>;
+    student: Attribute.Relation<'api::log-book.log-book', 'oneToOne', 'api::child.child'>;
     time: Attribute.DateTime;
     parent: Attribute.Relation<'api::log-book.log-book', 'oneToOne', 'api::parent.parent'>;
     center: Attribute.Relation<'api::log-book.log-book', 'oneToOne', 'api::center.center'>;
+    guest: Attribute.Component<'guest.guest'>;
+    isGuest: Attribute.Boolean & Attribute.DefaultTo<false>;
+    isParentWithStudent: Attribute.Boolean & Attribute.DefaultTo<false>;
+    isStudent: Attribute.Boolean & Attribute.DefaultTo<false>;
+    isStaff: Attribute.Boolean & Attribute.DefaultTo<false>;
+    staff: Attribute.Relation<'api::log-book.log-book', 'oneToOne', 'plugin::users-permissions.user'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::log-book.log-book', 'oneToOne', 'admin::user'> & Attribute.Private;
