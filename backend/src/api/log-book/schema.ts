@@ -9,34 +9,39 @@ const searchSchema = yup
   })
   .noUnknown();
 
-const guestSignSchema = yup
+const guestSignInSchema = yup
   .object()
   .shape({
     firstName: yup.string().trim().required().min(2).max(250).label('First Name'),
     lastName: yup.string().trim().required().min(2).max(250).label('Last Name'),
-    email: yup.string().trim().required().min(2).max(250).label('Email'),
+    email: yup.string().trim().max(250).label('Email'),
     phoneNumber: yup.string().trim().required().min(2).max(250).label('Phone Number'),
     signature: yup.number().required().label('Signature'),
-    type: yup.mixed().oneOf(['SignIn', 'SignOut']).required().label('Type'),
   })
   .noUnknown();
 
-const signSchema = yup
+const signInSchema = yup
   .object()
   .shape({
     signature: yup.number().required().label('Signature'),
-    type: yup.mixed().oneOf(['SignIn', 'SignOut']).required().label('Type'),
+    type: yup.mixed().oneOf(['Staff', 'Student', 'StudentWithParent', 'Parent']).required().label('Type'),
     student: yup.number().label('Student'),
     parent: yup.number().label('Parent'),
     staff: yup.number().label('Staff'),
-    isStaff: yup.boolean().label('Is Staff'),
-    isStudent: yup.boolean().label('Is Student'),
-    isParentWithStudent: yup.boolean().label('Is Parent With Student'),
+  })
+  .noUnknown();
+
+const signOutSchema = yup
+  .object()
+  .shape({
+    signIn: yup.number().required().label('Sign In'),
+    signature: yup.number().required().label('Signature'),
   })
   .noUnknown();
 
 export default {
   search: validateYupSchema(searchSchema),
-  guestSign: validateYupSchema(guestSignSchema),
-  sign: validateYupSchema(signSchema),
+  guestSignIn: validateYupSchema(guestSignInSchema),
+  signIn: validateYupSchema(signInSchema),
+  signOut: validateYupSchema(signOutSchema),
 };

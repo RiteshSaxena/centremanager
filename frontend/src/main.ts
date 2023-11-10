@@ -19,6 +19,7 @@ app.use(VueToast, {
 const toast = useToast();
 
 app.config.errorHandler = (err: any) => {
+  console.error(err);
   if (err?.response?.data?.error?.message) {
     toast.error(err.response.data.error.message);
   } else {

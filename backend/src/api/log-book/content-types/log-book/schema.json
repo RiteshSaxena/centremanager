@@ -12,14 +12,7 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "type": {
-      "type": "enumeration",
-      "enum": [
-        "SignIn",
-        "SignOut"
-      ]
-    },
-    "signature": {
+    "signatureIn": {
       "type": "media",
       "multiple": false,
       "required": false,
@@ -31,9 +24,6 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::child.child"
-    },
-    "time": {
-      "type": "datetime"
     },
     "parent": {
       "type": "relation",
@@ -50,26 +40,33 @@
       "repeatable": false,
       "component": "guest.guest"
     },
-    "isGuest": {
-      "type": "boolean",
-      "default": false
-    },
-    "isParentWithStudent": {
-      "type": "boolean",
-      "default": false
-    },
-    "isStudent": {
-      "type": "boolean",
-      "default": false
-    },
-    "isStaff": {
-      "type": "boolean",
-      "default": false
-    },
     "staff": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "Staff",
+        "Guest",
+        "Student",
+        "StudentWithParent",
+        "Parent"
+      ]
+    },
+    "signInTime": {
+      "type": "datetime"
+    },
+    "signOutTime": {
+      "type": "datetime"
+    },
+    "signatureOut": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

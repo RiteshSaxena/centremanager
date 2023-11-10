@@ -6,24 +6,39 @@ import { factories } from '@strapi/strapi';
 import schema from '../schema';
 import utils from '@strapi/utils';
 
-const { ValidationError } = utils.errors;
+const { ValidationError, ApplicationError } = utils.errors;
 export default factories.createCoreController('api::log-book.log-book', ({ strapi }) => ({
   async search(ctx) {
     const { text } = await schema.search(ctx.request.body);
 
+    const center = await strapi.entityService.findMany('api::center.center', {
+      limit: 1,
+    });
+
+    if (!center.length) {
+      throw new ApplicationError('Center not found');
+    }
+
     const students = await strapi.entityService.findMany('api::child.child', {
       fields: ['firstName', 'lastName', 'gender', 'schoolYear'] as any[],
       filters: {
-        $or: [
+        $and: [
           {
-            firstName: {
-              $containsi: text,
-            },
+            center: center[0].id as any,
           },
           {
-            lastName: {
-              $containsi: text,
-            },
+            $or: [
+              {
+                firstName: {
+                  $containsi: text,
+                },
+              },
+              {
+                lastName: {
+                  $containsi: text,
+                },
+              },
+            ],
           },
         ],
       },
@@ -33,21 +48,28 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     const staff = await strapi.entityService.findMany('plugin::users-permissions.user', {
       fields: ['firstName', 'lastName', 'email'] as any[],
       filters: {
-        $or: [
+        $and: [
           {
-            firstName: {
-              $containsi: text,
-            },
+            center: center[0].id as any,
           },
           {
-            lastName: {
-              $containsi: text,
-            },
-          },
-          {
-            email: {
-              $containsi: text,
-            },
+            $or: [
+              {
+                firstName: {
+                  $containsi: text,
+                },
+              },
+              {
+                lastName: {
+                  $containsi: text,
+                },
+              },
+              {
+                email: {
+                  $containsi: text,
+                },
+              },
+            ],
           },
         ],
       },
@@ -69,16 +91,23 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
 
     return [...studentsArr, ...staffArr];
   },
-  async guestSign(ctx) {
-    const payload = await schema.guestSign(ctx.request.body);
+  async guestSignIn(ctx) {
+    const payload = await schema.guestSignIn(ctx.request.body);
+
+    const center = await strapi.entityService.findMany('api::center.center', {
+      limit: 1,
+    });
+
+    if (!center.length) {
+      throw new ApplicationError('Center not found');
+    }
 
     const entry = await strapi.entityService.create('api::log-book.log-book', {
       data: {
-        type: payload.type,
-        signature: payload.signature,
-        time: new Date(),
-        isGuest: true,
-        center: 5,
+        type: 'Guest',
+        signatureIn: payload.signature,
+        signInTime: new Date(),
+        center: center[0].id,
         guest: {
           firstName: payload.firstName,
           lastName: payload.lastName,
@@ -90,41 +119,116 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
 
     return entry;
   },
-  async sign(ctx) {
-    const payload = await schema.sign(ctx.request.body);
-
-    if (payload.isStaff && !payload.staff) {
-      throw new ValidationError('Staff is required');
-    }
-
-    if (payload.isStudent && (!payload.student || !payload.parent)) {
-      throw new ValidationError('Student and Parent is required');
-    }
+  async signIn(ctx) {
+    const payload = await schema.signIn(ctx.request.body);
 
     const data: any = {};
 
-    if (payload.isStaff) {
+    if (payload.type === 'Staff') {
+      if (!payload.staff) {
+        throw new ValidationError('Staff is required');
+      }
       data.staff = payload.staff;
-      data.isStaff = true;
     }
 
-    if (payload.isStudent) {
+    if (payload.type === 'Student' || payload.type === 'StudentWithParent') {
+      if (!payload.student) throw new ValidationError('Student is required');
+      if (!payload.parent) throw new ValidationError('Parent is required');
+
       data.student = payload.student;
       data.parent = payload.parent;
-      data.isStudent = true;
-      data.isParentWithStudent = payload.isParentWithStudent;
+    }
+
+    if (payload.type === 'Parent') {
+      if (!payload.parent) throw new ValidationError('Parent is required');
+
+      data.parent = payload.parent;
+    }
+
+    const center = await strapi.entityService.findMany('api::center.center', {
+      limit: 1,
+    });
+
+    if (!center.length) {
+      throw new ApplicationError('Center not found');
+    }
+
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+
+    const alreadySignedIn = await strapi.entityService.findMany('api::log-book.log-book', {
+      filters: {
+        type: payload.type,
+        center: center[0].id as any,
+        ...data,
+        signInTime: {
+          $gte: date,
+        },
+      },
+      limit: 1,
+    });
+
+    if (alreadySignedIn.length) {
+      throw new ValidationError('Already signed in');
     }
 
     const entry = await strapi.entityService.create('api::log-book.log-book', {
       data: {
         type: payload.type,
-        signature: payload.signature,
-        time: new Date(),
-        center: 5,
+        signatureIn: payload.signature,
+        signInTime: new Date(),
+        center: center[0].id,
         ...data,
       },
     });
 
     return entry;
+  },
+  async signOut(ctx) {
+    const payload = await schema.signOut(ctx.request.body);
+
+    const entry = await strapi.entityService.findOne('api::log-book.log-book', payload.signIn);
+
+    if (!entry) {
+      throw new ValidationError('Entry not found');
+    }
+
+    if (entry.signOutTime) {
+      throw new ValidationError('Already signed out');
+    }
+
+    await strapi.entityService.update('api::log-book.log-book', entry.id, {
+      data: {
+        signOutTime: new Date(),
+        signatureOut: payload.signature,
+      },
+    });
+
+    return true;
+  },
+  async list(ctx) {
+    const center = await strapi.entityService.findMany('api::center.center', {
+      limit: 1,
+    });
+
+    if (!center.length) {
+      throw new ApplicationError('Center not found');
+    }
+
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+
+    const entries = await strapi.entityService.findMany('api::log-book.log-book', {
+      filters: {
+        center: center[0].id as any,
+        signInTime: {
+          $gte: date,
+        },
+        signOutTime: null,
+      },
+      populate: ['student', 'parent', 'staff', 'guest'],
+    });
+
+    return entries;
   },
 }));

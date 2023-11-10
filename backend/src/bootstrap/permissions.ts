@@ -3,8 +3,10 @@ import { Strapi } from '@strapi/strapi';
 const PERMISSIONS = [
   { action: 'api::import-data.import-data.importData', role: 'public' },
   { action: 'api::log-book.log-book.search', role: 'public' },
-  { action: 'api::log-book.log-book.guestSign', role: 'public' },
-  { action: 'api::log-book.log-book.sign', role: 'public' },
+  { action: 'api::log-book.log-book.guestSignIn', role: 'public' },
+  { action: 'api::log-book.log-book.signIn', role: 'public' },
+  { action: 'api::log-book.log-book.signOut', role: 'public' },
+  { action: 'api::log-book.log-book.list', role: 'public' },
   { action: 'api::parent.parent.create', role: 'public' },
   { action: 'plugin::upload.content-api.upload', role: 'public' },
 ];

@@ -1,10 +1,14 @@
 <template>
   <div class="centre-name">
     <h1>Hayes Study Centre</h1>
-    <span>31 October</span>
+    <span>{{ date }}</span>
   </div>
 </template>
 
+<script setup lang="ts">
+import moment from 'moment';
+const date = moment().format('DD MMMM, YYYY');
+</script>
 <style scoped lang="scss">
 .centre-name {
   h1 {

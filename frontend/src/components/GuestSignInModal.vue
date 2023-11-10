@@ -48,12 +48,21 @@ const onSubmit = async () => {
       throw new Error('Please sign to continue');
     }
 
-    await logBookStore.guestSignIn({
-      ...guestData,
+    const payload: any = {
+      firstName: guestData.firstName,
+      lastName: guestData.lastName,
+      phoneNumber: guestData.phoneNumber.toString(),
       signature: signaturePad.value.getImage()
-    });
+    };
 
-    toast.success('Guest signed in successfully');
+    if (guestData.email) {
+      payload.email = guestData.email;
+    }
+
+    await logBookStore.guestSignIn(payload);
+
+    toast.success('Guest signed successfully');
+    logBookStore.fetchList();
     emit('update:show', false);
   } finally {
     loading.value = false;
@@ -85,16 +94,10 @@ const emit = defineEmits(['update:show']);
         class="mb-2"
         placeholder="Last Name"
       />
-      <InputField
-        v-model="guestData.email"
-        type="email"
-        :required="true"
-        class="mb-2"
-        placeholder="Email"
-      />
+      <InputField v-model="guestData.email" type="email" class="mb-2" placeholder="Email" />
       <InputField
         v-model="guestData.phoneNumber"
-        type="text"
+        type="number"
         :required="true"
         placeholder="Phone Number"
       />

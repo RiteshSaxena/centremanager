@@ -25,6 +25,9 @@ export const searchStore = defineStore('search', {
         this.loading = false;
       }
     },
+    clearResults() {
+      this.results = [];
+    },
     async addParent(payload: AddParentPayload) {
       const res = await axios.post('/parents', payload);
       return res.data;

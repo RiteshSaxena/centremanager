@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from '@/axios';
+import type { LogRecord } from '@/types';
 
 interface GuestSignInPayload {
   firstName: string;
@@ -17,44 +18,49 @@ const convertBase64ToFile = async (base64: string) => {
 
 export const logBookStore = defineStore('log-book', {
   state: () => ({
-    loading: false
+    list: [] as LogRecord[]
   }),
   actions: {
     async guestSignIn(payload: GuestSignInPayload) {
-      try {
-        this.loading = true;
-        const signature = await convertBase64ToFile(payload.signature);
-        const formData = new FormData();
-        formData.append('files', signature);
-        const fileUploadRes = await axios.post('/upload', formData);
-        const fileId = fileUploadRes.data[0].id;
-        const res = await axios.post('/log-book/guest-sign', {
-          ...payload,
-          type: 'SignIn',
-          signature: fileId
-        });
-        return res.data;
-      } finally {
-        this.loading = false;
-      }
+      const signature = await convertBase64ToFile(payload.signature);
+      const formData = new FormData();
+      formData.append('files', signature);
+      const fileUploadRes = await axios.post('/upload', formData);
+      const fileId = fileUploadRes.data[0].id;
+      const res = await axios.post('/log-book/guest-sign-in', {
+        ...payload,
+        signature: fileId
+      });
+      return res.data;
     },
     async signIn(payload: any) {
-      try {
-        this.loading = true;
-        const signature = await convertBase64ToFile(payload.signature);
-        const formData = new FormData();
-        formData.append('files', signature);
-        const fileUploadRes = await axios.post('/upload', formData);
-        const fileId = fileUploadRes.data[0].id;
-        const res = await axios.post('/log-book/sign', {
-          ...payload,
-          type: 'SignIn',
-          signature: fileId
-        });
-        return res.data;
-      } finally {
-        this.loading = false;
-      }
+      const signature = await convertBase64ToFile(payload.signature);
+      const formData = new FormData();
+      formData.append('files', signature);
+      const fileUploadRes = await axios.post('/upload', formData);
+      const fileId = fileUploadRes.data[0].id;
+      const res = await axios.post('/log-book/sign-in', {
+        ...payload,
+        signature: fileId
+      });
+      return res.data;
+    },
+    async signOut(payload: any) {
+      const signature = await convertBase64ToFile(payload.signature);
+      const formData = new FormData();
+      formData.append('files', signature);
+      const fileUploadRes = await axios.post('/upload', formData);
+      const fileId = fileUploadRes.data[0].id;
+      const res = await axios.post('/log-book/sign-out', {
+        ...payload,
+        signature: fileId
+      });
+      return res.data;
+    },
+    async fetchList() {
+      const res = await axios.get<LogRecord[]>('/log-book/list');
+      this.list = res.data;
+      return res.data;
     }
   }
 });
