@@ -59,4 +59,9 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #193b4d;
+}
 </style>
