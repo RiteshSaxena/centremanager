@@ -86,7 +86,7 @@ const onSubmit = async (data: any) => {
 </script>
 
 <template>
-  <Card>
+  <Card class="signed-in-list">
     <template #header> People Signed In </template>
     <p class="small text-muted" v-if="!signedIn.length">No results found.</p>
     <SignedInListItem
@@ -98,3 +98,10 @@ const onSubmit = async (data: any) => {
   </Card>
   <SignOutModal v-model:show="showModal" :loading="signing" @onSubmit="onSubmit" />
 </template>
+
+<style scoped lang="scss">
+.signed-in-list {
+  max-height: 600px;
+  overflow-y: auto;
+}
+</style>

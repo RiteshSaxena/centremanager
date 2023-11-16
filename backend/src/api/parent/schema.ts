@@ -7,7 +7,7 @@ const addParentSchema = yup
   .shape({
     firstName: yup.string().trim().required().min(2).max(250).label('First Name'),
     lastName: yup.string().trim().required().min(2).max(250).label('Last Name'),
-    email: yup.string().trim().required().min(2).max(250).label('Email'),
+    email: yup.string().trim().max(250).label('Email'),
     phoneNumber: yup.string().trim().required().min(2).max(250).label('Phone Number'),
     child: yup.number().required().label('Child'),
   })

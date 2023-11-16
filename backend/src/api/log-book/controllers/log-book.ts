@@ -5,6 +5,7 @@
 import { factories } from '@strapi/strapi';
 import schema from '../schema';
 import utils from '@strapi/utils';
+import { sanitizeUser, sanitizeChild } from '../../../utils/sanitize';
 
 const { ValidationError, ApplicationError } = utils.errors;
 export default factories.createCoreController('api::log-book.log-book', ({ strapi }) => ({
@@ -207,7 +208,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
 
     return true;
   },
-  async list(ctx) {
+  async list() {
     const center = await strapi.entityService.findMany('api::center.center', {
       limit: 1,
     });
@@ -230,6 +231,14 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       populate: ['student', 'parent', 'staff', 'guest'],
     });
 
-    return entries;
+    return entries.map((entry: any) => {
+      if (entry.student) {
+        entry.student = sanitizeChild(entry.student);
+      }
+      if (entry.staff) {
+        entry.staff = sanitizeUser(entry.staff);
+      }
+      return entry;
+    });
   },
 }));
