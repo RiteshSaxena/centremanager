@@ -5,7 +5,14 @@
       <div class="col-md-4">
         <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
         <div class="text-end">
-          <button v-if="search.trim().length" type="button" class="btn btn-info mt-2" @click="clearSearch">Clear</button>
+          <button
+            v-if="search.trim().length"
+            type="button"
+            class="btn btn-info mt-2"
+            @click="clearSearch"
+          >
+            Clear
+          </button>
         </div>
         <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
       </div>
@@ -16,18 +23,25 @@
         </button>
         <div class="mt-3">
           <GuardianList
-              v-if="selectedStudentId"
-              :items="parents"
-              :student-id="selectedStudentId"
-              @onSelect="onSelectGuardian"
-              @onAddGuardian="onAddGuardian"
+            v-if="selectedStudentId"
+            :items="parents"
+            :student-id="selectedStudentId"
+            @onSelect="onSelectGuardian"
+            @onAddGuardian="onAddGuardian"
           />
         </div>
       </div>
       <div class="col-md-4">
         <InputField v-model="signedInFilter" placeholder="Filter" />
         <div class="text-end">
-          <button v-if="signedInFilter.length" type="button" class="btn btn-info mt-2" @click="signedInFilter = ''">Clear</button>
+          <button
+            v-if="signedInFilter.length"
+            type="button"
+            class="btn btn-info mt-2"
+            @click="signedInFilter = ''"
+          >
+            Clear
+          </button>
         </div>
         <div class="mt-3">
           <SignedInList :filter="signedInFilter" />

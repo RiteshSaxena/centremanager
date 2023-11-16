@@ -8,6 +8,7 @@ const PERMISSIONS = [
   { action: 'api::log-book.log-book.signOut', role: 'public' },
   { action: 'api::log-book.log-book.list', role: 'public' },
   { action: 'api::parent.parent.create', role: 'public' },
+  { action: 'api::slot.slot.find', role: 'public' },
   { action: 'plugin::upload.content-api.upload', role: 'public' },
 ];
 

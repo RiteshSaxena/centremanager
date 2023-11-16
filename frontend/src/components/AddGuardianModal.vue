@@ -55,12 +55,7 @@ const emit = defineEmits(['update:show', 'onSubmit']);
         class="mb-2"
         placeholder="Last Name"
       />
-      <InputField
-        v-model="guardianData.email"
-        type="email"
-        class="mb-2"
-        placeholder="Email"
-      />
+      <InputField v-model="guardianData.email" type="email" class="mb-2" placeholder="Email" />
       <InputField
         v-model="guardianData.phoneNumber"
         type="text"
