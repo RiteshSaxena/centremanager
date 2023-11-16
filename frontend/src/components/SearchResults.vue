@@ -18,7 +18,11 @@ defineEmits(['onSelect']);
 <template>
   <Card>
     <template #header> Results </template>
-    <p class="small text-muted" v-if="searchStore.loading">Loading...</p>
+    <div class="text-center" v-if="searchStore.loading">
+      <div class="spinner-border text-dark text-center" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     <p class="small text-muted" v-if="!searchStore.loading && !searchStore.results.length">
       No results found.
     </p>

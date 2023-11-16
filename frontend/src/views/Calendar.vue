@@ -80,8 +80,8 @@ const getStudents = computed(() => {
   };
 });
 
-onMounted(() => {
-  slotStore.fetchSlots();
+onMounted(async () => {
+  await slotStore.fetchSlots();
 });
 </script>
 
@@ -102,13 +102,17 @@ onMounted(() => {
       <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
         <div class="calendar-header">{{ timing.text }}</div>
         <div class="student-list" v-for="day in days" :key="day">
-          <span v-for="student in getStudents(day, timing)" :key="student.id">{{
-            student.firstName
-          }}</span>
+          <span v-for="student in getStudents(day, timing)" :key="student.id">
+            {{ student.firstName }}
+          </span>
         </div>
       </div>
     </div>
-    <p v-else>Loading...</p>
+    <div class="text-center my-4" v-else>
+      <div class="spinner-border text-dark text-center" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
   </div>
 </template>
 
