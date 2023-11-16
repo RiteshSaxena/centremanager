@@ -56,7 +56,9 @@ defineExpose({
         'border-radius': '5px'
       }"
     />
-    <button type="button" class="btn btn-sm btn-dark mt-3" @click.prevent="reset">Reset</button>
+    <div class="text-end">
+      <button type="button" class="btn btn-sm btn-dark mt-3" @click.prevent="reset">Reset</button>
+    </div>
   </div>
 </template>
 

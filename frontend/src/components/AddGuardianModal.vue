@@ -23,7 +23,16 @@ const guardianData = reactive({
 });
 
 const onSubmit = () => {
-  emit('onSubmit', guardianData);
+  const payload: any = {
+    firstName: guardianData.firstName,
+    lastName: guardianData.lastName,
+    phoneNumber: guardianData.phoneNumber
+  };
+
+  if (guardianData.email) {
+    payload.email = guardianData.email;
+  }
+  emit('onSubmit', payload);
 };
 
 const emit = defineEmits(['update:show', 'onSubmit']);
@@ -49,7 +58,6 @@ const emit = defineEmits(['update:show', 'onSubmit']);
       <InputField
         v-model="guardianData.email"
         type="email"
-        :required="true"
         class="mb-2"
         placeholder="Email"
       />
