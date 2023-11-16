@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LogRecord, SearchResult } from '@/types';
+import type { LogRecord } from '@/types';
 import { computed } from 'vue';
 
 const props = defineProps<{

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import QrScanner from 'qr-scanner';
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 import Modal from '@/components/base/Modal.vue';
 

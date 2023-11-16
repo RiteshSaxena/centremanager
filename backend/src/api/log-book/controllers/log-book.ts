@@ -208,7 +208,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
 
     return true;
   },
-  async list(ctx) {
+  async list() {
     const center = await strapi.entityService.findMany('api::center.center', {
       limit: 1,
     });

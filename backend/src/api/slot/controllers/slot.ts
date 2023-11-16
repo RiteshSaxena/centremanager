@@ -10,7 +10,7 @@ import { sanitizeChild } from '../../../utils/sanitize';
 const { ApplicationError } = utils.errors;
 
 export default factories.createCoreController('api::slot.slot', ({ strapi }) => ({
-  async find(ctx) {
+  async find() {
     const center = await strapi.entityService.findMany('api::center.center', {
       limit: 1,
     });
