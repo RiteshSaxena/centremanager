@@ -1,5 +1,4 @@
-<script setup lang='ts'>
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="sidebar d-flex flex-column justify-content-between align-items-center">
