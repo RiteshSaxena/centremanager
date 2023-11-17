@@ -22,7 +22,11 @@
     },
     "gender": {
       "type": "enumeration",
-      "enum": ["Male", "Female", "Others"]
+      "enum": [
+        "Male",
+        "Female",
+        "Others"
+      ]
     },
     "houseNumber": {
       "type": "string"
@@ -78,9 +82,6 @@
     "enrollmentDate": {
       "type": "datetime"
     },
-    "paymentDate": {
-      "type": "datetime"
-    },
     "statusLog": {
       "type": "component",
       "repeatable": true,
@@ -107,7 +108,10 @@
       "type": "string"
     },
     "notes": {
-      "type": "string"
+      "type": "text"
+    },
+    "paymentDate": {
+      "type": "integer"
     }
   }
 }
