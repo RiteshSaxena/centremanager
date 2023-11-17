@@ -226,7 +226,6 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
         signInTime: {
           $gte: date,
         },
-        signOutTime: null,
       },
       populate: ['student', 'parent', 'staff', 'guest'],
     });

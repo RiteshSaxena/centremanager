@@ -3,9 +3,10 @@ import CentreHeader from '@/components/CentreHeader.vue';
 import { computed, onMounted } from 'vue';
 import moment from 'moment';
 
-import { useSlotStore } from '@/stores';
+import { useSlotStore, useLogBookStore } from '@/stores';
 
 const slotStore = useSlotStore();
+const logBookStore = useLogBookStore();
 
 const loading = computed(() => slotStore.loading);
 
@@ -14,6 +15,8 @@ interface Timing {
   start: string;
   end: string;
 }
+
+const day = moment().format('dddd');
 
 const formatTime = (time: string) => {
   let timeArr = time.split(':');
@@ -26,7 +29,9 @@ const formatTime = (time: string) => {
 const timings = computed<Timing[]>(() => {
   const timings: Timing[] = [];
 
-  slotStore.slots.forEach((slot) => {
+  const slots = slotStore.slots.filter((slot) => slot.day === day);
+
+  slots.forEach((slot) => {
     const isExists = timings.find(
       (time) => time.start === slot.startTime && time.end === slot.endTime
     );
@@ -56,17 +61,6 @@ const timings = computed<Timing[]>(() => {
   return timings;
 });
 
-const days = computed(() => {
-  const days: string[] = [];
-
-  days.push(moment().subtract(1, 'day').format('dddd'));
-  days.push(moment().format('dddd'));
-  days.push(moment().add(1, 'day').format('dddd'));
-  days.push(moment().add(2, 'days').format('dddd'));
-
-  return days;
-});
-
 const getStudents = computed(() => {
   return (day: string, timing: Timing) => {
     const slot = slotStore.slots.filter(
@@ -80,7 +74,30 @@ const getStudents = computed(() => {
   };
 });
 
+const getStudentAttendance = computed(() => {
+  return (id: number, timing: Timing) => {
+    const isPresent = logBookStore.list.find((log) => log.student?.id === id);
+
+    if (!isPresent) {
+      const isSlotActive = moment().isAfter(moment(timing.start, 'HH:mm:ss.SSS'));
+
+      if (isSlotActive) {
+        return 'absent';
+      }
+
+      return '';
+    }
+
+    if (isPresent.signOutTime) {
+      return 'present';
+    }
+
+    return 'in-class';
+  };
+});
+
 onMounted(async () => {
+  await logBookStore.fetchList();
   await slotStore.fetchSlots();
 });
 </script>
@@ -89,23 +106,30 @@ onMounted(async () => {
   <div class="p-4">
     <CentreHeader />
     <div class="calendar-container" v-if="!loading">
-      <div class="calendar-row mb-3">
+      <div class="calendar-row">
         <div></div>
-        <span
-          class="calendar-header"
-          v-for="(day, index) in days"
-          :key="day"
-          :class="{ 'calendar-header-active': index === 1 }"
-          >{{ day }}
-        </span>
+        <span class="calendar-header calendar-header-active">{{ day }}</span>
       </div>
       <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
         <div class="calendar-header">{{ timing.text }}</div>
-        <div class="student-list" v-for="day in days" :key="day">
+        <div class="student-list">
           <span v-for="student in getStudents(day, timing)" :key="student.id">
             {{ student.firstName }} {{ student.lastName }}
+            <span v-if="getStudentAttendance(student.id, timing) === 'present'">
+              <i class="fa-solid fa-circle-check text-success ms-1"></i>
+            </span>
+            <span v-if="getStudentAttendance(student.id, timing) === 'absent'">
+              <i class="fa-solid fa-circle-xmark text-danger ms-1"></i>
+            </span>
+            <span v-if="getStudentAttendance(student.id, timing) === 'in-class'">
+              <i class="fa-solid fa-circle-arrow-right text-primary ms-1"></i>
+            </span>
           </span>
         </div>
+      </div>
+      <div class="calendar-row" v-if="!timings.length">
+        <div></div>
+        <p class="text-muted small">No slots found for today.</p>
       </div>
     </div>
     <div class="text-center my-4" v-else>
@@ -133,6 +157,7 @@ onMounted(async () => {
     justify-self: center;
     padding: 5px 15px;
     border-radius: 15px;
+    margin-bottom: 15px;
 
     &.calendar-header-active {
       color: #193b4d;
@@ -142,7 +167,7 @@ onMounted(async () => {
 
   .student-list {
     background: white;
-    min-height: 50px;
+    min-height: 150px;
     border: 1px solid #dbdbdb;
     border-right: 0;
     border-bottom: 0;

@@ -5,7 +5,7 @@ export interface LogRecord {
   id: number;
   type: 'Guest' | 'Student' | 'StudentWithParent' | 'Parent' | 'Staff';
   signInTime: Date;
-  signOutTIme: null | Date;
+  signOutTime: null | Date;
   student?: Student;
   parent?: Parent;
   staff?: Staff;

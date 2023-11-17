@@ -2,7 +2,7 @@
 import Card from '@/components/base/Card.vue';
 
 import { useLogBookStore } from '@/stores';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import SignedInListItem from '@/components/SignedInListItem.vue';
 import SignOutModal from '@/components/SignOutModal.vue';
 import type { LogRecord } from '@/types';
@@ -16,14 +16,16 @@ const props = defineProps<{
 
 const toast = useToast();
 
+const loading = ref(false);
 const signing = ref(false);
 const showModal = ref(false);
 const selectedRecord = ref<LogRecord | null>(null);
 
 const signedIn = computed(() => {
+  const list = logBookStore.list.filter((item) => !item.signOutTime);
   const text = props.filter?.trim().toLowerCase() || '';
   if (text) {
-    return logBookStore.list.filter((item) => {
+    return list.filter((item) => {
       if (item.type === 'Student' || item.type === 'StudentWithParent') {
         return (
           item.student?.firstName?.toLowerCase().includes(text) ||
@@ -58,7 +60,7 @@ const signedIn = computed(() => {
       return false;
     });
   }
-  return logBookStore.list;
+  return list;
 });
 
 const onSelect = (item: LogRecord) => {
@@ -78,17 +80,35 @@ const onSubmit = async (data: any) => {
 
     showModal.value = false;
     toast.success('Signed out Successfully');
-    logBookStore.fetchList();
+    fetchList();
   } finally {
     signing.value = false;
   }
 };
+
+const fetchList = async () => {
+  try {
+    loading.value = true;
+    await logBookStore.fetchList();
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await fetchList();
+});
 </script>
 
 <template>
   <Card class="signed-in-list">
     <template #header> People Signed In </template>
-    <p class="small text-muted" v-if="!signedIn.length">No results found.</p>
+    <div class="text-center mb-3" v-if="loading">
+      <div class="spinner-border text-dark text-center" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <p class="small text-muted" v-if="!loading && !signedIn.length">No results found.</p>
     <SignedInListItem
       v-for="(item, index) in signedIn"
       :key="index"

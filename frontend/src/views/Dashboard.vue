@@ -8,7 +8,7 @@
           <button
             v-if="search.trim().length"
             type="button"
-            class="btn btn-dark rounded-3"
+            class="btn btn-secondary rounded-3"
             @click="clearSearch"
           >
             <i class="fa-solid fa-xmark"></i>
@@ -37,7 +37,7 @@
           <button
             v-if="signedInFilter.length"
             type="button"
-            class="btn btn-dark rounded-3"
+            class="btn btn-secondary rounded-3"
             @click="signedInFilter = ''"
           >
             <i class="fa-solid fa-xmark"></i>
@@ -111,10 +111,6 @@ watch(search, () => {
   } else {
     clearSearch();
   }
-});
-
-onMounted(() => {
-  logBookStore.fetchList();
 });
 
 const onAddGuardian = (data: any) => {

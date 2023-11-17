@@ -21,6 +21,12 @@ export const logBookStore = defineStore('log-book', {
     list: [] as LogRecord[]
   }),
   actions: {
+    async importData(file: File) {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await axios.post('/import-data', formData);
+      return res.data;
+    },
     async guestSignIn(payload: GuestSignInPayload) {
       const signature = await convertBase64ToFile(payload.signature);
       const formData = new FormData();
