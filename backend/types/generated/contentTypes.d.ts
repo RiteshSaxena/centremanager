@@ -577,14 +577,14 @@ export interface ApiChildChild extends Schema.CollectionType {
     > &
       Attribute.DefaultTo<'New'>;
     enrollmentDate: Attribute.DateTime;
-    paymentDate: Attribute.DateTime;
     statusLog: Attribute.Component<'status.status-change', true>;
     childHash: Attribute.String & Attribute.Unique;
     slots: Attribute.Relation<'api::child.child', 'manyToMany', 'api::slot.slot'>;
     enquiryDate: Attribute.DateTime;
     formType: Attribute.String;
     referralCode: Attribute.String;
-    notes: Attribute.String;
+    notes: Attribute.Text;
+    paymentDate: Attribute.Integer;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::child.child', 'oneToOne', 'admin::user'> & Attribute.Private;
