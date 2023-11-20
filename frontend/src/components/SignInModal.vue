@@ -51,7 +51,7 @@ const emit = defineEmits(['update:show', 'onSubmit']);
 </script>
 
 <template>
-  <Modal v-if="show" title="Sign In" @close="emit('update:show', false)">
+  <Modal v-if="show" :large="true" title="Sign In" @close="emit('update:show', false)">
     <div>
       <signature-pad ref="signaturePad" />
       <div class="form-check mt-4" v-if="selectedUser?.type === 'parent'">

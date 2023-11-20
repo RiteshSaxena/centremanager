@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import CentreHeader from '@/components/CentreHeader.vue';
 import { computed, onMounted } from 'vue';
 import moment from 'moment';
+
+import CentreHeader from '@/components/CentreHeader.vue';
 
 import { useSlotStore } from '@/stores';
 
@@ -26,7 +27,9 @@ const formatTime = (time: string) => {
 const timings = computed<Timing[]>(() => {
   const timings: Timing[] = [];
 
-  slotStore.slots.forEach((slot) => {
+  const slots = slotStore.slots.filter((slot) => days.value.includes(slot.day));
+
+  slots.forEach((slot) => {
     const isExists = timings.find(
       (time) => time.start === slot.startTime && time.end === slot.endTime
     );
@@ -56,13 +59,28 @@ const timings = computed<Timing[]>(() => {
   return timings;
 });
 
+const allDays: string[] = [];
+
+allDays.push(moment().subtract(1, 'day').format('dddd'));
+allDays.push(moment().format('dddd'));
+allDays.push(moment().add(1, 'day').format('dddd'));
+allDays.push(moment().add(3, 'days').format('dddd'));
+allDays.push(moment().add(4, 'days').format('dddd'));
+allDays.push(moment().add(5, 'days').format('dddd'));
+allDays.push(moment().add(6, 'days').format('dddd'));
+
+const today = moment().format('dddd');
+
 const days = computed(() => {
   const days: string[] = [];
 
-  days.push(moment().subtract(1, 'day').format('dddd'));
-  days.push(moment().format('dddd'));
-  days.push(moment().add(1, 'day').format('dddd'));
-  days.push(moment().add(2, 'days').format('dddd'));
+  allDays.forEach((day) => {
+    const isSlotExists = slotStore.slots.find((slot) => slot.day === day);
+
+    if (isSlotExists && days.length < 4) {
+      days.push(day);
+    }
+  });
 
   return days;
 });
@@ -88,15 +106,21 @@ onMounted(async () => {
 <template>
   <div class="p-4">
     <CentreHeader />
-    <div class="calendar-container" v-if="!loading">
+    <div class="text-center my-4" v-if="loading">
+      <div class="spinner-border text-dark text-center" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <div class="calendar-container" v-else>
       <div class="calendar-row mb-3">
         <div></div>
         <span
           class="calendar-header"
-          v-for="(day, index) in days"
+          v-for="day in days"
           :key="day"
-          :class="{ 'calendar-header-active': index === 1 }"
-          >{{ day }}
+          :class="{ 'calendar-header-active': day === today }"
+        >
+          {{ day }}
         </span>
       </div>
       <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
@@ -106,11 +130,6 @@ onMounted(async () => {
             {{ student.firstName }} {{ student.lastName }}
           </span>
         </div>
-      </div>
-    </div>
-    <div class="text-center my-4" v-else>
-      <div class="spinner-border text-dark text-center" role="status">
-        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
   </div>

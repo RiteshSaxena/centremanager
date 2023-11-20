@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import { useToast } from 'vue-toastification';
+
 import CentreHeader from '@/components/CentreHeader.vue';
 
 import { useLogBookStore } from '@/stores';
-import { ref } from 'vue';
-import { useToast } from 'vue-toastification';
 
 const toast = useToast();
 const logBookStore = useLogBookStore();
