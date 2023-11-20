@@ -2,8 +2,8 @@
   <div class="pt-4 px-4">
     <CentreHeader />
     <div class="row mt-5">
-      <div class="col-md-4">
-        <div class="d-flex gap-1">
+      <div class="col-md-4 order-2 order-md-1">
+        <div class="d-flex gap-1 mb-3">
           <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
           <button
             v-if="search.trim().length"
@@ -16,7 +16,7 @@
         </div>
         <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
       </div>
-      <div class="col-md-4">
+      <div class="col-md-4 order-1 order-md-2">
         <button type="button" class="btn btn-info me-2" @click="scanQRModal = true">Scan QR</button>
         <button type="button" class="btn btn-info" @click="guestSignInModal = true">
           Guest SignIn
@@ -31,7 +31,7 @@
           />
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-4 order-3">
         <div class="d-flex gap-1">
           <InputField v-model="signedInFilter" placeholder="Filter" />
           <button
@@ -41,6 +41,20 @@
             @click="signedInFilter = ''"
           >
             <i class="fa-solid fa-xmark"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary rounded-3"
+            @click="logBookStore.fetchList"
+            :disabled="logBookStore.fetching"
+          >
+            <span
+              v-if="logBookStore.fetching"
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            <i v-else class="fa-solid fa-arrows-rotate"></i>
           </button>
         </div>
         <div class="mt-3">
@@ -61,8 +75,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { debounce } from 'lodash';
+import { useToast } from 'vue-toastification';
 
 import InputField from '@/components/base/InputField.vue';
 import CentreHeader from '@/components/CentreHeader.vue';
@@ -74,7 +89,6 @@ import GuestSignInModal from '@/components/GuestSignInModal.vue';
 import SignInModal from '@/components/SignInModal.vue';
 
 import { useSearchStore, useLogBookStore } from '@/stores';
-import { useToast } from 'vue-toastification';
 
 import type { Parent, SearchResult } from '@/types';
 

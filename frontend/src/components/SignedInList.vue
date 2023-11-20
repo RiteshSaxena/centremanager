@@ -1,28 +1,43 @@
 <script setup lang="ts">
-import Card from '@/components/base/Card.vue';
-
-import { useLogBookStore } from '@/stores';
-import { computed, ref, onMounted } from 'vue';
-import SignedInListItem from '@/components/SignedInListItem.vue';
-import SignOutModal from '@/components/SignOutModal.vue';
-import type { LogRecord } from '@/types';
+import { computed, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
-const logBookStore = useLogBookStore();
+import Card from '@/components/base/Card.vue';
+import SignedInListItem from '@/components/SignedInListItem.vue';
+import SignOutModal from '@/components/SignOutModal.vue';
+
+import { useLogBookStore } from '@/stores';
+
+import type { LogRecord } from '@/types';
 
 const props = defineProps<{
   filter?: string;
 }>();
 
 const toast = useToast();
+const logBookStore = useLogBookStore();
 
-const loading = ref(false);
 const signing = ref(false);
 const showModal = ref(false);
 const selectedRecord = ref<LogRecord | null>(null);
 
+const loading = computed(() => logBookStore.fetching);
+
 const signedIn = computed(() => {
   const list = logBookStore.list.filter((item) => !item.signOutTime);
+  const sortOrder = ['Student', 'StudentWithParent', 'Parent', 'Guest', 'Staff'];
+  list.sort((a, b) => {
+    const aIndex = sortOrder.indexOf(a.type);
+    const bIndex = sortOrder.indexOf(b.type);
+    if (aIndex < bIndex) {
+      return -1;
+    }
+    if (aIndex > bIndex) {
+      return 1;
+    }
+
+    return 0;
+  });
   const text = props.filter?.trim().toLowerCase() || '';
   if (text) {
     return list.filter((item) => {
@@ -80,24 +95,11 @@ const onSubmit = async (data: any) => {
 
     showModal.value = false;
     toast.success('Signed out Successfully');
-    fetchList();
+    logBookStore.fetchList().then();
   } finally {
     signing.value = false;
   }
 };
-
-const fetchList = async () => {
-  try {
-    loading.value = true;
-    await logBookStore.fetchList();
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(async () => {
-  await fetchList();
-});
 </script>
 
 <template>

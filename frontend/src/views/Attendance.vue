@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import CentreHeader from '@/components/CentreHeader.vue';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, getCurrentInstance, onUnmounted } from 'vue';
 import moment from 'moment';
+
+import CentreHeader from '@/components/CentreHeader.vue';
 
 import { useSlotStore, useLogBookStore } from '@/stores';
 
@@ -96,9 +97,20 @@ const getStudentAttendance = computed(() => {
   };
 });
 
+let updateTimer: number | null = null;
+
 onMounted(async () => {
-  await logBookStore.fetchList();
   await slotStore.fetchSlots();
+  updateTimer = setInterval(async () => {
+    const instance = getCurrentInstance();
+    instance?.proxy?.$forceUpdate();
+  }, 1000 * 5);
+});
+
+onUnmounted(() => {
+  if (updateTimer) {
+    clearInterval(updateTimer);
+  }
 });
 </script>
 
@@ -114,7 +126,6 @@ onMounted(async () => {
         <div class="calendar-header">{{ timing.text }}</div>
         <div class="student-list">
           <span v-for="student in getStudents(day, timing)" :key="student.id">
-            {{ student.firstName }} {{ student.lastName }}
             <span v-if="getStudentAttendance(student.id, timing) === 'present'">
               <i class="fa-solid fa-circle-check text-success ms-1"></i>
             </span>
@@ -124,6 +135,7 @@ onMounted(async () => {
             <span v-if="getStudentAttendance(student.id, timing) === 'in-class'">
               <i class="fa-solid fa-circle-arrow-right text-primary ms-1"></i>
             </span>
+            {{ student.firstName }} {{ student.lastName }}
           </span>
         </div>
       </div>

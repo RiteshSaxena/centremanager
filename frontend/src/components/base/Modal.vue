@@ -8,12 +8,14 @@ withDefaults(
     showFooterCloseButton?: boolean;
     closeOnOutside?: boolean;
     closeOnKeyboard?: boolean;
+    large?: boolean;
   }>(),
   {
     title: '',
     showFooterCloseButton: true,
     closeOnBackdrop: true,
-    closeOnKeyboard: true
+    closeOnKeyboard: true,
+    large: false
   }
 );
 
@@ -43,7 +45,7 @@ onBeforeUnmount(() => {
       :data-bs-backdrop="closeOnOutside ? 'true' : 'static'"
       :data-bs-keyboard="closeOnKeyboard ? 'true' : 'false'"
     >
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-dialog-centered" :class="{ 'modal-lg': large }">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ title }}</h5>

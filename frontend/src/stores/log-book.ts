@@ -18,7 +18,8 @@ const convertBase64ToFile = async (base64: string) => {
 
 export const logBookStore = defineStore('log-book', {
   state: () => ({
-    list: [] as LogRecord[]
+    list: [] as LogRecord[],
+    fetching: false
   }),
   actions: {
     async importData(file: File) {
@@ -64,9 +65,14 @@ export const logBookStore = defineStore('log-book', {
       return res.data;
     },
     async fetchList() {
-      const res = await axios.get<LogRecord[]>('/log-book/list');
-      this.list = res.data;
-      return res.data;
+      try {
+        this.fetching = true;
+        const res = await axios.get<LogRecord[]>('/log-book/list');
+        this.list = res.data;
+        return res.data;
+      } finally {
+        this.fetching = false;
+      }
     }
   }
 });

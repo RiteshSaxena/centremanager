@@ -1,6 +1,27 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue';
 import { RouterView } from 'vue-router';
+
 import Sidebar from '@/components/Sidebar.vue';
+
+import { useLogBookStore } from '@/stores';
+
+const logBookStore = useLogBookStore();
+
+let logBookTimer: number | null = null;
+
+onMounted(async () => {
+  await logBookStore.fetchList();
+  logBookTimer = setInterval(async () => {
+    await logBookStore.fetchList();
+  }, 1000 * 10);
+});
+
+onUnmounted(() => {
+  if (logBookTimer) {
+    clearInterval(logBookTimer);
+  }
+});
 </script>
 
 <template>
