@@ -14,7 +14,7 @@ onMounted(async () => {
   await logBookStore.fetchList();
   logBookTimer = setInterval(async () => {
     await logBookStore.fetchList();
-  }, 1000 * 10);
+  }, 1000 * 60);
 });
 
 onUnmounted(() => {
