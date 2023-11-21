@@ -48,13 +48,7 @@
             @click="logBookStore.fetchList"
             :disabled="logBookStore.fetching"
           >
-            <span
-              v-if="logBookStore.fetching"
-              class="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"
-            ></span>
-            <i v-else class="fa-solid fa-arrows-rotate"></i>
+            <i class="fa-solid fa-arrows-rotate"></i>
           </button>
         </div>
         <div class="mt-3">
