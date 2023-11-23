@@ -1,5 +1,6 @@
 export interface Parent {
   id: number;
+  type: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -15,4 +16,5 @@ export interface Student {
   gender: 'Male' | 'Female' | null;
   schoolYear: string;
   parents: Parent[];
+  qrCode: string;
 }

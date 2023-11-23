@@ -8,7 +8,7 @@ import { useLogBookStore } from '@/stores';
 
 const logBookStore = useLogBookStore();
 
-let logBookTimer: number | null = null;
+let logBookTimer: any = null;
 
 onMounted(async () => {
   await logBookStore.fetchList();
@@ -27,7 +27,7 @@ onUnmounted(() => {
 <template>
   <div class="d-flex">
     <Sidebar />
-    <div class="overflow-auto vh-100 w-100">
+    <div class="main-container overflow-auto vh-100 w-100">
       <RouterView />
     </div>
   </div>

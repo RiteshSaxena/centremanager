@@ -35,6 +35,10 @@ watch(
   () => props.show,
   (val) => {
     if (val) {
+      guestData.firstName = '';
+      guestData.lastName = '';
+      guestData.email = '';
+      guestData.phoneNumber = '';
       step.value = 1;
       signaturePad.value?.reset();
     }
@@ -75,6 +79,7 @@ const emit = defineEmits(['update:show']);
 <template>
   <Modal
     v-if="show"
+    :large="step === 2"
     :show-footer-close-button="step === 1"
     title="Guest Sign In"
     @close="emit('update:show', false)"

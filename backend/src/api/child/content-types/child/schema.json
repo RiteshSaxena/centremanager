@@ -22,11 +22,7 @@
     },
     "gender": {
       "type": "enumeration",
-      "enum": [
-        "Male",
-        "Female",
-        "Others"
-      ]
+      "enum": ["Male", "Female", "Others"]
     },
     "houseNumber": {
       "type": "string"
@@ -74,7 +70,6 @@
         "Attended enrolment meeting but didn't enrol",
         "Send to KSiS",
         "Send to KSiS (Free Trial)",
-        "Enrolled",
         "Exited"
       ],
       "default": "New"

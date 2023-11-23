@@ -531,6 +531,7 @@ export interface ApiCenterCenter extends Schema.CollectionType {
     region: Attribute.String;
     displayText: Attribute.String;
     logo: Attribute.Media;
+    lastImportDate: Attribute.DateTime;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::center.center', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -571,7 +572,6 @@ export interface ApiChildChild extends Schema.CollectionType {
         "Attended enrolment meeting but didn't enrol",
         'Send to KSiS',
         'Send to KSiS (Free Trial)',
-        'Enrolled',
         'Exited'
       ]
     > &

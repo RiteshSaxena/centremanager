@@ -12,6 +12,7 @@ import type { LogRecord } from '@/types';
 
 const props = defineProps<{
   filter?: string;
+  filterId: number | null;
 }>();
 
 const toast = useToast();
@@ -38,6 +39,11 @@ const signedIn = computed(() => {
 
     return 0;
   });
+
+  if (props.filterId) {
+    return list.filter((item) => item.student?.id === props.filterId);
+  }
+
   const text = props.filter?.trim().toLowerCase() || '';
   if (text) {
     return list.filter((item) => {
@@ -76,6 +82,24 @@ const signedIn = computed(() => {
     });
   }
   return list;
+});
+
+const selectedName = computed(() => {
+  if (selectedRecord.value) {
+    if (
+      selectedRecord.value.type === 'Student' ||
+      selectedRecord.value.type === 'StudentWithParent' ||
+      selectedRecord.value.type === 'Parent'
+    ) {
+      return `${selectedRecord.value.parent?.firstName} ${selectedRecord.value.parent?.lastName}`;
+    } else if (selectedRecord.value?.type === 'Staff') {
+      return `${selectedRecord.value.staff?.firstName} ${selectedRecord.value.staff?.lastName}`;
+    } else if (selectedRecord.value?.type === 'Guest') {
+      return `${selectedRecord.value.guest?.firstName} ${selectedRecord.value.guest?.lastName}`;
+    }
+  }
+
+  return '';
 });
 
 const onSelect = (item: LogRecord) => {
@@ -118,7 +142,12 @@ const onSubmit = async (data: any) => {
       @click="onSelect(item)"
     ></SignedInListItem>
   </Card>
-  <SignOutModal v-model:show="showModal" :loading="signing" @onSubmit="onSubmit" />
+  <SignOutModal
+    v-model:show="showModal"
+    :loading="signing"
+    @onSubmit="onSubmit"
+    :name="selectedName"
+  />
 </template>
 
 <style scoped lang="scss">

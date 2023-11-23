@@ -7,7 +7,7 @@ import moment from 'moment';
 import { createHash } from 'node:crypto';
 import utils from '@strapi/utils';
 
-const { ValidationError } = utils.errors;
+const { ValidationError, ApplicationError } = utils.errors;
 
 export default {
   importData: async (ctx) => {
@@ -27,45 +27,80 @@ export default {
 
     const records = parse(csvFile.trim(), {
       skip_empty_lines: true,
+      columns: true,
     });
-
-    records.shift();
 
     console.log('Records Length ' + records.length);
 
+    const center = await strapi.entityService.findMany('api::center.center', {
+      limit: 1,
+    });
+
+    if (!center.length) {
+      throw new ApplicationError('Center not found');
+    }
+
+    const latestDate = center[0].lastImportDate ? new Date(center[0].lastImportDate) : null;
+    let newLatestDate = latestDate;
+    console.log('Latest Date: ' + latestDate);
+
     for (let i = 0; i < records.length; i++) {
       try {
-        //Center
-        const centreRegion = records[i][1].trim();
-        const centreName = records[i][2].trim();
-        let centerId: null | string | number = null;
-        if (centreName && centreRegion) {
-          const existingCenter = await strapi.entityService.findMany('api::center.center', {
-            filters: { name: centreName, region: centreRegion },
-            limit: 1,
-          });
+        //Child
+        const childFirstName = records[i]['Child Details: First Name'].trim();
+        const childLastName = records[i]['Child Details: Last Name'].trim();
+        const childGender = records[i]['Child Details: Gender'].trim();
+        const childHouseNumber = records[i]['Child Details: House number or name'].trim();
+        const childStreetName = records[i]['Child Details: Street Name'].trim();
+        const childTownCity = records[i]['Child Details: Town/City'].trim();
+        const childPostcode = records[i]['Child Details: Postcode'].trim();
+        const schoolYear = records[i]['School: School year'].trim();
 
-          if (existingCenter.length) {
-            centerId = existingCenter[0].id;
-          } else {
-            console.log('Creating Center');
-            const entry = await strapi.entityService.create('api::center.center', {
-              data: {
-                name: centreName,
-                region: centreRegion,
-              },
+        if (!childFirstName) {
+          continue;
+        }
+
+        //Enquiry Status
+        const statusChangeKeys = Object.keys(records[i]).filter((key) => key.startsWith('Status Change'));
+        statusChangeKeys.sort();
+        const statusLog = [];
+        statusChangeKeys.forEach((key) => {
+          const statusChange = records[i][key].trim();
+          if (statusChange) {
+            const statusChangeDate = records[i][`Date ${key}`].trim();
+            const statusChangeDateObj = statusChangeDate ? moment(statusChangeDate, 'DD/MM/YYYY HH:mm').toDate() : null;
+            statusLog.push({
+              status: statusChange,
+              date: statusChangeDateObj,
             });
-            centerId = entry.id;
           }
+        });
+
+        const enquiryDate = records[i]['Enquiry Date'].trim()
+          ? moment(records[i]['Enquiry Date'].trim(), 'DD/MM/YYYY HH:mm').toDate()
+          : null;
+
+        let childLatestDate = null;
+        if (statusLog.length) {
+          childLatestDate = statusLog[statusLog.length - 1].date;
+        } else {
+          childLatestDate = enquiryDate;
+        }
+
+        if (childLatestDate <= latestDate) {
+          console.log('Skipping Record ' + (i + 1), childLatestDate, latestDate);
+          continue;
+        }
+        if (childLatestDate > newLatestDate) {
+          newLatestDate = childLatestDate;
         }
 
         //School
-        const schoolName = records[i][19].trim();
-        const schoolTownCity = records[i][20].trim();
-        const schoolPostcode = records[i][21].trim();
+        const schoolName = records[i]['School: School'].trim();
+        const schoolTownCity = records[i]['School: Town/City'].trim();
+        const schoolPostcode = records[i]['School: Postcode'].trim();
         let schoolId: null | number | string = null;
         if (schoolName) {
-          console.log('Creating School');
           const existingSchool = await strapi.entityService.findMany('api::school.school', {
             filters: { name: schoolName, city: schoolTownCity, postcode: schoolPostcode },
             limit: 1,
@@ -74,6 +109,7 @@ export default {
           if (existingSchool.length) {
             schoolId = existingSchool[0].id;
           } else {
+            console.log('Creating School');
             const entry = await strapi.entityService.create('api::school.school', {
               data: { name: schoolName, city: schoolTownCity, postcode: schoolPostcode },
             });
@@ -82,7 +118,7 @@ export default {
         }
 
         //Subjects
-        const allSubjectsName = records[i][12].trim();
+        const allSubjectsName = records[i]['Subjects'].trim();
         const subjectNameArr = allSubjectsName.split(',');
         const childSubjects = [];
         for (let j = 0; j < subjectNameArr.length; j++) {
@@ -110,11 +146,11 @@ export default {
         }
 
         //Parents
-        const parentFirstName = records[i][13].trim();
-        const parentLastName = records[i][14].trim();
-        const parentEmail = records[i][15].trim().toLowerCase();
-        const parentContactNumber = records[i][16];
-        const parentMobileNumber = records[i][17];
+        const parentFirstName = records[i]['Parent/Guardian Details: First name'].trim();
+        const parentLastName = records[i]['Parent/Guardian Details: Last name'].trim();
+        const parentEmail = records[i]['Parent/Guardian Details: Email address'].trim().toLowerCase();
+        const parentContactNumber = records[i]['Parent/Guardian Details: Contact number'];
+        const parentMobileNumber = records[i]['Parent/Guardian Details: Mobile phone number'];
         let parentNumber = (parentContactNumber ? parentContactNumber : parentMobileNumber)
           .trim()
           .replace(/^\s+|\s+$/g, '')
@@ -135,7 +171,7 @@ export default {
             firstName: parentFirstName,
             email: parentEmail,
             contactNumber: parentNumber,
-            center: centerId as any,
+            center: center[0],
           },
           limit: 1,
         });
@@ -149,40 +185,23 @@ export default {
               lastName: parentLastName,
               email: parentEmail,
               contactNumber: parentNumber,
-              center: centerId,
+              center: center[0].id,
             },
           });
           parentId = entry.id;
         }
 
-        //Child
-        const childFirstName = records[i][5].trim();
-        const childLastName = records[i][6].trim();
-        const childGender = records[i][7].trim();
-        const childHouseNumber = records[i][8].trim();
-        const childStreetName = records[i][9].trim();
-        const childTownCity = records[i][10].trim();
-        const childPostcode = records[i][11].trim();
-        const schoolYear = records[i][18].trim();
-
-        //Enquiry Status
-        const statusChange1 = records[i][23].trim();
-        let dateStatusChange1 = records[i][24].trim();
-        dateStatusChange1 = dateStatusChange1 ? moment(dateStatusChange1, 'DD/MM/YYYY HH:mm').toDate() : null;
-
-        const statusChange2 = records[i][25].trim();
-        let dateStatusChange2 = records[i][26].trim();
-        dateStatusChange2 = dateStatusChange2 ? moment(dateStatusChange2, 'DD/MM/YYYY HH:mm').toDate() : null;
-
-        const formType = records[i][3].trim();
-        const referralCode = records[i][4].trim();
-        const enquiryDate = moment(records[i][0].trim(), 'DD/MM/YYYY HH:mm').toDate();
-        const notes = records[i][22].trim();
+        const formType = records[i]['Form Type (Origin)'].trim();
+        const referralCode = records[i]['Referral Code'].trim();
+        const notes = records[i]['Notes'].trim();
 
         const hashString = childFirstName + parentFirstName + parentEmail + parentNumber;
         const md5hash = createHash('md5').update(hashString).digest('hex');
 
-        const existingChild = await strapi.query('api::child.child').findOne({ where: { childHash: md5hash } });
+        const existingChild = await strapi.entityService.findMany('api::child.child', {
+          filters: { childHash: md5hash },
+          limit: 1,
+        });
 
         const child: any = {
           firstName: childFirstName,
@@ -193,7 +212,7 @@ export default {
           postcode: childPostcode,
           schoolYear,
           childHash: md5hash,
-          center: centerId,
+          center: center[0].id,
           school: schoolId,
           subjects: childSubjects,
           formType,
@@ -206,43 +225,51 @@ export default {
           child.gender = childGender;
         }
 
-        if (existingChild) {
-          if (existingChild.status === statusChange1 && statusChange2) {
-            child.status = statusChange2;
-            child.statusLog = existingChild.statusLog;
-            child.statusLog.push({
-              from: statusChange1,
-              to: statusChange2,
-              date: dateStatusChange2,
+        if (existingChild.length) {
+          const pastStatues = statusLog.map((status) => status.status);
+          const latestStatus = pastStatues.pop();
+          if (pastStatues.includes(existingChild[0].status)) {
+            child.status = latestStatus;
+            child.statusLog = statusLog.map((status, index) => {
+              if (index === 0) {
+                return {
+                  to: status.status,
+                  date: status.date,
+                };
+              }
+              return {
+                from: statusLog[index - 1].status,
+                to: status.status,
+                date: status.date,
+              };
             });
           }
 
           console.log('Updating Child');
-          await strapi.entityService.update('api::child.child', existingChild.id, {
+          await strapi.entityService.update('api::child.child', existingChild[0].id, {
             data: {
               ...child,
             },
           });
         } else {
           child.parents = [parentId];
-          child.status = statusChange2 ? statusChange2 : statusChange1;
+          child.status = statusLog[statusLog.length - 1].status;
           if (!child.status) {
             child.status = 'New';
           }
-          child.statusLog = [];
-          if (statusChange1) {
-            child.statusLog.push({
-              to: statusChange1,
-              date: dateStatusChange1,
-            });
-          }
-          if (statusChange2) {
-            child.statusLog.push({
-              from: statusChange1,
-              to: statusChange2,
-              date: dateStatusChange2,
-            });
-          }
+          child.statusLog = statusLog.map((status, index) => {
+            if (index === 0) {
+              return {
+                to: status.status,
+                date: status.date,
+              };
+            }
+            return {
+              from: statusLog[index - 1].status,
+              to: status.status,
+              date: status.date,
+            };
+          });
 
           console.log('Creating Child');
           await strapi.entityService.create('api::child.child', {
@@ -258,6 +285,12 @@ export default {
         console.log(err);
       }
     }
+
+    await strapi.entityService.update('api::center.center', center[0].id, {
+      data: {
+        lastImportDate: newLatestDate,
+      },
+    });
 
     return true;
   },

@@ -97,14 +97,14 @@ const getStudentAttendance = computed(() => {
   };
 });
 
-let updateTimer: number | null = null;
+let updateTimer: any = null;
 
 onMounted(async () => {
   await slotStore.fetchSlots();
   updateTimer = setInterval(async () => {
     const instance = getCurrentInstance();
     instance?.proxy?.$forceUpdate();
-  }, 1000 * 5);
+  }, 1000 * 10);
 });
 
 onUnmounted(() => {
