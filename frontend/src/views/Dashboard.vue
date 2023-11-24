@@ -17,15 +17,22 @@
         <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
       </div>
       <div class="col-md-4 order-1 order-md-2">
-        <button type="button" class="btn btn-info me-2" @click="scanQRModal = true">Scan QR</button>
-        <button type="button" class="btn btn-info" @click="guestSignInModal = true">
+        <button type="button" class="btn btn-info me-2" @click="qrSignIn">Scan QR</button>
+        <button type="button" class="btn btn-info me-2" @click="guestSignInModal = true">
           Guest SignIn
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click="clearSearch"
+          v-if="selectedStudent && !search"
+        >
+          Clear
         </button>
         <div class="mt-3">
           <GuardianList
-            v-if="selectedStudentId"
-            :items="parents"
-            :student-id="selectedStudentId"
+            v-if="selectedStudent"
+            :student="selectedStudent"
             @onSelect="onSelectGuardian"
             @onAddGuardian="onAddGuardian"
           />
@@ -35,10 +42,13 @@
         <div class="d-flex gap-1">
           <InputField v-model="signedInFilter" placeholder="Filter" />
           <button
-            v-if="signedInFilter.length"
+            v-if="signedInFilter.length || signedInFilterId"
             type="button"
             class="btn btn-secondary rounded-3"
-            @click="signedInFilter = ''"
+            @click="
+              signedInFilter = '';
+              signedInFilterId = null;
+            "
           >
             <i class="fa-solid fa-xmark"></i>
           </button>
@@ -50,14 +60,17 @@
           >
             <i class="fa-solid fa-arrows-rotate"></i>
           </button>
+          <button type="button" class="btn btn-info rounded-3" @click="qrSignOut">
+            <i class="fa-solid fa-qrcode"></i>
+          </button>
         </div>
         <div class="mt-3">
-          <SignedInList :filter="signedInFilter" />
+          <SignedInList :filter="signedInFilter" :filter-id="signedInFilterId" />
         </div>
       </div>
     </div>
 
-    <ScanQRModal v-model:show="scanQRModal" />
+    <ScanQRModal v-model:show="scanQRModal" @student="handleQrStudent" />
     <GuestSignInModal v-model:show="guestSignInModal" />
     <SignInModal
       v-model:show="signInModal"
@@ -82,22 +95,25 @@ import ScanQRModal from '@/components/ScanQRModal.vue';
 import GuestSignInModal from '@/components/GuestSignInModal.vue';
 import SignInModal from '@/components/SignInModal.vue';
 
-import { useSearchStore, useLogBookStore } from '@/stores';
+import { useSearchStore, useLogBookStore, useStudentStore } from '@/stores';
 
-import type { Parent, SearchResult } from '@/types';
+import type { Parent, SearchResult, Student } from '@/types';
 
 const toast = useToast();
 const searchStore = useSearchStore();
 const logBookStore = useLogBookStore();
+const studentStore = useStudentStore();
 
 const scanQRModal = ref(false);
+const qrMode = ref('');
 const guestSignInModal = ref(false);
 const signInModal = ref(false);
 const signing = ref(false);
 
 const search = ref('');
 const signedInFilter = ref('');
-const selectedStudentId = ref<number | null>(null);
+const signedInFilterId = ref<number | null>(null);
+const selectedStudent = ref<Student | null>(null);
 const selectedUser = ref<SearchResult | null>(null);
 const parents = ref<Parent[]>([]);
 
@@ -107,7 +123,7 @@ const debouncedSearch = debounce((value: string) => {
 
 const clearSearch = () => {
   search.value = '';
-  selectedStudentId.value = null;
+  selectedStudent.value = null;
   selectedUser.value = null;
   parents.value = [];
   searchStore.clearResults();
@@ -122,7 +138,7 @@ watch(search, () => {
 });
 
 const onAddGuardian = (data: any) => {
-  parents.value.push({
+  selectedStudent.value?.parents.push({
     type: 'parent',
     ...data
   });
@@ -130,15 +146,14 @@ const onAddGuardian = (data: any) => {
 
 const onSelectFromSearch = (item: SearchResult) => {
   parents.value = [];
-  selectedStudentId.value = null;
+  selectedStudent.value = null;
   selectedUser.value = null;
   if (item.type === 'student') {
-    selectedStudentId.value = item.id;
-    parents.value = [];
-    parents.value = item.parents.map((parent) => {
+    selectedStudent.value = item;
+    selectedStudent.value.parents = item.parents.map((parent) => {
       return {
-        type: 'parent',
-        ...parent
+        ...parent,
+        type: 'parent'
       };
     });
   } else if (item.type === 'staff') {
@@ -150,6 +165,31 @@ const onSelectFromSearch = (item: SearchResult) => {
 const onSelectGuardian = (item: SearchResult) => {
   selectedUser.value = item;
   signInModal.value = true;
+};
+
+const handleQrStudent = async (id: number) => {
+  if (qrMode.value === 'signIn') {
+    const student = await studentStore.fetchStudent(id);
+    selectedStudent.value = student;
+    selectedStudent.value.parents = student.parents.map((parent) => {
+      return {
+        ...parent,
+        type: 'parent'
+      };
+    });
+  } else if (qrMode.value === 'signOut') {
+    signedInFilterId.value = id;
+  }
+};
+
+const qrSignIn = () => {
+  qrMode.value = 'signIn';
+  scanQRModal.value = true;
+};
+
+const qrSignOut = () => {
+  qrMode.value = 'signOut';
+  scanQRModal.value = true;
 };
 
 const handleOnSubmit = async (data: any) => {
@@ -169,7 +209,7 @@ const handleOnSubmit = async (data: any) => {
         payload.type = 'Student';
       }
       payload.parent = selectedUser.value.id;
-      payload.student = selectedStudentId.value;
+      payload.student = selectedStudent.value?.id;
     }
     const res = await logBookStore.signIn(payload);
 

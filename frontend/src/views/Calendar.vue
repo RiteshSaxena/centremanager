@@ -59,15 +59,15 @@ const timings = computed<Timing[]>(() => {
   return timings;
 });
 
-const allDays: string[] = [];
-
-allDays.push(moment().subtract(1, 'day').format('dddd'));
-allDays.push(moment().format('dddd'));
-allDays.push(moment().add(1, 'day').format('dddd'));
-allDays.push(moment().add(3, 'days').format('dddd'));
-allDays.push(moment().add(4, 'days').format('dddd'));
-allDays.push(moment().add(5, 'days').format('dddd'));
-allDays.push(moment().add(6, 'days').format('dddd'));
+const allDays: string[] = [
+  moment().subtract(1, 'day').format('dddd'),
+  moment().format('dddd'),
+  moment().add(1, 'day').format('dddd'),
+  moment().add(2, 'days').format('dddd'),
+  moment().add(3, 'days').format('dddd'),
+  moment().add(4, 'days').format('dddd'),
+  moment().add(5, 'days').format('dddd')
+];
 
 const today = moment().format('dddd');
 

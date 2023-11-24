@@ -13,7 +13,7 @@ const props = withDefaults(
   }
 );
 
-const emit = defineEmits(['update:show']);
+const emit = defineEmits(['update:show', 'student']);
 
 let qrScannerIns: any = null;
 const isScanning = ref(false);
@@ -23,6 +23,15 @@ const onScanCompleted = async (result: QrScanner.ScanResult) => {
   if (result) {
     const { data } = result;
     console.log(data);
+    const dataArr = data.trim().split('-');
+    if (dataArr.length < 2) {
+      window.alert('Invalid QR code');
+      return;
+    }
+    console.log(dataArr);
+    if (dataArr[0] === 'student') {
+      emit('student', parseInt(dataArr[1]));
+    }
     emit('update:show', false);
   }
 };

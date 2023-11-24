@@ -7,10 +7,12 @@ import AddGuardianModal from '@/components/AddGuardianModal.vue';
 
 import { useSearchStore } from '@/stores';
 
+import type { Student } from '@/types';
+
 const props = withDefaults(
   defineProps<{
     items?: any[];
-    studentId: number;
+    student: Student;
   }>(),
   {
     items: () => []
@@ -26,7 +28,7 @@ const onSubmit = async (data: any) => {
     loading.value = true;
     const newParent = await searchStore.addParent({
       ...data,
-      child: props.studentId
+      child: props.student.id
     });
     emit('onAddGuardian', newParent);
     showModal.value = false;
@@ -42,12 +44,17 @@ const emit = defineEmits(['onSelect', 'onAddGuardian']);
 
 <template>
   <Card>
-    <template #header> Guardians </template>
-    <p class="small text-muted" v-if="!items.length">No results found.</p>
+    <template #header> Student</template>
+    <p class="small text-muted mt-0 mb-0">{{ student.firstName }} {{ student.lastName }}</p>
+    <p class="small text-muted mt-1 mb-0" v-if="student.schoolYear">
+      {{ student.schoolYear }}
+    </p>
+    <p class="small text-muted" v-if="!student.parents.length">No guardian found.</p>
+    <p class="small mt-4"><strong>Guardians</strong></p>
     <UserListItem
-      v-for="(item, index) in items"
+      v-for="(item, index) in student.parents"
       :key="index"
-      :item="item"
+      :item="item as any"
       @click="$emit('onSelect', item)"
     />
     <button type="button" class="btn btn-secondary" @click="showModal = true">Add Guardian</button>

@@ -7,3 +7,21 @@ body {
   background: #f1f1f1;
   font-family: 'Inter', sans-serif;
 }
+.pagination {
+  --bs-pagination-color: #193b4d;
+  --bs-pagination-active-bg: #193b4d;
+  --bs-pagination-active-border-color: #193b4d;
+  --bs-pagination-hover-color: #193b4d;
+  --bs-pagination-focus-box-shadow: none;
+}
+
+@media print {
+  .sidebar,
+  .pagination,
+  .centre-name {
+    display: none !important;
+  }
+  .main-container {
+    height: 100% !important;
+  }
+}

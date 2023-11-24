@@ -7,10 +7,12 @@ const props = withDefaults(
   defineProps<{
     show: boolean;
     loading?: boolean;
+    name?: string;
   }>(),
   {
     show: false,
-    loading: false
+    loading: false,
+    name: ''
   }
 );
 
@@ -39,7 +41,12 @@ const emit = defineEmits(['update:show', 'onSubmit']);
 </script>
 
 <template>
-  <Modal v-if="show" title="Sign Out" @close="emit('update:show', false)">
+  <Modal
+    :large="true"
+    v-if="show"
+    :title="`Sign Out - ${name}`"
+    @close="emit('update:show', false)"
+  >
     <div>
       <signature-pad ref="signaturePad" />
     </div>
