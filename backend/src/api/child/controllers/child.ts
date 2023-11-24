@@ -18,13 +18,12 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
       throw new ApplicationError('Center not found');
     }
 
-    console.log('center', center);
-
     const entries = await strapi.entityService.findMany('api::child.child', {
       filters: {
         center: center[0],
       },
       populate: ['center'],
+      sort: { firstName: 'asc' },
     });
 
     return entries.map((entry) => sanitizeChild(entry));

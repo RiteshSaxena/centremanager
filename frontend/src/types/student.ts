@@ -13,6 +13,7 @@ export interface Student {
   id: number;
   firstName: string;
   lastName: string;
+  status: string;
   gender: 'Male' | 'Female' | null;
   schoolYear: string;
   parents: Parent[];

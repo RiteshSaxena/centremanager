@@ -4,16 +4,13 @@ import { computed, onMounted, ref } from 'vue';
 import CentreHeader from '@/components/CentreHeader.vue';
 
 import { useStudentStore } from '@/stores';
+import type { Student } from '@/types';
 
 const studentStore = useStudentStore();
 
 const currentPage = ref(1);
 
 const itemsPerPage = ref(12);
-
-const totalPages = computed(() => {
-  return Math.ceil(studentStore.students.length / itemsPerPage.value);
-});
 
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
@@ -31,12 +28,31 @@ const changePage = (page: number) => {
   currentPage.value = page;
 };
 
+const enrolledStudents = computed(() => {
+  return studentStore.students.filter(
+    (student) => student.status === 'Send to KSiS' || student.status === 'Send to KSiS (Free Trial)'
+  );
+});
+
+const totalPages = computed(() => {
+  return Math.ceil(enrolledStudents.value.length / itemsPerPage.value);
+});
+
 const students = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
 
-  return studentStore.students.slice(start, end);
+  return enrolledStudents.value.slice(start, end);
 });
+
+const studentText = (student: Student) => {
+  let name = `${student.firstName} ${student.lastName}`;
+  if (student.schoolYear) {
+    const schoolYear = student.schoolYear.trim().split('/')[0];
+    name += ` - ${schoolYear}`;
+  }
+  return name;
+};
 
 const loading = computed(() => studentStore.loading);
 
@@ -57,8 +73,7 @@ onMounted(async () => {
       <div class="qr-grid">
         <div class="qr-item" v-for="(student, index) in students" :key="index">
           <img class="qr-code" :src="student.qrCode" alt="QR Code" />
-          <p class="small text-muted m-0">{{ student.firstName }} {{ student.lastName }}</p>
-          <p class="small text-muted m-0">{{ student.schoolYear }}</p>
+          <p class="small text-muted m-0">{{ studentText(student) }}</p>
         </div>
       </div>
       <nav class="mt-3">
