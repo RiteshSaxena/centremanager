@@ -10,7 +10,7 @@ const studentStore = useStudentStore();
 
 const currentPage = ref(1);
 
-const itemsPerPage = ref(12);
+const itemsPerPage = ref(21);
 
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
@@ -103,7 +103,7 @@ onMounted(async () => {
 .qr-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 20px;
+  grid-gap: 10px;
   justify-items: center;
 }
 .qr-item {
@@ -112,12 +112,12 @@ onMounted(async () => {
   background: white;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 2px;
   border-radius: 10px;
-  padding: 20px;
+  padding: 12px;
 }
 .qr-code {
-  width: 150px;
-  height: 150px;
+  width: 110px;
+  height: 110px;
 }
 </style>
