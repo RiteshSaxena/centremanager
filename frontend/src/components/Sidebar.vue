@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+import { useUserStore } from '@/stores';
 
 const sidebarExpanded = ref(false);
+
+const router = useRouter();
+const userStore = useUserStore();
+
+const logout = async () => {
+  userStore.logout();
+  await router.push({ name: 'Login' });
+};
 </script>
 
 <template>
@@ -38,7 +49,7 @@ const sidebarExpanded = ref(false);
         <i v-else class="fa-solid fa-angles-right"></i>
         <span>Collapse</span>
       </div>
-      <div class="sidebar-item">
+      <div class="sidebar-item" @click="logout">
         <i class="fa-solid fa-right-from-bracket"></i>
         <span>Logout</span>
       </div>

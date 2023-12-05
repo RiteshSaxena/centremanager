@@ -59,7 +59,7 @@ const emit = defineEmits(['update:show', 'onSubmit']);
   >
     <div>
       <signature-pad ref="signaturePad" />
-      <div class="form-check mt-4" v-if="selectedUser?.type === 'parent'">
+      <div class="form-check" v-if="selectedUser?.type === 'parent'">
         <input
           class="form-check-input"
           type="checkbox"
@@ -78,3 +78,9 @@ const emit = defineEmits(['update:show', 'onSubmit']);
     </template>
   </Modal>
 </template>
+
+<style scoped lang='scss'>
+.form-check {
+  margin-top: -2rem;
+}
+</style>

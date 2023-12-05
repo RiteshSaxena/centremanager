@@ -1,17 +1,18 @@
 import { Strapi } from '@strapi/strapi';
 
 const PERMISSIONS = [
-  { action: 'api::import-data.import-data.importData', role: 'public' },
-  { action: 'api::log-book.log-book.search', role: 'public' },
-  { action: 'api::log-book.log-book.guestSignIn', role: 'public' },
-  { action: 'api::log-book.log-book.signIn', role: 'public' },
-  { action: 'api::log-book.log-book.signOut', role: 'public' },
-  { action: 'api::log-book.log-book.list', role: 'public' },
-  { action: 'api::child.child.find', role: 'public' },
-  { action: 'api::child.child.findOne', role: 'public' },
-  { action: 'api::parent.parent.create', role: 'public' },
-  { action: 'api::slot.slot.find', role: 'public' },
-  { action: 'plugin::upload.content-api.upload', role: 'public' },
+  { action: 'api::import-data.import-data.importData', role: 'authenticated' },
+  { action: 'api::log-book.log-book.search', role: 'authenticated' },
+  { action: 'api::log-book.log-book.guestSignIn', role: 'authenticated' },
+  { action: 'api::log-book.log-book.signIn', role: 'authenticated' },
+  { action: 'api::log-book.log-book.signOut', role: 'authenticated' },
+  { action: 'api::log-book.log-book.list', role: 'authenticated' },
+  { action: 'api::child.child.find', role: 'authenticated' },
+  { action: 'api::child.child.findOne', role: 'authenticated' },
+  { action: 'api::parent.parent.create', role: 'authenticated' },
+  { action: 'api::slot.slot.find', role: 'authenticated' },
+  { action: 'api::center.center.find', role: 'authenticated' },
+  { action: 'plugin::upload.content-api.upload', role: 'authenticated' },
 ];
 
 const syncPermissions = async (strapi: Strapi) => {

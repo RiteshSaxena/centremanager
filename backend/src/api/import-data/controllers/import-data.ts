@@ -7,7 +7,7 @@ import moment from 'moment';
 import { createHash } from 'node:crypto';
 import utils from '@strapi/utils';
 
-const { ValidationError, ApplicationError } = utils.errors;
+const { ValidationError } = utils.errors;
 
 export default {
   importData: async (ctx) => {
@@ -32,15 +32,9 @@ export default {
 
     console.log('Records Length ' + records.length);
 
-    const center = await strapi.entityService.findMany('api::center.center', {
-      limit: 1,
-    });
+    const center = ctx.state.center;
 
-    if (!center.length) {
-      throw new ApplicationError('Center not found');
-    }
-
-    const latestDate = center[0].lastImportDate ? new Date(center[0].lastImportDate) : null;
+    const latestDate = center.lastImportDate ? new Date(center.lastImportDate) : null;
     let newLatestDate = latestDate;
     console.log('Latest Date: ' + latestDate);
 
@@ -171,7 +165,7 @@ export default {
             firstName: parentFirstName,
             email: parentEmail,
             contactNumber: parentNumber,
-            center: center[0],
+            center: center,
           },
           limit: 1,
         });
@@ -185,7 +179,7 @@ export default {
               lastName: parentLastName,
               email: parentEmail,
               contactNumber: parentNumber,
-              center: center[0].id,
+              center: center.id,
             },
           });
           parentId = entry.id;
@@ -212,7 +206,7 @@ export default {
           postcode: childPostcode,
           schoolYear,
           childHash: md5hash,
-          center: center[0].id,
+          center: center.id,
           school: schoolId,
           subjects: childSubjects,
           formType,
@@ -286,7 +280,7 @@ export default {
       }
     }
 
-    await strapi.entityService.update('api::center.center', center[0].id, {
+    await strapi.entityService.update('api::center.center', center.id, {
       data: {
         lastImportDate: newLatestDate,
       },

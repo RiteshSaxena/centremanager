@@ -74,6 +74,10 @@ const desc = computed(() => {
   }
   return text;
 });
+
+const alert = (text: string) => {
+  window.alert(text);
+};
 </script>
 
 <template>
@@ -85,6 +89,7 @@ const desc = computed(() => {
         {{ desc }}
       </span>
     </div>
+    <button @click.prevent="alert('ss')" class="btn btn-sm">C</button>
   </div>
 </template>
 
