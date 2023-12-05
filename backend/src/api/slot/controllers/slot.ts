@@ -4,24 +4,13 @@
 
 import { factories } from '@strapi/strapi';
 
-import utils from '@strapi/utils';
 import { sanitizeChild } from '../../../utils/sanitize';
 
-const { ApplicationError } = utils.errors;
-
 export default factories.createCoreController('api::slot.slot', ({ strapi }) => ({
-  async find() {
-    const center = await strapi.entityService.findMany('api::center.center', {
-      limit: 1,
-    });
-
-    if (!center.length) {
-      throw new ApplicationError('Center not found');
-    }
-
+  async find(ctx) {
     const slots = await strapi.entityService.findMany('api::slot.slot', {
       filters: {
-        center: center[0].id as any,
+        center: ctx.state.center.id,
       },
       populate: ['children'],
     });

@@ -4,4 +4,10 @@
 
 import { factories } from '@strapi/strapi';
 
-export default factories.createCoreRouter('api::center.center');
+export default factories.createCoreRouter('api::center.center', {
+  config: {
+    find: {
+      middlewares: ['global::centre'],
+    },
+  },
+});

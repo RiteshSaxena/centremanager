@@ -6,7 +6,7 @@ export default {
       handler: 'import-data.importData',
       config: {
         policies: [],
-        middlewares: [],
+        middlewares: ['global::centre'],
       },
     },
   ],

@@ -7,25 +7,18 @@ import schema from '../schema';
 import utils from '@strapi/utils';
 import { sanitizeUser, sanitizeChild } from '../../../utils/sanitize';
 
-const { ValidationError, ApplicationError } = utils.errors;
+const { ValidationError } = utils.errors;
+
 export default factories.createCoreController('api::log-book.log-book', ({ strapi }) => ({
   async search(ctx) {
     const { text } = await schema.search(ctx.request.body);
-
-    const center = await strapi.entityService.findMany('api::center.center', {
-      limit: 1,
-    });
-
-    if (!center.length) {
-      throw new ApplicationError('Center not found');
-    }
 
     const students = await strapi.entityService.findMany('api::child.child', {
       fields: ['firstName', 'lastName', 'gender', 'schoolYear'] as any[],
       filters: {
         $and: [
           {
-            center: center[0].id as any,
+            center: ctx.state.center.id,
           },
           {
             $or: [
@@ -51,7 +44,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       filters: {
         $and: [
           {
-            center: center[0].id as any,
+            center: ctx.state.center.id,
           },
           {
             $or: [
@@ -95,20 +88,12 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
   async guestSignIn(ctx) {
     const payload = await schema.guestSignIn(ctx.request.body);
 
-    const center = await strapi.entityService.findMany('api::center.center', {
-      limit: 1,
-    });
-
-    if (!center.length) {
-      throw new ApplicationError('Center not found');
-    }
-
     const entry = await strapi.entityService.create('api::log-book.log-book', {
       data: {
         type: 'Guest',
         signatureIn: payload.signature,
         signInTime: new Date(),
-        center: center[0].id,
+        center: ctx.state.center.id,
         guest: {
           firstName: payload.firstName,
           lastName: payload.lastName,
@@ -146,21 +131,13 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       data.parent = payload.parent;
     }
 
-    const center = await strapi.entityService.findMany('api::center.center', {
-      limit: 1,
-    });
-
-    if (!center.length) {
-      throw new ApplicationError('Center not found');
-    }
-
     const date = new Date();
     date.setHours(0, 0, 0, 0);
 
     const alreadySignedIn = await strapi.entityService.findMany('api::log-book.log-book', {
       filters: {
         type: payload.type,
-        center: center[0].id as any,
+        center: ctx.state.center.id as any,
         ...data,
         signInTime: {
           $gte: date,
@@ -179,7 +156,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
         type: payload.type,
         signatureIn: payload.signature,
         signInTime: new Date(),
-        center: center[0].id,
+        center: ctx.state.center.id,
         ...data,
       },
     });
@@ -208,21 +185,13 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
 
     return true;
   },
-  async list() {
-    const center = await strapi.entityService.findMany('api::center.center', {
-      limit: 1,
-    });
-
-    if (!center.length) {
-      throw new ApplicationError('Center not found');
-    }
-
+  async list(ctx) {
     const date = new Date();
     date.setHours(0, 0, 0, 0);
 
     const entries = await strapi.entityService.findMany('api::log-book.log-book', {
       filters: {
-        center: center[0].id as any,
+        center: ctx.state.center.id as any,
         signInTime: {
           $gte: date,
         },
