@@ -129,11 +129,14 @@ onUnmounted(() => {
             <span v-if="getStudentAttendance(student.id, timing) === 'present'">
               <i class="fa-solid fa-circle-check text-success ms-1"></i>
             </span>
-            <span v-if="getStudentAttendance(student.id, timing) === 'absent'">
+            <span v-else-if="getStudentAttendance(student.id, timing) === 'absent'">
               <i class="fa-solid fa-circle-xmark text-danger ms-1"></i>
             </span>
-            <span v-if="getStudentAttendance(student.id, timing) === 'in-class'">
+            <span v-else-if="getStudentAttendance(student.id, timing) === 'in-class'">
               <i class="fa-solid fa-circle-arrow-right text-primary ms-1"></i>
+            </span>
+            <span v-else>
+              <i class="fa-solid fa-circle-minus text-secondary ms-1"></i>
             </span>
             {{ student.firstName }} {{ student.lastName }}
           </span>
@@ -179,7 +182,7 @@ onUnmounted(() => {
 
   .student-list {
     background: white;
-    min-height: 150px;
+    min-height: 50px;
     border: 1px solid #dbdbdb;
     border-right: 0;
     border-bottom: 0;

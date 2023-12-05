@@ -37,7 +37,7 @@ defineEmits(['onSelect']);
 
 <style scoped lang="scss">
 .signed-in-list {
-  max-height: 600px;
+  max-height: 73vh;
   overflow-y: auto;
 }
 </style>

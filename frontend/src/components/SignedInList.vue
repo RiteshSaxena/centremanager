@@ -139,7 +139,7 @@ const onSubmit = async (data: any) => {
       v-for="(item, index) in signedIn"
       :key="index"
       :item="item"
-      @click="onSelect(item)"
+      @onSelect="onSelect(item)"
     ></SignedInListItem>
   </Card>
   <SignOutModal

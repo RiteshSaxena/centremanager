@@ -1,12 +1,81 @@
 <script setup lang="ts">
 import type { LogRecord } from '@/types';
-import { computed } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
   item: LogRecord;
 }>();
 
-defineEmits(['click']);
+defineEmits(['onSelect']);
+
+const name = ref('');
+const type = ref('');
+const desc = ref('');
+const phoneNumber = ref('');
+
+const updateVars = () => {
+  if (props.item?.type === 'Student') {
+    name.value = `${props.item?.student?.firstName} ${props.item?.student?.lastName}`;
+    type.value = 'Student';
+    desc.value = '';
+    if (props.item?.student?.schoolYear) {
+      desc.value += `${props.item?.student?.schoolYear}`;
+    }
+    if (props.item?.parent?.contactNumber) {
+      desc.value += ` - ${props.item?.parent?.contactNumber}`;
+      phoneNumber.value = props.item?.parent?.contactNumber;
+    }
+  } else if (props.item?.type === 'StudentWithParent') {
+    name.value = `${props.item?.student?.firstName} ${props.item?.student?.lastName}, ${props.item?.parent?.firstName} ${props.item?.parent?.lastName}`;
+    type.value = 'Student';
+    desc.value = '';
+    if (props.item?.student?.schoolYear) {
+      desc.value += ` - ${props.item?.student?.schoolYear}`;
+    }
+    if (props.item?.parent?.contactNumber) {
+      desc.value += ` - ${props.item?.parent?.contactNumber}`;
+      phoneNumber.value = props.item?.parent?.contactNumber;
+    }
+  } else if (props.item?.type === 'Staff') {
+    name.value = `${props.item?.staff?.firstName} ${props.item?.staff?.lastName}`;
+    type.value = 'Staff';
+    desc.value = '';
+    if (props.item?.staff?.phoneNumber) {
+      desc.value += `${props.item?.staff?.phoneNumber}`;
+      phoneNumber.value = props.item?.staff?.phoneNumber;
+    } else if (props.item?.staff?.email) {
+      desc.value += ` - ${props.item?.staff?.email}`;
+    }
+  } else if (props.item?.type === 'Parent') {
+    name.value = `${props.item?.parent?.firstName} ${props.item?.parent?.lastName}`;
+    type.value = 'Parent';
+    desc.value = '';
+    if (props.item?.parent?.contactNumber) {
+      desc.value += ` - ${props.item?.parent?.contactNumber}`;
+      phoneNumber.value = props.item?.parent?.contactNumber;
+    } else if (props.item?.parent?.email) {
+      desc.value += ` - ${props.item?.parent?.email}`;
+    }
+  } else if (props.item?.type === 'Guest') {
+    name.value = `${props.item?.guest?.firstName} ${props.item?.guest?.lastName}`;
+    type.value = 'Guest';
+    desc.value = '';
+    if (props.item?.guest?.phoneNumber) {
+      desc.value += ` - ${props.item?.guest?.phoneNumber}`;
+      phoneNumber.value = props.item?.guest?.phoneNumber;
+    } else if (props.item?.guest?.email) {
+      desc.value += ` - ${props.item?.guest?.email}`;
+    }
+  }
+};
+
+watch(props.item, () => {
+  updateVars();
+});
+
+onMounted(() => {
+  updateVars();
+});
 
 const iconColorClass = computed(() => {
   if (props.item?.student) {
@@ -18,78 +87,22 @@ const iconColorClass = computed(() => {
   }
   return 'icon-general';
 });
-
-const fullName = computed(() => {
-  if (props.item?.type === 'Staff') {
-    return `${props.item?.staff?.firstName} ${props.item?.staff?.lastName}`;
-  }
-  if (props.item?.type === 'Student') {
-    return `${props.item?.student?.firstName} ${props.item?.student?.lastName}`;
-  }
-  if (props.item?.type === 'Parent') {
-    return `${props.item?.parent?.firstName} ${props.item?.parent?.lastName}`;
-  }
-  if (props.item?.type === 'StudentWithParent') {
-    return `${props.item?.student?.firstName} ${props.item?.student?.lastName}, ${props.item?.parent?.firstName} ${props.item?.parent?.lastName}`;
-  }
-  if (props.item?.type === 'Guest') {
-    return `${props.item?.guest?.firstName} ${props.item?.guest?.lastName}`;
-  }
-  return '';
-});
-
-const desc = computed(() => {
-  let text = '';
-  if (props.item?.type === 'Student' || props.item?.type === 'StudentWithParent') {
-    text = 'Student';
-
-    if (props.item?.student?.schoolYear) {
-      text += ` - ${props.item?.student?.schoolYear}`;
-    }
-
-    if (props.item?.parent?.contactNumber) {
-      text += ` - ${props.item?.parent?.contactNumber}`;
-    }
-  } else if (props.item?.type === 'Staff') {
-    text = 'Staff';
-    if (props.item?.staff?.phoneNumber) {
-      text += ` - ${props.item?.staff?.phoneNumber}`;
-    } else if (props.item?.staff?.email) {
-      text += ` - ${props.item?.staff?.email}`;
-    }
-  } else if (props.item?.type === 'Parent') {
-    text = 'Parent';
-    if (props.item?.parent?.contactNumber) {
-      text += ` - ${props.item?.parent?.contactNumber}`;
-    } else if (props.item?.parent?.email) {
-      text += ` - ${props.item?.parent?.email}`;
-    }
-  } else if (props.item?.type === 'Guest') {
-    text = 'Guest';
-    if (props.item?.guest?.phoneNumber) {
-      text += ` - ${props.item?.guest?.phoneNumber}`;
-    } else if (props.item?.guest?.email) {
-      text += ` - ${props.item?.guest?.email}`;
-    }
-  }
-  return text;
-});
-
-const alert = (text: string) => {
-  window.alert(text);
-};
 </script>
 
 <template>
-  <div class="child-list-item d-flex align-items-center gap-3" @click="$emit('click')">
-    <i class="fa-solid fa-user" :class="iconColorClass"></i>
-    <div>
-      <span class="name">{{ fullName }}</span>
-      <span class="desc">
-        {{ desc }}
-      </span>
+  <div class="child-list-item">
+    <div class="d-flex align-items-center gap-3 w-100" @click.prevent="$emit('onSelect')">
+      <i class="fa-solid fa-user" :class="iconColorClass"></i>
+      <div>
+        <span class="name">{{ name }} ({{ type }})</span>
+        <span class="desc">
+          {{ desc }}
+        </span>
+      </div>
     </div>
-    <button @click.prevent="alert('ss')" class="btn btn-sm">C</button>
+    <a :href="`tel:${phoneNumber}`" v-if="phoneNumber" class="btn btn-secondary rounded-3">
+      <i class="fa-solid fa-phone"></i>
+    </a>
   </div>
 </template>
 
@@ -100,6 +113,8 @@ const alert = (text: string) => {
   padding: 10px 25px;
   margin-bottom: 10px;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
 
   &:hover {
     background: #ffe08a;
