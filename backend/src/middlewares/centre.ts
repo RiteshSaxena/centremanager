@@ -20,6 +20,8 @@ export default (config, { strapi }: { strapi: Strapi }) => {
       }
 
       ctx.state.center = user.center;
+    } else {
+      throw new ApplicationError('User not authenticated');
     }
 
     await next();

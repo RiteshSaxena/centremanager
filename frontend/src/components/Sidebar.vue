@@ -62,6 +62,7 @@ const logout = async () => {
   background: #193b4d;
   min-width: 64px;
   height: 100vh;
+  transition: all 0.3s ease-in-out;
 
   a {
     text-align: center;

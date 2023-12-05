@@ -100,7 +100,7 @@ const iconColorClass = computed(() => {
         </span>
       </div>
     </div>
-    <a :href="`tel:${phoneNumber}`" v-if="phoneNumber" class="btn btn-secondary rounded-3">
+    <a :href="`tel:${phoneNumber}`" v-if="phoneNumber" class="btn btn-secondary btn-sm m-0 rounded-3">
       <i class="fa-solid fa-phone"></i>
     </a>
   </div>
@@ -115,6 +115,7 @@ const iconColorClass = computed(() => {
   cursor: pointer;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
   &:hover {
     background: #ffe08a;

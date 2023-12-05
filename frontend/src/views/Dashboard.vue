@@ -13,14 +13,14 @@
           >
             <i class="fa-solid fa-xmark"></i>
           </button>
-          <button type="button" class="btn btn-info rounded-3" @click="qrSignIn">
-            <i class="fa-solid fa-qrcode"></i>
-          </button>
         </div>
         <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
       </div>
       <div class="col-md-4 order-1 order-md-2">
-        <button type="button" class="btn btn-info me-2" @click="guestSignInModal = true">
+        <button type="button" class="btn btn-info me-1" @click="qrSignIn">
+          <i class="fa-solid fa-qrcode"></i>
+        </button>
+        <button type="button" class="btn btn-info me-1" @click="guestSignInModal = true">
           Guest SignIn
         </button>
         <button
