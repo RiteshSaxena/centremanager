@@ -18,4 +18,5 @@ export interface Student {
   schoolYear: string;
   parents: Parent[];
   qrCode: string;
+  isEarlyLearner: boolean;
 }
