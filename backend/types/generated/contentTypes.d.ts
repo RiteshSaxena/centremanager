@@ -585,6 +585,7 @@ export interface ApiChildChild extends Schema.CollectionType {
     referralCode: Attribute.String;
     notes: Attribute.Text;
     paymentDate: Attribute.Integer;
+    isEarlyLearner: Attribute.Boolean & Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::child.child', 'oneToOne', 'admin::user'> & Attribute.Private;

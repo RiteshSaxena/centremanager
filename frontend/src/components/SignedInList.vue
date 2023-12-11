@@ -136,8 +136,8 @@ const onSubmit = async (data: any) => {
     </div>
     <p class="small text-muted" v-if="!loading && !signedIn.length">No results found.</p>
     <SignedInListItem
-      v-for="(item, index) in signedIn"
-      :key="index"
+      v-for="item in signedIn"
+      :key="item.id"
       :item="item"
       @onSelect="onSelect(item)"
     ></SignedInListItem>

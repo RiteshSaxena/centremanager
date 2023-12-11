@@ -69,48 +69,41 @@ const getStudents = computed(() => {
     );
 
     if (slot.length) {
-      return slot[0].children;
+      return slot[0].children.map((child) => {
+        let attendance = '';
+        let signInTime = '';
+        let signOutTime = '';
+        const isPresent = logBookStore.list.find((log) => log.student?.id === child.id);
+
+        if (isPresent) {
+          signInTime = moment(isPresent.signInTime).format('hh:mm A');
+          if (isPresent.signOutTime) {
+            attendance = 'present';
+            signOutTime = moment(isPresent.signOutTime).format('hh:mm A');
+          } else {
+            attendance = 'in-class';
+          }
+        } else if (!isPresent) {
+          const isSlotActive = moment().isAfter(moment(timing.start, 'HH:mm:ss.SSS'));
+
+          if (isSlotActive) {
+            attendance = 'absent';
+          }
+        }
+        return {
+          ...child,
+          attendance,
+          signInTime,
+          signOutTime
+        };
+      });
     }
     return [];
   };
 });
 
-const getStudentAttendance = computed(() => {
-  return (id: number, timing: Timing) => {
-    const isPresent = logBookStore.list.find((log) => log.student?.id === id);
-
-    if (!isPresent) {
-      const isSlotActive = moment().isAfter(moment(timing.start, 'HH:mm:ss.SSS'));
-
-      if (isSlotActive) {
-        return 'absent';
-      }
-
-      return '';
-    }
-
-    if (isPresent.signOutTime) {
-      return 'present';
-    }
-
-    return 'in-class';
-  };
-});
-
-let updateTimer: any = null;
-
 onMounted(async () => {
   await slotStore.fetchSlots();
-  updateTimer = setInterval(async () => {
-    const instance = getCurrentInstance();
-    instance?.proxy?.$forceUpdate();
-  }, 1000 * 10);
-});
-
-onUnmounted(() => {
-  if (updateTimer) {
-    clearInterval(updateTimer);
-  }
 });
 </script>
 
@@ -125,20 +118,33 @@ onUnmounted(() => {
       <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
         <div class="calendar-header">{{ timing.text }}</div>
         <div class="student-list">
-          <span v-for="student in getStudents(day, timing)" :key="student.id">
-            <span v-if="getStudentAttendance(student.id, timing) === 'present'">
+          <span
+            class="d-flex align-items-center"
+            v-for="student in getStudents(day, timing)"
+            :key="student.id"
+          >
+            <span v-if="student.attendance === 'present'">
               <i class="fa-solid fa-circle-check text-success ms-1"></i>
             </span>
-            <span v-else-if="getStudentAttendance(student.id, timing) === 'absent'">
+            <span v-else-if="student.attendance === 'absent'">
               <i class="fa-solid fa-circle-xmark text-danger ms-1"></i>
             </span>
-            <span v-else-if="getStudentAttendance(student.id, timing) === 'in-class'">
+            <span v-else-if="student.attendance === 'in-class'">
               <i class="fa-solid fa-circle-arrow-right text-primary ms-1"></i>
             </span>
             <span v-else>
               <i class="fa-solid fa-circle-minus text-secondary ms-1"></i>
             </span>
-            {{ student.firstName }} {{ student.lastName }}
+            <span class="ms-1"> {{ student.firstName }} {{ student.lastName }} </span>
+            <span class="ms-1" v-if="student.signInTime">
+              ({{ student.signInTime }} - {{ student.signOutTime }})
+            </span>
+            <span
+              v-if="student.isEarlyLearner || student.schoolYear.includes('Reception')"
+              class="badge bg-success ms-1"
+            >
+              EL
+            </span>
           </span>
         </div>
       </div>
@@ -220,5 +226,12 @@ onUnmounted(() => {
       border-bottom-right-radius: 15px;
     }
   }
+}
+.el-tag {
+  font-size: 8px;
+  height: 12px;
+  line-height: 12px;
+  width: 12px;
+  padding: 1px 3px;
 }
 </style>

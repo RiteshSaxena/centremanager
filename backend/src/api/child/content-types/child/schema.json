@@ -22,7 +22,11 @@
     },
     "gender": {
       "type": "enumeration",
-      "enum": ["Male", "Female", "Others"]
+      "enum": [
+        "Male",
+        "Female",
+        "Others"
+      ]
     },
     "houseNumber": {
       "type": "string"
@@ -107,6 +111,10 @@
     },
     "paymentDate": {
       "type": "integer"
+    },
+    "isEarlyLearner": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

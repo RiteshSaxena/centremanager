@@ -126,8 +126,18 @@ onMounted(async () => {
       <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
         <div class="calendar-header">{{ timing.text }}</div>
         <div class="student-list" v-for="day in days" :key="day">
-          <span v-for="student in getStudents(day, timing)" :key="student.id">
-            {{ student.firstName }} {{ student.lastName }}
+          <span
+            class="d-flex align-items-center"
+            v-for="student in getStudents(day, timing)"
+            :key="student.id"
+          >
+            <span> {{ student.firstName }} {{ student.lastName }} </span>
+            <span
+              v-if="student.isEarlyLearner || student.schoolYear.includes('Reception')"
+              class="badge bg-success ms-1"
+            >
+              EL
+            </span>
           </span>
         </div>
       </div>
@@ -199,5 +209,9 @@ onMounted(async () => {
       border-bottom-right-radius: 15px;
     }
   }
+}
+.el-tag {
+  font-size: 8px;
+  padding: 5px;
 }
 </style>

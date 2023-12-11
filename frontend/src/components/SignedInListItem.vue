@@ -14,28 +14,36 @@ const desc = ref('');
 const phoneNumber = ref('');
 
 const updateVars = () => {
+  name.value = '';
+  type.value = '';
+  desc.value = '';
+  phoneNumber.value = '';
   if (props.item?.type === 'Student') {
     name.value = `${props.item?.student?.firstName} ${props.item?.student?.lastName}`;
     type.value = 'Student';
     desc.value = '';
+    const descArr = [];
     if (props.item?.student?.schoolYear) {
-      desc.value += `${props.item?.student?.schoolYear}`;
+      descArr.push(`${props.item?.student?.schoolYear}`);
     }
     if (props.item?.parent?.contactNumber) {
-      desc.value += ` - ${props.item?.parent?.contactNumber}`;
+      descArr.push(`${props.item?.parent?.contactNumber}`);
       phoneNumber.value = props.item?.parent?.contactNumber;
     }
+    desc.value = descArr.join(' - ');
   } else if (props.item?.type === 'StudentWithParent') {
     name.value = `${props.item?.student?.firstName} ${props.item?.student?.lastName}, ${props.item?.parent?.firstName} ${props.item?.parent?.lastName}`;
     type.value = 'Student';
     desc.value = '';
+    const descArr = [];
     if (props.item?.student?.schoolYear) {
-      desc.value += ` - ${props.item?.student?.schoolYear}`;
+      descArr.push(`${props.item?.student?.schoolYear}`);
     }
     if (props.item?.parent?.contactNumber) {
-      desc.value += ` - ${props.item?.parent?.contactNumber}`;
+      descArr.push(`${props.item?.parent?.contactNumber}`);
       phoneNumber.value = props.item?.parent?.contactNumber;
     }
+    desc.value = descArr.join(' - ');
   } else if (props.item?.type === 'Staff') {
     name.value = `${props.item?.staff?.firstName} ${props.item?.staff?.lastName}`;
     type.value = 'Staff';
@@ -44,27 +52,27 @@ const updateVars = () => {
       desc.value += `${props.item?.staff?.phoneNumber}`;
       phoneNumber.value = props.item?.staff?.phoneNumber;
     } else if (props.item?.staff?.email) {
-      desc.value += ` - ${props.item?.staff?.email}`;
+      desc.value += `${props.item?.staff?.email}`;
     }
   } else if (props.item?.type === 'Parent') {
     name.value = `${props.item?.parent?.firstName} ${props.item?.parent?.lastName}`;
     type.value = 'Parent';
     desc.value = '';
     if (props.item?.parent?.contactNumber) {
-      desc.value += ` - ${props.item?.parent?.contactNumber}`;
+      desc.value += `${props.item?.parent?.contactNumber}`;
       phoneNumber.value = props.item?.parent?.contactNumber;
     } else if (props.item?.parent?.email) {
-      desc.value += ` - ${props.item?.parent?.email}`;
+      desc.value += `${props.item?.parent?.email}`;
     }
   } else if (props.item?.type === 'Guest') {
     name.value = `${props.item?.guest?.firstName} ${props.item?.guest?.lastName}`;
     type.value = 'Guest';
     desc.value = '';
     if (props.item?.guest?.phoneNumber) {
-      desc.value += ` - ${props.item?.guest?.phoneNumber}`;
+      desc.value += `${props.item?.guest?.phoneNumber}`;
       phoneNumber.value = props.item?.guest?.phoneNumber;
     } else if (props.item?.guest?.email) {
-      desc.value += ` - ${props.item?.guest?.email}`;
+      desc.value += `${props.item?.guest?.email}`;
     }
   }
 };

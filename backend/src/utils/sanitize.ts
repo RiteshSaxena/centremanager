@@ -16,5 +16,6 @@ export const sanitizeChild = (user: any) => {
     'school',
     'schoolYear',
     'status',
+    'isEarlyLearner',
   ]);
 };
