@@ -133,7 +133,7 @@ onMounted(async () => {
           >
             <span> {{ student.firstName }} {{ student.lastName }} </span>
             <span
-              v-if="student.isEarlyLearner || student.schoolYear.includes('Reception')"
+              v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
               class="badge bg-success ms-1"
             >
               EL

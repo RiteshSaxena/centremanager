@@ -140,7 +140,7 @@ onMounted(async () => {
               ({{ student.signInTime }} - {{ student.signOutTime }})
             </span>
             <span
-              v-if="student.isEarlyLearner || student.schoolYear.includes('Reception')"
+              v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
               class="badge bg-success ms-1"
             >
               EL
