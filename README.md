@@ -1,1 +1,1 @@
-# centremanager
+# centre-manager
