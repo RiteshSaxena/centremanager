@@ -1,0 +1,42 @@
+{
+  "name": "Centre Manager",
+  "short_name": "Centre Manager",
+  "description": "Centre Manager",
+  "theme_color": "#193b4d",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/?source=pwa",
+  "icons": [
+    {
+      "src": "assets/icons/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icons/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+     {
+       "src": "assets/icons/android-chrome-512x512.png",
+       "sizes": "512x512",
+       "type": "image/png",
+       "purpose": "any"
+     }
+  ]
+}

@@ -1,86 +1,83 @@
 <template>
-  <div class="pt-4 px-4">
-    <CentreHeader />
-    <div class="row mt-5">
-      <div class="col-md-4 order-2 order-md-1">
-        <div class="d-flex gap-1 mb-3">
-          <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
-          <button
-            v-if="search.trim().length"
-            type="button"
-            class="btn btn-secondary rounded-3"
-            @click="clearSearch"
-          >
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-        <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
-      </div>
-      <div class="col-md-4 order-1 order-md-2">
-        <button type="button" class="btn btn-info me-1" @click="qrSignIn">
-          <i class="fa-solid fa-qrcode"></i>
+  <div class="row mt-5">
+    <div class="col-md-4 order-2 order-md-1">
+      <div class="d-flex gap-1 mb-3">
+        <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
+        <button
+          v-if="search.trim().length"
+          type="button"
+          class="btn btn-secondary rounded-3"
+          @click="clearSearch"
+        >
+          <i class="fa-solid fa-xmark"></i>
         </button>
-        <button type="button" class="btn btn-info me-1" @click="guestSignInModal = true">
-          Guest SignIn
+      </div>
+      <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
+    </div>
+    <div class="col-md-4 order-1 order-md-2">
+      <button type="button" class="btn btn-info me-1" @click="qrSignIn">
+        <i class="fa-solid fa-qrcode"></i>
+      </button>
+      <button type="button" class="btn btn-info me-1" @click="guestSignInModal = true">
+        Guest SignIn
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        @click="clearSearch"
+        v-if="selectedStudent && !search"
+      >
+        Clear
+      </button>
+      <div class="mt-3">
+        <GuardianList
+          v-if="selectedStudent"
+          :student="selectedStudent"
+          @onSelect="onSelectGuardian"
+          @onAddGuardian="onAddGuardian"
+        />
+      </div>
+    </div>
+    <div class="col-md-4 order-3">
+      <div class="d-flex gap-1">
+        <InputField v-model="signedInFilter" placeholder="Filter" />
+        <button
+          v-if="signedInFilter.length || signedInFilterId"
+          type="button"
+          class="btn btn-secondary rounded-3"
+          @click="
+            signedInFilter = '';
+            signedInFilterId = null;
+          "
+        >
+          <i class="fa-solid fa-xmark"></i>
         </button>
         <button
           type="button"
-          class="btn btn-secondary"
-          @click="clearSearch"
-          v-if="selectedStudent && !search"
+          class="btn btn-secondary rounded-3"
+          @click="logBookStore.fetchList"
+          :disabled="logBookStore.fetching"
         >
-          Clear
+          <i class="fa-solid fa-arrows-rotate"></i>
         </button>
-        <div class="mt-3">
-          <GuardianList
-            v-if="selectedStudent"
-            :student="selectedStudent"
-            @onSelect="onSelectGuardian"
-            @onAddGuardian="onAddGuardian"
-          />
-        </div>
+        <button type="button" class="btn btn-info rounded-3" @click="qrSignOut">
+          <i class="fa-solid fa-qrcode"></i>
+        </button>
       </div>
-      <div class="col-md-4 order-3">
-        <div class="d-flex gap-1">
-          <InputField v-model="signedInFilter" placeholder="Filter" />
-          <button
-            v-if="signedInFilter.length || signedInFilterId"
-            type="button"
-            class="btn btn-secondary rounded-3"
-            @click="
-              signedInFilter = '';
-              signedInFilterId = null;
-            "
-          >
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary rounded-3"
-            @click="logBookStore.fetchList"
-            :disabled="logBookStore.fetching"
-          >
-            <i class="fa-solid fa-arrows-rotate"></i>
-          </button>
-          <button type="button" class="btn btn-info rounded-3" @click="qrSignOut">
-            <i class="fa-solid fa-qrcode"></i>
-          </button>
-        </div>
-        <div class="mt-3">
-          <SignedInList :filter="signedInFilter" :filter-id="signedInFilterId" />
-        </div>
+      <div class="mt-3">
+        <SignedInList :filter="signedInFilter" :filter-id="signedInFilterId" />
       </div>
     </div>
-
-    <ScanQRModal v-model:show="scanQRModal" @student="handleQrStudent" />
-    <GuestSignInModal v-model:show="guestSignInModal" />
-    <SignInModal
-      v-model:show="signInModal"
-      :selected-user="selectedUser"
-      :loading="signing"
-      @onSubmit="handleOnSubmit"
-    />
   </div>
+
+  <ScanQRModal v-model:show="scanQRModal" @student="handleQrStudent" />
+  <GuestSignInModal v-model:show="guestSignInModal" />
+  <SignInModal
+    v-model:show="signInModal"
+    :selected-user="selectedUser"
+    :loading="signing"
+    @onSubmit="handleOnSubmit"
+  />
 </template>
 
 <script setup lang="ts">
@@ -89,7 +86,6 @@ import { debounce } from 'lodash';
 import { useToast } from 'vue-toastification';
 
 import InputField from '@/components/base/InputField.vue';
-import CentreHeader from '@/components/CentreHeader.vue';
 import SearchResults from '@/components/SearchResults.vue';
 import GuardianList from '@/components/GuardianList.vue';
 import SignedInList from '@/components/SignedInList.vue';

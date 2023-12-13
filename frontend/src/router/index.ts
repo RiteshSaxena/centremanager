@@ -17,7 +17,8 @@ const router = createRouter({
       name: 'Login',
       component: Login,
       meta: {
-        guest: true
+        guest: true,
+        title: 'Login'
       }
     },
     {
@@ -26,7 +27,8 @@ const router = createRouter({
       component: Dashboard,
       meta: {
         auth: true,
-        layout: DashboardLayout
+        layout: DashboardLayout,
+        title: 'Dashboard'
       }
     },
     {
@@ -35,7 +37,8 @@ const router = createRouter({
       component: Calendar,
       meta: {
         auth: true,
-        layout: DashboardLayout
+        layout: DashboardLayout,
+        title: 'Calendar'
       }
     },
     {
@@ -44,7 +47,8 @@ const router = createRouter({
       component: Attendance,
       meta: {
         auth: true,
-        layout: DashboardLayout
+        layout: DashboardLayout,
+        title: 'Attendance'
       }
     },
     {
@@ -53,7 +57,8 @@ const router = createRouter({
       component: QrGenerator,
       meta: {
         auth: true,
-        layout: DashboardLayout
+        layout: DashboardLayout,
+        title: 'QR Generator'
       }
     },
     {
@@ -62,7 +67,8 @@ const router = createRouter({
       component: Upload,
       meta: {
         auth: true,
-        layout: DashboardLayout
+        layout: DashboardLayout,
+        title: 'Upload'
       }
     }
   ]
@@ -85,6 +91,12 @@ router.beforeEach(async (to, from, next) => {
   } else {
     next();
   }
+});
+
+const appTitle = 'Centre Manager';
+
+router.afterEach((to) => {
+  document.title = to.meta.title ? `${to.meta.title} | ${appTitle}` : appTitle;
 });
 
 export default router;
