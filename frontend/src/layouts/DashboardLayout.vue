@@ -4,6 +4,7 @@ import { onMounted, onUnmounted } from 'vue';
 import Sidebar from '@/components/Sidebar.vue';
 
 import { useLogBookStore } from '@/stores';
+import CentreHeader from '@/components/CentreHeader.vue';
 
 const logBookStore = useLogBookStore();
 
@@ -27,7 +28,10 @@ onUnmounted(() => {
   <div class="d-flex">
     <Sidebar />
     <div class="main-container overflow-auto vh-100 w-100">
-      <slot />
+      <div class="p-4">
+        <centre-header />
+        <slot />
+      </div>
     </div>
   </div>
 </template>

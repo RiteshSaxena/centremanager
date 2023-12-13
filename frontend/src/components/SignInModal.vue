@@ -79,7 +79,7 @@ const emit = defineEmits(['update:show', 'onSubmit']);
   </Modal>
 </template>
 
-<style scoped lang='scss'>
+<style scoped lang="scss">
 .form-check {
   margin-top: -2rem;
 }

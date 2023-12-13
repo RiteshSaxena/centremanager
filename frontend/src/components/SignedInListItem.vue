@@ -108,7 +108,11 @@ const iconColorClass = computed(() => {
         </span>
       </div>
     </div>
-    <a :href="`tel:${phoneNumber}`" v-if="phoneNumber" class="btn btn-secondary btn-sm m-0 rounded-3">
+    <a
+      :href="`tel:${phoneNumber}`"
+      v-if="phoneNumber"
+      class="btn btn-secondary btn-sm m-0 rounded-3"
+    >
       <i class="fa-solid fa-phone"></i>
     </a>
   </div>

@@ -1,13 +1,26 @@
 <template>
   <div class="centre-name">
-    <h1>Hayes Study Centre</h1>
+    <h1>{{ centre?.displayText || centre?.name }}</h1>
     <span>{{ date }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
 import moment from 'moment';
+
+import { useUserStore } from '@/stores';
+
+const userStore = useUserStore();
+
+const centre = ref<any>(null);
+
 const date = moment().format('DD MMMM, YYYY');
+
+onMounted(async () => {
+  const data = await userStore.getCentre();
+  centre.value = data;
+});
 </script>
 <style scoped lang="scss">
 .centre-name {

@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, getCurrentInstance, onUnmounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import moment from 'moment';
-
-import CentreHeader from '@/components/CentreHeader.vue';
 
 import { useSlotStore, useLogBookStore } from '@/stores';
 
@@ -108,55 +106,52 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="p-4">
-    <CentreHeader />
-    <div class="calendar-container" v-if="!loading">
-      <div class="calendar-row">
-        <div></div>
-        <span class="calendar-header calendar-header-active">{{ day }}</span>
-      </div>
-      <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
-        <div class="calendar-header">{{ timing.text }}</div>
-        <div class="student-list">
-          <span
-            class="d-flex align-items-center"
-            v-for="student in getStudents(day, timing)"
-            :key="student.id"
-          >
-            <span v-if="student.attendance === 'present'">
-              <i class="fa-solid fa-circle-check text-success ms-1"></i>
-            </span>
-            <span v-else-if="student.attendance === 'absent'">
-              <i class="fa-solid fa-circle-xmark text-danger ms-1"></i>
-            </span>
-            <span v-else-if="student.attendance === 'in-class'">
-              <i class="fa-solid fa-circle-arrow-right text-primary ms-1"></i>
-            </span>
-            <span v-else>
-              <i class="fa-solid fa-circle-minus text-secondary ms-1"></i>
-            </span>
-            <span class="ms-1"> {{ student.firstName }} {{ student.lastName }} </span>
-            <span class="ms-1" v-if="student.signInTime">
-              ({{ student.signInTime }} - {{ student.signOutTime }})
-            </span>
-            <span
-              v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
-              class="badge bg-success ms-1"
-            >
-              EL
-            </span>
+  <div class="calendar-container" v-if="!loading">
+    <div class="calendar-row">
+      <div></div>
+      <span class="calendar-header calendar-header-active">{{ day }}</span>
+    </div>
+    <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
+      <div class="calendar-header">{{ timing.text }}</div>
+      <div class="student-list">
+        <span
+          class="d-flex align-items-center"
+          v-for="student in getStudents(day, timing)"
+          :key="student.id"
+        >
+          <span v-if="student.attendance === 'present'">
+            <i class="fa-solid fa-circle-check text-success ms-1"></i>
           </span>
-        </div>
-      </div>
-      <div class="calendar-row" v-if="!timings.length">
-        <div></div>
-        <p class="text-muted small">No slots found for today.</p>
+          <span v-else-if="student.attendance === 'absent'">
+            <i class="fa-solid fa-circle-xmark text-danger ms-1"></i>
+          </span>
+          <span v-else-if="student.attendance === 'in-class'">
+            <i class="fa-solid fa-circle-arrow-right text-primary ms-1"></i>
+          </span>
+          <span v-else>
+            <i class="fa-solid fa-circle-minus text-secondary ms-1"></i>
+          </span>
+          <span class="ms-1"> {{ student.firstName }} {{ student.lastName }} </span>
+          <span class="ms-1" v-if="student.signInTime">
+            ({{ student.signInTime }} - {{ student.signOutTime }})
+          </span>
+          <span
+            v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
+            class="badge bg-success ms-1"
+          >
+            EL
+          </span>
+        </span>
       </div>
     </div>
-    <div class="text-center my-4" v-else>
-      <div class="spinner-border text-dark text-center" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+    <div class="calendar-row" v-if="!timings.length">
+      <div></div>
+      <p class="text-muted small">No slots found for today.</p>
+    </div>
+  </div>
+  <div class="text-center my-4" v-else>
+    <div class="spinner-border text-dark text-center" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
   </div>
 </template>

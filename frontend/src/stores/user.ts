@@ -15,6 +15,10 @@ export const userStore = defineStore('user', {
     }
   },
   actions: {
+    async getCentre() {
+      const res = await axios.get('/centers');
+      return res.data;
+    },
     async login(email: string, password: string) {
       const res = await axios.post('/auth/local', {
         identifier: email,

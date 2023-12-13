@@ -2,8 +2,6 @@
 import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
-import CentreHeader from '@/components/CentreHeader.vue';
-
 import { useLogBookStore } from '@/stores';
 
 const toast = useToast();
@@ -34,25 +32,22 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div class="pt-4 px-4">
-    <CentreHeader />
-    <form class="mt-4 d-flex flex-column align-items-start" @submit.prevent="onSubmit">
-      <div class="mb-3">
-        <label for="formFile" class="form-label">Select file to import data:</label>
-        <input
-          class="form-control"
-          type="file"
-          id="formFile"
-          @change="onSelect"
-          accept=".csv"
-          required
-        />
-      </div>
-      <button type="submit" class="btn btn-info" :disabled="loading">
-        {{ loading ? 'Uploading...' : 'Upload' }}
-      </button>
-    </form>
-  </div>
+  <form class="mt-4 d-flex flex-column align-items-start" @submit.prevent="onSubmit">
+    <div class="mb-3">
+      <label for="formFile" class="form-label">Select file to import data:</label>
+      <input
+        class="form-control"
+        type="file"
+        id="formFile"
+        @change="onSelect"
+        accept=".csv"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-info" :disabled="loading">
+      {{ loading ? 'Uploading...' : 'Upload' }}
+    </button>
+  </form>
 </template>
 
 <style scoped lang="scss"></style>

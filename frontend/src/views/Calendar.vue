@@ -2,8 +2,6 @@
 import { computed, onMounted } from 'vue';
 import moment from 'moment';
 
-import CentreHeader from '@/components/CentreHeader.vue';
-
 import { useSlotStore } from '@/stores';
 
 const slotStore = useSlotStore();
@@ -104,42 +102,39 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="p-4">
-    <CentreHeader />
-    <div class="text-center my-4" v-if="loading">
-      <div class="spinner-border text-dark text-center" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+  <div class="text-center my-4" v-if="loading">
+    <div class="spinner-border text-dark text-center" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
-    <div class="calendar-container" v-else>
-      <div class="calendar-row mb-3">
-        <div></div>
+  </div>
+  <div class="calendar-container" v-else>
+    <div class="calendar-row mb-3">
+      <div></div>
+      <span
+        class="calendar-header"
+        v-for="day in days"
+        :key="day"
+        :class="{ 'calendar-header-active': day === today }"
+      >
+        {{ day }}
+      </span>
+    </div>
+    <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
+      <div class="calendar-header">{{ timing.text }}</div>
+      <div class="student-list" v-for="day in days" :key="day">
         <span
-          class="calendar-header"
-          v-for="day in days"
-          :key="day"
-          :class="{ 'calendar-header-active': day === today }"
+          class="d-flex align-items-center"
+          v-for="student in getStudents(day, timing)"
+          :key="student.id"
         >
-          {{ day }}
-        </span>
-      </div>
-      <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
-        <div class="calendar-header">{{ timing.text }}</div>
-        <div class="student-list" v-for="day in days" :key="day">
+          <span> {{ student.firstName }} {{ student.lastName }} </span>
           <span
-            class="d-flex align-items-center"
-            v-for="student in getStudents(day, timing)"
-            :key="student.id"
+            v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
+            class="badge bg-success ms-1"
           >
-            <span> {{ student.firstName }} {{ student.lastName }} </span>
-            <span
-              v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
-              class="badge bg-success ms-1"
-            >
-              EL
-            </span>
+            EL
           </span>
-        </div>
+        </span>
       </div>
     </div>
   </div>
