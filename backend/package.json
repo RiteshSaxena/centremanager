@@ -49,5 +49,10 @@
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   },
+  "overrides": {
+    "@strapi/strapi": {
+      "@strapi/plugin-content-manager": "file:./packages/strapi-plugin-content-manager"
+    }
+  },
   "license": "MIT"
 }
