@@ -21,14 +21,13 @@ export default async ({ strapi }: { strapi: Strapi }) => {
         return false;
       }
 
-      const center = await strapi.entityService.findOne('api::center.center', centreId);
-
-      if (!center) {
-        return false;
+      if (user.permission.subject === 'api::center.center') {
+        return {
+          id: centreId,
+        };
       }
-
       return {
-        center,
+        'center.id': centreId,
       };
     },
   });
