@@ -127,11 +127,24 @@ module.exports = {
       fieldsToSelect.push(PUBLISHED_AT_ATTRIBUTE);
     }
 
+    const permissionChecker = getService('permission-checker').create({
+      userAbility,
+      model: attribute.target
+    });
+
+    if (permissionChecker.cannot.read()) {
+      return ctx.forbidden();
+    }
+
+    const permissionQuery = await permissionChecker.sanitizedQuery.read(ctx.request.query);
+
     const queryParams = {
       sort: mainField,
       ...query,
       fields: fieldsToSelect, // cannot select other fields as the user may not have the permissions
-      filters: {}, // cannot filter for RBAC reasons
+      filters: {
+        ...permissionQuery.filters,
+      }, // cannot filter for RBAC reasons
     };
 
     if (!isEmpty(idsToOmit)) {
