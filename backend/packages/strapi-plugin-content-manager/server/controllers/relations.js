@@ -1,6 +1,6 @@
 'use strict';
 
-const { prop, isEmpty, uniq, flow } = require('lodash/fp');
+const { prop, isEmpty, uniq, flow, omit } = require('lodash/fp');
 const { hasDraftAndPublish } = require('@strapi/utils').contentTypes;
 const { isAnyToMany } = require('@strapi/utils').relations;
 const { PUBLISHED_AT_ATTRIBUTE } = require('@strapi/utils').contentTypes.constants;
@@ -127,24 +127,30 @@ module.exports = {
       fieldsToSelect.push(PUBLISHED_AT_ATTRIBUTE);
     }
 
-    const permissionChecker = getService('permission-checker').create({
-      userAbility,
-      model: attribute.target
-    });
-
-    if (permissionChecker.cannot.read()) {
-      return ctx.forbidden();
-    }
-
-    const permissionQuery = await permissionChecker.sanitizedQuery.read(ctx.request.query);
 
     const queryParams = {
       sort: mainField,
       ...query,
       fields: fieldsToSelect, // cannot select other fields as the user may not have the permissions
-      filters: {
-        ...permissionQuery.filters,
-      }, // cannot filter for RBAC reasons
+      filters: {}, // cannot filter for RBAC reasons
+    };
+
+    const relationPermissionChecker = getService('permission-checker').create({
+      userAbility,
+      model: attribute.target
+    });
+
+    if (relationPermissionChecker.cannot.read()) {
+      return ctx.forbidden();
+    }
+
+    const relationCheckerQuery = omit(['entityId'], query);
+
+    const relationPermissionQuery = await relationPermissionChecker.sanitizedQuery.read(relationCheckerQuery);
+
+    queryParams.filters = {
+      ...queryParams.filters,
+      ...relationPermissionQuery.filters,
     };
 
     if (!isEmpty(idsToOmit)) {
