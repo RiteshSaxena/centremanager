@@ -135,23 +135,25 @@ module.exports = {
       filters: {}, // cannot filter for RBAC reasons
     };
 
-    const relationPermissionChecker = getService('permission-checker').create({
-      userAbility,
-      model: attribute.target
-    });
+    if (attribute.target !== 'plugin::users-permissions.role') {
+      const relationPermissionChecker = getService('permission-checker').create({
+        userAbility,
+        model: attribute.target
+      });
 
-    if (relationPermissionChecker.cannot.read()) {
-      return ctx.forbidden();
+      if (relationPermissionChecker.cannot.read()) {
+        return ctx.forbidden();
+      }
+
+      const relationCheckerQuery = omit(['entityId'], query);
+
+      const relationPermissionQuery = await relationPermissionChecker.sanitizedQuery.read(relationCheckerQuery);
+
+      queryParams.filters = {
+        ...queryParams.filters,
+        ...relationPermissionQuery.filters,
+      };
     }
-
-    const relationCheckerQuery = omit(['entityId'], query);
-
-    const relationPermissionQuery = await relationPermissionChecker.sanitizedQuery.read(relationCheckerQuery);
-
-    queryParams.filters = {
-      ...queryParams.filters,
-      ...relationPermissionQuery.filters,
-    };
 
     if (!isEmpty(idsToOmit)) {
       addFiltersClause(queryParams, { id: { $notIn: idsToOmit } });
