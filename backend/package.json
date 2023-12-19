@@ -23,19 +23,17 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "^4.15.4",
+    "@strapi/plugin-content-manager": "file:./packages/strapi-plugin-content-manager",
+    "@strapi/plugin-i18n": "^4.15.5",
     "@strapi/plugin-sentry": "^4.15.5",
-    "@strapi/plugin-users-permissions": "^4.15.4",
-    "@strapi/strapi": "^4.15.4",
-    "@strapi/utils": "^4.15.4",
+    "@strapi/plugin-users-permissions": "^4.15.5",
+    "@strapi/provider-upload-aws-s3": "^4.15.5",
+    "@strapi/strapi": "^4.15.5",
+    "@strapi/utils": "^4.15.5",
     "csv-parse": "^5.5.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "mysql2": "^3.6.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^5.3.4",
-    "styled-components": "^5.3.11"
+    "mysql2": "^3.6.3"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.9.0",
@@ -48,6 +46,9 @@
     "eslint-plugin-prettier": "^5.0.1",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
+  },
+  "overrides": {
+    "@strapi/plugin-content-manager": "file:./packages/strapi-plugin-content-manager"
   },
   "license": "MIT"
 }

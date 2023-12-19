@@ -7,7 +7,8 @@ import type { User } from '@/types';
 export const userStore = defineStore('user', {
   state: () => ({
     token: getToken() as string | null,
-    user: null as User | null
+    user: null as User | null,
+    centre: null as any
   }),
   getters: {
     isLoggedIn(state) {
@@ -17,6 +18,7 @@ export const userStore = defineStore('user', {
   actions: {
     async getCentre() {
       const res = await axios.get('/centers');
+      this.centre = res.data;
       return res.data;
     },
     async login(email: string, password: string) {

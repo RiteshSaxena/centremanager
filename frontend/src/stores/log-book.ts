@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from '@/axios';
 import type { LogRecord } from '@/types';
+import { userStore as useUserStore } from '@/stores/user';
 
 interface GuestSignInPayload {
   firstName: string;
@@ -22,6 +23,20 @@ export const logBookStore = defineStore('log-book', {
     fetching: false
   }),
   actions: {
+    async uploadImage(signature: string) {
+      const userStore = useUserStore();
+      let path = '';
+      if (userStore.centre) {
+        path = `centre-${userStore.centre.id}`;
+      }
+      const signatureFile = await convertBase64ToFile(signature);
+      const formData = new FormData();
+      formData.append('files', signatureFile);
+      if (path) {
+        formData.append('path', path);
+      }
+      return await axios.post('/upload', formData);
+    },
     async importData(file: File) {
       const formData = new FormData();
       formData.append('file', file);
@@ -29,10 +44,7 @@ export const logBookStore = defineStore('log-book', {
       return res.data;
     },
     async guestSignIn(payload: GuestSignInPayload) {
-      const signature = await convertBase64ToFile(payload.signature);
-      const formData = new FormData();
-      formData.append('files', signature);
-      const fileUploadRes = await axios.post('/upload', formData);
+      const fileUploadRes = await this.uploadImage(payload.signature);
       const fileId = fileUploadRes.data[0].id;
       const res = await axios.post('/log-book/guest-sign-in', {
         ...payload,
@@ -41,10 +53,7 @@ export const logBookStore = defineStore('log-book', {
       return res.data;
     },
     async signIn(payload: any) {
-      const signature = await convertBase64ToFile(payload.signature);
-      const formData = new FormData();
-      formData.append('files', signature);
-      const fileUploadRes = await axios.post('/upload', formData);
+      const fileUploadRes = await this.uploadImage(payload.signature);
       const fileId = fileUploadRes.data[0].id;
       const res = await axios.post('/log-book/sign-in', {
         ...payload,
@@ -53,10 +62,7 @@ export const logBookStore = defineStore('log-book', {
       return res.data;
     },
     async signOut(payload: any) {
-      const signature = await convertBase64ToFile(payload.signature);
-      const formData = new FormData();
-      formData.append('files', signature);
-      const fileUploadRes = await axios.post('/upload', formData);
+      const fileUploadRes = await this.uploadImage(payload.signature);
       const fileId = fileUploadRes.data[0].id;
       const res = await axios.post('/log-book/sign-out', {
         ...payload,
