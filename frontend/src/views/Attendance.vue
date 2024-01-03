@@ -141,6 +141,7 @@ onMounted(async () => {
           >
             EL
           </span>
+          <span v-if="student.isDuePending" class="badge bg-danger ms-1"> Overdue </span>
         </span>
       </div>
     </div>
@@ -162,7 +163,7 @@ onMounted(async () => {
 }
 .calendar-row {
   display: grid;
-  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr;
   align-items: center;
   justify-items: center;
   .calendar-header {

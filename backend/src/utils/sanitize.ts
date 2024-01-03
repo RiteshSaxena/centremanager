@@ -17,5 +17,6 @@ export const sanitizeChild = (user: any) => {
     'schoolYear',
     'status',
     'isEarlyLearner',
+    'isDuePending',
   ]);
 };
