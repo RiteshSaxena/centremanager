@@ -134,6 +134,7 @@ onMounted(async () => {
           >
             EL
           </span>
+          <span v-if="student.isDuePending" class="badge bg-danger ms-1"> Overdue </span>
         </span>
       </div>
     </div>
