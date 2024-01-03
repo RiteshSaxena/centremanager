@@ -31,7 +31,7 @@ export default factories.createCoreController('api::slot.slot', ({ strapi }) => 
 
         const bookStudent = booksStudents.find((student: any) => parseInt(student.designation) === sanitizedChild.id);
         if (bookStudent) {
-          if (bookStudent.parent.outstanding_payable_amount > 0) {
+          if (bookStudent.parent.outstanding_receivable_amount > 0) {
             sanitizedChild.isDuePending = true;
           }
         }
