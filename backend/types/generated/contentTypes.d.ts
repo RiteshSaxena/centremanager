@@ -532,6 +532,7 @@ export interface ApiCenterCenter extends Schema.CollectionType {
     displayText: Attribute.String;
     logo: Attribute.Media;
     lastImportDate: Attribute.DateTime;
+    zohobooks: Attribute.Component<'accounting.zoho-books'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::center.center', 'oneToOne', 'admin::user'> & Attribute.Private;

@@ -26,10 +26,17 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "lastImportDate": {
       "type": "datetime"
+    },
+    "zohobooks": {
+      "type": "component",
+      "repeatable": false,
+      "component": "accounting.zoho-books"
     }
   }
 }

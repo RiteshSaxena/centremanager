@@ -1,0 +1,40 @@
+{
+  "collectionName": "components_accounting_zoho_books",
+  "info": {
+    "displayName": "ZohoBooks",
+    "icon": "book",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "clientId": {
+      "type": "string",
+      "required": true
+    },
+    "clientSecret": {
+      "type": "string",
+      "required": true
+    },
+    "accessToken": {
+      "type": "string",
+      "required": true
+    },
+    "refreshToken": {
+      "type": "string",
+      "required": true
+    },
+    "domain": {
+      "type": "string",
+      "required": true
+    },
+    "organizationId": {
+      "type": "string",
+      "required": true
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    }
+  }
+}
