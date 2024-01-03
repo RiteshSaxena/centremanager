@@ -8,6 +8,7 @@ import Upload from '@/views/Upload.vue';
 import QrGenerator from '@/views/QrGenerator.vue';
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import Login from '@/views/Login.vue';
+import ZohoToken from '@/views/ZohoToken.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -69,6 +70,15 @@ const router = createRouter({
         auth: true,
         layout: DashboardLayout,
         title: 'Upload'
+      }
+    },
+    {
+      path: '/zoho-books/token',
+      name: 'ZohoBooksToken',
+      component: ZohoToken,
+      meta: {
+        auth: true,
+        title: 'Zoho Books'
       }
     }
   ]

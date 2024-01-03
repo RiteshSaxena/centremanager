@@ -2,6 +2,7 @@ import { Strapi } from '@strapi/strapi';
 
 const PERMISSIONS = [
   { action: 'api::import-data.import-data.importData', role: 'authenticated' },
+  { action: 'api::zoho-books.zoho-books.generateToken', role: 'authenticated' },
   { action: 'api::log-book.log-book.search', role: 'authenticated' },
   { action: 'api::log-book.log-book.guestSignIn', role: 'authenticated' },
   { action: 'api::log-book.log-book.signIn', role: 'authenticated' },

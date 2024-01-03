@@ -5,7 +5,6 @@
 import { factories } from '@strapi/strapi';
 
 import { sanitizeChild } from '../../../utils/sanitize';
-import { fetchContacts } from '../../../utils/zohobooks';
 
 export default factories.createCoreController('api::slot.slot', ({ strapi }) => ({
   async find(ctx) {
@@ -22,8 +21,8 @@ export default factories.createCoreController('api::slot.slot', ({ strapi }) => 
 
     let booksStudents = [];
 
-    if (center.zohobooks) {
-      booksStudents = await fetchContacts(strapi, center.id as number, center.zohobooks);
+    if (center.zohobooks && center.zohobooks.enabled) {
+      booksStudents = await strapi.service('api::zoho-books.zoho-books').fetchContacts(center.id as number, center.zohobooks);
     }
 
     return slots.map((slot) => {

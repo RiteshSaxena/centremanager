@@ -30,6 +30,11 @@
     "organizationId": {
       "type": "string",
       "required": true
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "required": true
     }
   }
 }

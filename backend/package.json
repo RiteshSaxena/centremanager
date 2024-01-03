@@ -31,6 +31,7 @@
     "@strapi/strapi": "^4.15.5",
     "@strapi/utils": "^4.15.5",
     "axios": "^1.6.3",
+    "axios-cache-interceptor": "^1.4.1",
     "csv-parse": "^5.5.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
@@ -46,7 +47,11 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.0.1",
     "prettier": "^3.0.3",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^5.3.4",
+    "styled-components": "^5.3.11"
   },
   "overrides": {
     "@strapi/plugin-content-manager": "file:./packages/strapi-plugin-content-manager"
