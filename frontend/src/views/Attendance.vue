@@ -176,7 +176,7 @@ onMounted(async () => {
           <span class="ms-1 me-2"> {{ student.firstName }} {{ student.lastName }} </span>
           <span
             v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
-            class="badge badge-green cursor-pointer rounded-pill"
+            class="badge badge-grey cursor-pointer rounded-pill"
             data-bs-toggle="popover"
             data-bs-content="Early Learner"
           >

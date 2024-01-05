@@ -211,7 +211,6 @@ const handleOnSubmit = async (data: any) => {
     }
     const res = await logBookStore.signIn(payload);
 
-    console.log(res);
     signInModal.value = false;
     toast.success('Signed Successfully');
     logBookStore.fetchList();
