@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import moment from 'moment';
+import { Popover } from 'bootstrap';
 
 import { useSlotStore } from '@/stores';
 
@@ -98,6 +99,14 @@ const getStudents = computed(() => {
 
 onMounted(async () => {
   await slotStore.fetchSlots();
+  setTimeout(() => {
+    new Popover('.calendar-container', {
+      selector: '[data-bs-toggle="popover"]',
+      trigger: 'click',
+      container: 'body',
+      placement: 'top'
+    });
+  }, 1000);
 });
 </script>
 
@@ -123,18 +132,30 @@ onMounted(async () => {
       <div class="calendar-header">{{ timing.text }}</div>
       <div class="student-list" v-for="day in days" :key="day">
         <span
-          class="d-flex align-items-center"
+          class="d-flex align-items-center mt-1"
           v-for="student in getStudents(day, timing)"
           :key="student.id"
         >
-          <span> {{ student.firstName }} {{ student.lastName }} </span>
+          <span
+            v-if="student.dueAmount && student.dueAmount > 0"
+            class="badge cursor-pointer badge-red rounded-pill me-1"
+            data-bs-toggle="popover"
+            :data-bs-content="`Amount Due: £${student.dueAmount}`"
+          >
+            <i class="fa-solid fa-dollar-sign"></i>
+          </span>
+          <span v-else-if="student.dueAmount === 0" class="badge badge-grey rounded-pill me-1">
+            <i class="fa-solid fa-dollar-sign"></i>
+          </span>
+          <span class="ms-1 me-2"> {{ student.firstName }} {{ student.lastName }} </span>
           <span
             v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
-            class="badge bg-success ms-1"
+            class="badge badge-green cursor-pointer rounded-pill"
+            data-bs-toggle="popover"
+            data-bs-content="Early Learner"
           >
-            EL
+            <i class="fa-solid fa-e"></i>
           </span>
-          <span v-if="student.isDuePending" class="badge bg-danger ms-1"> Overdue </span>
         </span>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue';
 import moment from 'moment';
 
 import { useSlotStore, useLogBookStore } from '@/stores';
+import { Popover } from 'bootstrap';
 
 const slotStore = useSlotStore();
 const logBookStore = useLogBookStore();
@@ -69,30 +70,38 @@ const getStudents = computed(() => {
     if (slot.length) {
       return slot[0].children.map((child) => {
         let attendance = '';
-        let signInTime = '';
-        let signOutTime = '';
-        const isPresent = logBookStore.list.find((log) => log.student?.id === child.id);
+        const timeLog: string[] = [];
+        const studentFilteredList = logBookStore.list.filter((log) => log.student?.id === child.id);
 
-        if (isPresent) {
-          signInTime = moment(isPresent.signInTime).format('hh:mm A');
-          if (isPresent.signOutTime) {
-            attendance = 'present';
-            signOutTime = moment(isPresent.signOutTime).format('hh:mm A');
-          } else {
-            attendance = 'in-class';
-          }
-        } else if (!isPresent) {
+        if (studentFilteredList.length) {
+          studentFilteredList.map((log) => {
+            let signInTime = '';
+            let signOutTime = '';
+            if (log.signInTime) {
+              signInTime = moment(log.signInTime).format('hh:mm A');
+            }
+            if (log.signOutTime) {
+              signOutTime = moment(log.signOutTime).format('hh:mm A');
+            }
+            if (signInTime && signOutTime && attendance !== 'present') {
+              attendance = 'present';
+            } else if (signInTime && !signOutTime && !attendance) {
+              attendance = 'in-class';
+            }
+            timeLog.push(`${signInTime} - ${signOutTime}`);
+          });
+        } else {
           const isSlotActive = moment().isAfter(moment(timing.start, 'HH:mm:ss.SSS'));
 
           if (isSlotActive) {
             attendance = 'absent';
           }
         }
+
         return {
           ...child,
           attendance,
-          signInTime,
-          signOutTime
+          timeLog
         };
       });
     }
@@ -102,6 +111,15 @@ const getStudents = computed(() => {
 
 onMounted(async () => {
   await slotStore.fetchSlots();
+  setTimeout(() => {
+    new Popover('.calendar-container', {
+      selector: '[data-bs-toggle="popover"]',
+      trigger: 'click',
+      container: 'body',
+      placement: 'top',
+      html: true
+    });
+  }, 1000);
 });
 </script>
 
@@ -115,33 +133,55 @@ onMounted(async () => {
       <div class="calendar-header">{{ timing.text }}</div>
       <div class="student-list">
         <span
-          class="d-flex align-items-center"
+          class="d-flex align-items-center mt-1"
           v-for="student in getStudents(day, timing)"
           :key="student.id"
         >
-          <span v-if="student.attendance === 'present'">
-            <i class="fa-solid fa-circle-check text-success ms-1"></i>
+          <span
+            v-if="student.dueAmount && student.dueAmount > 0"
+            class="badge cursor-pointer badge-red rounded-pill me-1"
+            data-bs-toggle="popover"
+            :data-bs-content="`Amount Due: £${student.dueAmount}`"
+          >
+            <i class="fa-solid fa-dollar-sign"></i>
           </span>
-          <span v-else-if="student.attendance === 'absent'">
-            <i class="fa-solid fa-circle-xmark text-danger ms-1"></i>
-          </span>
-          <span v-else-if="student.attendance === 'in-class'">
-            <i class="fa-solid fa-circle-arrow-right text-primary ms-1"></i>
-          </span>
-          <span v-else>
-            <i class="fa-solid fa-circle-minus text-secondary ms-1"></i>
-          </span>
-          <span class="ms-1"> {{ student.firstName }} {{ student.lastName }} </span>
-          <span class="ms-1" v-if="student.signInTime">
-            ({{ student.signInTime }} - {{ student.signOutTime }})
+          <span v-else-if="student.dueAmount === 0" class="badge badge-grey rounded-pill me-1">
+            <i class="fa-solid fa-dollar-sign"></i>
           </span>
           <span
-            v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
-            class="badge bg-success ms-1"
+            v-if="student.attendance === 'present'"
+            class="badge badge-green cursor-pointer rounded-pill me-1"
+            data-bs-toggle="popover"
+            :data-bs-content="student.timeLog.join('<br>')"
           >
-            EL
+            <i class="fa-solid fa-check"></i>
           </span>
-          <span v-if="student.isDuePending" class="badge bg-danger ms-1"> Overdue </span>
+          <span
+            v-else-if="student.attendance === 'absent'"
+            class="badge badge-red rounded-pill me-1"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </span>
+          <span
+            v-else-if="student.attendance === 'in-class'"
+            class="badge badge-blue cursor-pointer rounded-pill me-1"
+            data-bs-toggle="popover"
+            :data-bs-content="student.timeLog.join('<br>')"
+          >
+            <i class="fa-solid fa-arrow-right"></i>
+          </span>
+          <span v-else class="badge badge-grey rounded-pill me-1">
+            <i class="fa-solid fa-minus"></i>
+          </span>
+          <span class="ms-1 me-2"> {{ student.firstName }} {{ student.lastName }} </span>
+          <span
+            v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
+            class="badge badge-green cursor-pointer rounded-pill"
+            data-bs-toggle="popover"
+            data-bs-content="Early Learner"
+          >
+            <i class="fa-solid fa-e"></i>
+          </span>
         </span>
       </div>
     </div>

@@ -25,3 +25,28 @@ body {
     height: 100% !important;
   }
 }
+
+.badge-red {
+  background: #fdf2f1;
+  border: 1px solid #dd2526;
+  color: #dd2526;
+}
+.badge-grey {
+    background: #fcfcfc;
+    border: 1px solid #6c757d;
+    color: #6c757d;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.badge-green {
+    background: #f1faf5;
+    border: 1px solid #0a9650;
+    color: #0a9650;
+}
+
+.badge-blue {
+  background: #ecf3fd;
+  border: 1px solid #417ddf;
+  color: #417ddf;
+}
