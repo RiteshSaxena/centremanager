@@ -19,5 +19,5 @@ export interface Student {
   parents: Parent[];
   qrCode: string;
   isEarlyLearner: boolean;
-  isDuePending?: boolean;
+  dueAmount?: number;
 }
