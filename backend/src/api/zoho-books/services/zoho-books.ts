@@ -17,7 +17,6 @@ interface ZohoBooks {
 export default () => ({
   async fetchContacts(centerId: number, zohoBooks: ZohoBooks, attempt = 1) {
     try {
-      console.log('fetching contacts', zohoBooks);
       const baseApiUrl = `https://www.zohoapis.${zohoBooks.domain}/books/v3`;
 
       const contactsRes = await axios.get(`${baseApiUrl}/contacts?organization_id=${zohoBooks.organizationId}`, {
@@ -61,8 +60,6 @@ export default () => ({
       }
     });
 
-    console.log('fetching access token', res);
-
     const { access_token, error } = res.data;
 
     if (error || !access_token) {
@@ -83,8 +80,6 @@ export default () => ({
         redirect_uri: 'https://www.zoho.com/books'
       }
     });
-
-    console.log('fetching access token', res);
 
     const { access_token, error } = res.data;
 
