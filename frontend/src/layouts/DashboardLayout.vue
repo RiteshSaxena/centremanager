@@ -25,7 +25,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="d-flex">
+  <div class="d-flex flex-column flex-md-row">
     <Sidebar />
     <div class="main-container overflow-auto vh-100 w-100">
       <div class="p-4">
