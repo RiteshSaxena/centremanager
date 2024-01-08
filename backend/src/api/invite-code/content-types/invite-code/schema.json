@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "invite_codes",
+  "info": {
+    "singularName": "invite-code",
+    "pluralName": "invite-codes",
+    "displayName": "InviteCode",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "code": {
+      "type": "customField",
+      "options": {
+        "uuid-format": "^[a-z0-9]{6}$"
+      },
+      "customField": "plugin::strapi-advanced-uuid.uuid"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "isUsed": {
+      "type": "boolean",
+      "default": false
+    },
+    "usedBy": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::center.center"
+    }
+  }
+}

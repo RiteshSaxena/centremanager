@@ -28,21 +28,25 @@ const login = async () => {
 
 <template>
   <div class="w-100 vh-100 d-flex justify-content-center align-items-center">
-    <div class="login-card rounded shadow bg-white">
+    <div class="login-card rounded shadow bg-white my-5">
       <h3 class="mb-4">Login</h3>
       <form @submit.prevent="login">
         <div class="mb-3">
           <label class="form-label">Email address</label>
-          <input type="email" class="form-control" autocomplete="email" v-model="email" required />
+          <input type="email" class="form-control" autocomplete="on" v-model="email" required />
         </div>
         <div class="mb-3">
           <label class="form-label">Password</label>
           <input type="password" class="form-control" v-model="password" required />
         </div>
-        <button type="submit" class="btn px-4 btn-info" :disabled="loading">
+        <button type="submit" class="btn px-4 btn-info mb-3" :disabled="loading">
           Login
           <span v-if="loading" class="spinner-border spinner-border-sm ms-2"></span>
         </button>
+        <p class="text-muted m-0">
+          Don't have a account?
+          <router-link to="/register" class="text-info text-decoration-none">Register</router-link>
+        </p>
       </form>
     </div>
   </div>

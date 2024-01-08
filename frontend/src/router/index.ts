@@ -9,6 +9,7 @@ import QrGenerator from '@/views/QrGenerator.vue';
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import Login from '@/views/Login.vue';
 import ZohoToken from '@/views/ZohoToken.vue';
+import Register from '@/views/Register.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,15 @@ const router = createRouter({
       meta: {
         guest: true,
         title: 'Login'
+      }
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register,
+      meta: {
+        guest: true,
+        title: 'Register'
       }
     },
     {

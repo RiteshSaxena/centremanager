@@ -13,6 +13,7 @@ const PERMISSIONS = [
   { action: 'api::parent.parent.create', role: 'authenticated' },
   { action: 'api::slot.slot.find', role: 'authenticated' },
   { action: 'api::center.center.find', role: 'authenticated' },
+  { action: 'api::center.center.register', role: 'public' },
   { action: 'plugin::upload.content-api.upload', role: 'authenticated' },
 ];
 

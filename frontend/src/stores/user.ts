@@ -4,6 +4,17 @@ import { getToken, removeToken, saveToken } from '@/utils/token';
 
 import type { User } from '@/types';
 
+interface RegisterPayload {
+  inviteCode: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  centerName: string;
+  centerRegion: string;
+}
+
 export const userStore = defineStore('user', {
   state: () => ({
     token: getToken() as string | null,
@@ -29,6 +40,10 @@ export const userStore = defineStore('user', {
       this.token = res.data.jwt;
       this.user = res.data.user;
       saveToken(res.data.jwt);
+      return res.data;
+    },
+    async register(payload: RegisterPayload) {
+      const res = await axios.post('/center/register', payload);
       return res.data;
     },
     logout() {

@@ -1,6 +1,6 @@
 <template>
   <div class="centre-name">
-    <h1>{{ centre?.displayText || centre?.name }}</h1>
+    <h1>{{ centre?.displayName || centre?.name }}</h1>
     <span>{{ date }}</span>
   </div>
 </template>
