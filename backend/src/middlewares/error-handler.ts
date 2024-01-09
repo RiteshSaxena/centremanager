@@ -9,6 +9,9 @@ export default () => {
     try {
       await next();
     } catch (err) {
+      if (err.name !== 'ValidationError') {
+        console.log(err);
+      }
       console.log(err);
       errorHandler(err);
     }

@@ -3,6 +3,14 @@ import QRCode from 'qrcode';
 import axios from '@/axios';
 import type { Student } from '@/types';
 
+interface Books {
+  enabled: boolean;
+  dueStudents: {
+    id: number;
+    dueAmount: number;
+  }[];
+}
+
 const generateQR = async (text: string) => {
   try {
     return await QRCode.toDataURL(text);
@@ -14,6 +22,10 @@ const generateQR = async (text: string) => {
 export const studentStore = defineStore('student', {
   state: () => ({
     students: [] as Student[],
+    books: {
+      enabled: false,
+      dueStudents: []
+    } as Books,
     loading: false
   }),
   actions: {
@@ -37,6 +49,12 @@ export const studentStore = defineStore('student', {
     },
     async fetchStudent(id: number) {
       const res = await axios.get<Student>(`/children/${id}`);
+      return res.data;
+    },
+    async dueStudents() {
+      const res = await axios.get('/children/due-students');
+      this.books.enabled = res.data.booksEnabled;
+      this.books.dueStudents = res.data.dueStudents;
       return res.data;
     }
   }

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import Card from '@/components/base/Card.vue';
 import UserListItem from '@/components/UserListItem.vue';
 import AddGuardianModal from '@/components/AddGuardianModal.vue';
 
-import { useSearchStore } from '@/stores';
+import { useSearchStore, useStudentStore } from '@/stores';
 
 import type { Student } from '@/types';
 
@@ -19,6 +19,7 @@ const props = withDefaults(
   }
 );
 
+const studentStore = useStudentStore();
 const searchStore = useSearchStore();
 
 const loading = ref(false);
@@ -39,15 +40,33 @@ const onSubmit = async (data: any) => {
 
 const showModal = ref(false);
 
+const studentDueAmount = computed(() => {
+  if (!studentStore.books.enabled) {
+    return 0;
+  }
+  const student = studentStore.books.dueStudents.find(
+    (student) => student.id === props.student?.id
+  );
+  if (student) {
+    return student.dueAmount;
+  }
+  return 0;
+});
+
 const emit = defineEmits(['onSelect', 'onAddGuardian']);
 </script>
 
 <template>
   <Card>
     <template #header> Student</template>
-    <p class="small text-muted mt-0 mb-0">{{ student.firstName }} {{ student.lastName }}</p>
+    <p class="small text-muted mt-0 mb-0">
+      <span class="fw-bold">Name:</span> {{ student.firstName }} {{ student.lastName }}
+    </p>
     <p class="small text-muted mt-1 mb-0" v-if="student.schoolYear">
-      {{ student.schoolYear }}
+      <span class="fw-bold">School Year:</span> {{ student.schoolYear }}
+    </p>
+    <p class="small text-muted mt-1 mb-0" v-if="studentDueAmount > 0">
+      <span class="fw-bold">Due Amount:</span> £{{ studentDueAmount }}
     </p>
     <p class="small text-muted" v-if="!student.parents.length">No guardian found.</p>
     <p class="small mt-4"><strong>Guardians</strong></p>

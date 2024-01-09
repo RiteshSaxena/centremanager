@@ -14,21 +14,17 @@
   "attributes": {
     "name": {
       "type": "string",
-      "required": true
+      "required": true,
+      "unique": true
     },
     "region": {
-      "type": "string"
-    },
-    "displayText": {
       "type": "string"
     },
     "logo": {
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": [
-        "images"
-      ]
+      "allowedTypes": ["images"]
     },
     "lastImportDate": {
       "type": "datetime"
@@ -37,6 +33,9 @@
       "type": "component",
       "repeatable": false,
       "component": "accounting.zoho-books"
+    },
+    "displayName": {
+      "type": "string"
     }
   }
 }

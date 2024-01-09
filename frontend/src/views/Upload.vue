@@ -23,8 +23,10 @@ const onSubmit = async () => {
       return;
     }
     loading.value = true;
-    await logBookStore.importData(file.value);
-    toast.success('Data imported successfully');
+    const data = await logBookStore.importData(file.value);
+    toast.success(
+      `Data imported successfully! Records added: ${data.created}, updated: ${data.updated}`
+    );
   } finally {
     loading.value = false;
   }

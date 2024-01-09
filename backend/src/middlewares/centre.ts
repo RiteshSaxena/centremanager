@@ -5,7 +5,7 @@
 import { Strapi } from '@strapi/strapi';
 import utils from '@strapi/utils';
 
-const { ApplicationError } = utils.errors;
+const { ValidationError } = utils.errors;
 
 export default (config, { strapi }: { strapi: Strapi }) => {
   // Add your own logic here.
@@ -16,12 +16,12 @@ export default (config, { strapi }: { strapi: Strapi }) => {
       });
 
       if (!user.center) {
-        throw new ApplicationError('User does not have a center assigned');
+        throw new ValidationError('User does not have a center assigned');
       }
 
       ctx.state.center = user.center;
     } else {
-      throw new ApplicationError('User not authenticated');
+      throw new ValidationError('User not authenticated');
     }
 
     await next();

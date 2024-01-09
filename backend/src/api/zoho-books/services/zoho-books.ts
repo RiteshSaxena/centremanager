@@ -1,7 +1,7 @@
 import axios from 'axios';
 import utils from '@strapi/utils';
 
-const { ApplicationError } = utils.errors;
+const { ValidationError } = utils.errors;
 
 interface ZohoBooks {
   enabled: boolean;
@@ -21,30 +21,35 @@ export default () => ({
 
       const contactsRes = await axios.get(`${baseApiUrl}/contacts?organization_id=${zohoBooks.organizationId}`, {
         headers: {
-          Authorization: `Bearer ${zohoBooks.accessToken}`
-        }
+          Authorization: `Bearer ${zohoBooks.accessToken}`,
+        },
       });
 
-      const contactPersonsRes = await axios.get(`${baseApiUrl}/contacts/contactpersons?organization_id=${zohoBooks.organizationId}`, {
-        headers: {
-          Authorization: `Bearer ${zohoBooks.accessToken}`
+      const contactPersonsRes = await axios.get(
+        `${baseApiUrl}/contacts/contactpersons?organization_id=${zohoBooks.organizationId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${zohoBooks.accessToken}`,
+          },
         }
-      });
+      );
 
       const students = contactPersonsRes.data.contact_persons.filter((contact: any) => contact.designation !== '');
       return students.map((student: any) => {
         const parent = contactsRes.data.contacts.find((contact: any) => contact.contact_id === student.contact_id);
         return {
           ...student,
-          parent
+          parent,
         };
       });
     } catch (err) {
       if (err.response?.status === 401 && attempt < 3) {
-        zohoBooks.accessToken = await strapi.service('api::zoho-books.zoho-books').fetchAccessToken(centerId, zohoBooks);
+        zohoBooks.accessToken = await strapi
+          .service('api::zoho-books.zoho-books')
+          .fetchAccessToken(centerId, zohoBooks);
         return await strapi.service('api::zoho-books.zoho-books').fetchContacts(centerId, zohoBooks, attempt + 1);
       }
-      throw new ApplicationError(`ZohoBooks: ${err.response?.data?.message || err.message}`);
+      throw new ValidationError(`ZohoBooks: ${err.response?.data?.message || err.message}`);
     }
   },
   async generateToken(zohoBooks: ZohoBooks) {
@@ -56,14 +61,14 @@ export default () => ({
         client_id: zohoBooks.clientId,
         client_secret: zohoBooks.clientSecret,
         grant_type: 'authorization_code',
-        redirect_uri: 'https://www.zoho.com/books'
-      }
+        redirect_uri: 'https://www.zoho.com/books',
+      },
     });
 
     const { access_token, error } = res.data;
 
     if (error || !access_token) {
-      throw new ApplicationError(`ZohoBooks: Error generating access token - ${error}`);
+      throw new ValidationError(`ZohoBooks: Error generating access token - ${error}`);
     }
 
     return res.data;
@@ -77,25 +82,25 @@ export default () => ({
         client_id: zohoBooks.clientId,
         client_secret: zohoBooks.clientSecret,
         grant_type: 'refresh_token',
-        redirect_uri: 'https://www.zoho.com/books'
-      }
+        redirect_uri: 'https://www.zoho.com/books',
+      },
     });
 
     const { access_token, error } = res.data;
 
     if (error || !access_token) {
-      throw new ApplicationError(`ZohoBooks: Error generating access token - ${error}`);
+      throw new ValidationError(`ZohoBooks: Error generating access token - ${error}`);
     }
 
     await strapi.entityService.update('api::center.center', centerId, {
       data: {
         zohobooks: {
           ...zohoBooks,
-          accessToken: access_token
-        }
-      }
+          accessToken: access_token,
+        },
+      },
     });
 
     return access_token;
-  }
+  },
 });

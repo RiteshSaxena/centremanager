@@ -1,9 +1,9 @@
 export default {
   routes: [
     {
-      method: 'POST',
-      path: '/zoho-books/token',
-      handler: 'zoho-books.generateToken',
+      method: 'GET',
+      path: '/children/due-students',
+      handler: 'child.dueStudents',
       config: {
         middlewares: ['global::centre'],
       },

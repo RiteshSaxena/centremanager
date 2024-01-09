@@ -3,8 +3,9 @@ import { computed, onMounted } from 'vue';
 import moment from 'moment';
 import { Popover } from 'bootstrap';
 
-import { useSlotStore } from '@/stores';
+import { useSlotStore, useStudentStore } from '@/stores';
 
+const studentStore = useStudentStore();
 const slotStore = useSlotStore();
 
 const loading = computed(() => slotStore.loading);
@@ -86,12 +87,28 @@ const days = computed(() => {
 
 const getStudents = computed(() => {
   return (day: string, timing: Timing) => {
+    const books = studentStore.books;
     const slot = slotStore.slots.filter(
       (slot) => slot.day === day && slot.startTime === timing.start && slot.endTime === timing.end
     );
 
     if (slot.length) {
-      return slot[0].children;
+      return slot[0].children.map((child) => {
+        let dueAmount = -1;
+
+        if (books.enabled) {
+          const dueStudent = books.dueStudents.find((student) => student.id === child.id);
+          if (dueStudent) {
+            dueAmount = dueStudent.dueAmount;
+          } else {
+            dueAmount = 0;
+          }
+        }
+        return {
+          ...child,
+          dueAmount
+        };
+      });
     }
     return [];
   };
@@ -138,7 +155,7 @@ onMounted(async () => {
         >
           <span
             v-if="student.dueAmount && student.dueAmount > 0"
-            class="badge cursor-pointer badge-red rounded-pill me-1"
+            class="badge cursor-pointer badge-yellow rounded-pill me-1"
             data-bs-toggle="popover"
             :data-bs-content="`Amount Due: £${student.dueAmount}`"
           >
@@ -150,7 +167,7 @@ onMounted(async () => {
           <span class="ms-1 me-2"> {{ student.firstName }} {{ student.lastName }} </span>
           <span
             v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
-            class="badge badge-yellow cursor-pointer rounded-pill"
+            class="badge badge-blue cursor-pointer rounded-pill"
             data-bs-toggle="popover"
             data-bs-content="Early Learner"
           >
