@@ -22,7 +22,7 @@ const logout = async () => {
   >
     <div class="d-flex justify-content-between">
       <div :class="['p-3', sidebarExpanded ? '' : 'd-md-none']">
-        <h2 class="text-white mb-0 fs-6 fw-bold">Centre <br />Manager</h2>
+        <!--        <h2 class="text-white mb-0 fs-6 fw-bold">Centre <br />Manager</h2>-->
       </div>
       <div class="d-flex d-md-none burger-menu justify-content-end">
         <div @click="sidebarExpanded = !sidebarExpanded">

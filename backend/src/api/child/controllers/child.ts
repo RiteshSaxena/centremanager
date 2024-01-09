@@ -6,7 +6,7 @@ import { factories } from '@strapi/strapi';
 import utils from '@strapi/utils';
 import { sanitizeChild } from '../../../utils/sanitize';
 
-const { ApplicationError } = utils.errors;
+const { ValidationError } = utils.errors;
 
 export default factories.createCoreController('api::child.child', ({ strapi }) => ({
   async find(ctx) {
@@ -26,11 +26,11 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
     });
 
     if (!entry) {
-      throw new ApplicationError('Child not found');
+      throw new ValidationError('Child not found');
     }
 
     if (entry.center.id !== ctx.state.center.id) {
-      throw new ApplicationError('Child not found');
+      throw new ValidationError('Child not found');
     }
 
     return sanitizeChild(entry);

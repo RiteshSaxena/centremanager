@@ -37,6 +37,10 @@ export default {
     const latestDate = center.lastImportDate ? new Date(center.lastImportDate) : null;
     let newLatestDate = latestDate;
     console.log('Latest Date: ' + latestDate);
+    const importReport = {
+      created: 0,
+      updated: 0,
+    };
 
     for (let i = 0; i < records.length; i++) {
       try {
@@ -245,6 +249,7 @@ export default {
               ...child,
             },
           });
+          importReport.updated++;
         } else {
           child.parents = [parentId];
           child.status = statusLog[statusLog.length - 1].status;
@@ -271,6 +276,7 @@ export default {
               ...child,
             },
           });
+          importReport.created++;
         }
 
         console.log('Record ' + (i + 1) + ' imported');
@@ -286,6 +292,6 @@ export default {
       },
     });
 
-    return true;
+    return importReport;
   },
 };

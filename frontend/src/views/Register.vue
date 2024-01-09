@@ -14,20 +14,25 @@ const phoneNumber = ref('');
 const centerName = ref('');
 const email = ref('');
 const password = ref('');
+const confirmPassword = ref('');
 const loading = ref(false);
 
 const userStore = useUserStore();
 const router = useRouter();
 const toast = useToast();
 
-const login = async () => {
+const register = async () => {
   try {
     loading.value = true;
+    if (password.value !== confirmPassword.value) {
+      toast.error('Passwords do not match!');
+      return;
+    }
     await userStore.register({
       inviteCode: inviteCode.value,
       firstName: firstName.value,
       lastName: lastName.value,
-      phoneNumber: phoneNumber.value,
+      phoneNumber: `${phoneNumber.value}`,
       centerName: centerName.value,
       email: email.value,
       password: password.value
@@ -43,11 +48,11 @@ const login = async () => {
 </script>
 
 <template>
-  <div class="w-100 min-vh-100 d-flex justify-content-center align-items-center">
+  <div class="w-100 min-vh-100 d-flex justify-content-center align-items-center px-3">
     <div class="register-card rounded shadow bg-white my-5">
       <h3 class="mb-4 mt-2">Register</h3>
-      <form @submit.prevent="login">
-        <div class="row gx-3 mb-3">
+      <form @submit.prevent="register">
+        <div class="row g-3 mb-3">
           <div class="col-sm-6">
             <div class="form-floating">
               <input
@@ -73,7 +78,7 @@ const login = async () => {
             </div>
           </div>
         </div>
-        <div class="row gx-3 mb-3">
+        <div class="row g-3 mb-3">
           <div class="col-sm-6">
             <div class="form-floating">
               <input
@@ -99,7 +104,7 @@ const login = async () => {
             </div>
           </div>
         </div>
-        <div class="row gx-3 mb-3">
+        <div class="row g-3 mb-3">
           <div class="col-sm-6">
             <div class="form-floating">
               <input
@@ -116,7 +121,7 @@ const login = async () => {
           <div class="col-sm-6">
             <div class="form-floating">
               <input
-                type="text"
+                type="number"
                 class="form-control"
                 placeholder="Phone Number"
                 v-model="phoneNumber"
@@ -126,8 +131,8 @@ const login = async () => {
             </div>
           </div>
         </div>
-        <div class="row gx-3 mb-4">
-          <div class="col-sm-12">
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6">
             <div class="form-floating">
               <input
                 type="password"
@@ -139,8 +144,20 @@ const login = async () => {
               <label>Password</label>
             </div>
           </div>
+          <div class="col-sm-6">
+            <div class="form-floating">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Confirm Password"
+                v-model="confirmPassword"
+                required
+              />
+              <label>Confirm Password</label>
+            </div>
+          </div>
         </div>
-        <div class="row gx-3 align-items-center mb-2">
+        <div class="row g-3 align-items-center mb-2">
           <div class="col-sm-6">
             <p class="text-muted m-0">
               Already have an account?

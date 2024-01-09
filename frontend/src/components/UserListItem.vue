@@ -43,19 +43,17 @@ const isStudentDue = computed(() => {
 <template>
   <div class="child-list-item d-flex align-items-center gap-3" @click="$emit('click')">
     <i class="fa-solid fa-user" :class="iconColorClass"></i>
-    <div>
-      <span class="name d-flex align-items-center">
-        <span>{{ item?.firstName }} {{ item?.lastName }}</span>
-        <span v-if="isStudentDue" class="badge cursor-pointer badge-yellow rounded-pill ms-2">
-          <i class="fa-solid fa-dollar-sign"></i>
-        </span>
-      </span>
+    <div class="w-100">
+      <span class="name">{{ item?.firstName }} {{ item?.lastName }}</span>
       <span class="desc" v-if="item?.type === 'student'">
         Student {{ item?.schoolYear ? '- ' + item?.schoolYear : '' }}
       </span>
       <span class="desc" v-if="item?.type === 'staff'"> Staff - {{ item?.email }} </span>
       <span class="desc" v-if="item?.type === 'parent'"> {{ (item as any)?.contactNumber }} </span>
     </div>
+    <span v-if="isStudentDue" class="badge cursor-pointer badge-yellow rounded-pill">
+      <i class="fa-solid fa-dollar-sign"></i>
+    </span>
   </div>
 </template>
 

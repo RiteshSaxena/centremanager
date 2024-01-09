@@ -5,6 +5,7 @@ import * as Sentry from '@sentry/vue';
 
 import App from './App.vue';
 import router from './router';
+import errorHandler from '@/utils/error-handler';
 
 import './assets/main.scss';
 
@@ -17,15 +18,8 @@ app.use(VueToast, {
   icon: false
 });
 
-const toast = useToast();
-
 app.config.errorHandler = (err: any) => {
-  console.error(err);
-  if (err?.response?.data?.error?.message) {
-    toast.error(err.response.data.error.message);
-  } else {
-    toast.error(err.message);
-  }
+  errorHandler(err);
 };
 
 if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {

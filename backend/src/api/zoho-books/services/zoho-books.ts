@@ -1,7 +1,7 @@
 import axios from 'axios';
 import utils from '@strapi/utils';
 
-const { ApplicationError } = utils.errors;
+const { ValidationError } = utils.errors;
 
 interface ZohoBooks {
   enabled: boolean;
@@ -49,7 +49,7 @@ export default () => ({
           .fetchAccessToken(centerId, zohoBooks);
         return await strapi.service('api::zoho-books.zoho-books').fetchContacts(centerId, zohoBooks, attempt + 1);
       }
-      throw new ApplicationError(`ZohoBooks: ${err.response?.data?.message || err.message}`);
+      throw new ValidationError(`ZohoBooks: ${err.response?.data?.message || err.message}`);
     }
   },
   async generateToken(zohoBooks: ZohoBooks) {
@@ -68,7 +68,7 @@ export default () => ({
     const { access_token, error } = res.data;
 
     if (error || !access_token) {
-      throw new ApplicationError(`ZohoBooks: Error generating access token - ${error}`);
+      throw new ValidationError(`ZohoBooks: Error generating access token - ${error}`);
     }
 
     return res.data;
@@ -89,7 +89,7 @@ export default () => ({
     const { access_token, error } = res.data;
 
     if (error || !access_token) {
-      throw new ApplicationError(`ZohoBooks: Error generating access token - ${error}`);
+      throw new ValidationError(`ZohoBooks: Error generating access token - ${error}`);
     }
 
     await strapi.entityService.update('api::center.center', centerId, {
