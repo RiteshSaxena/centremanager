@@ -45,76 +45,112 @@ const login = async () => {
 </script>
 
 <template>
-  <div class="w-100 d-flex justify-content-center align-items-center">
+  <div class="w-100 min-vh-100 d-flex justify-content-center align-items-center">
     <div class="register-card rounded shadow bg-white my-5">
-      <h3 class="mb-4">Register</h3>
+      <h3 class="mb-4 mt-2">Register</h3>
       <form @submit.prevent="login">
-        <div class="row gx-3">
+        <div class="row gx-3 mb-3">
           <div class="col-sm-6">
-            <div class="mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                v-model="inviteCode"
+                placeholder="Invite Code"
+                required
+              />
               <label class="form-label">Invite Code</label>
-              <input type="text" class="form-control" v-model="inviteCode" required />
             </div>
           </div>
           <div class="col-sm-6">
-            <div class="mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Centre Name"
+                v-model="centerName"
+                required
+              />
               <label class="form-label">Centre Name</label>
-              <input type="text" class="form-control" v-model="centerName" required />
             </div>
           </div>
         </div>
-        <div class="row gx-3">
-          <!-- <div class="col-sm-6">
-            <div class="mb-3">
-              <label class="form-label">Centre Region</label>
-              <input type="text" class="form-control" v-model="centerRegion" required />
-            </div>
-          </div> -->
+        <div class="row gx-3 mb-3">
           <div class="col-sm-6">
-            <div class="mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="First Name"
+                v-model="firstName"
+                required
+              />
               <label class="form-label">First Name</label>
-              <input type="text" class="form-control" v-model="firstName" required />
             </div>
           </div>
           <div class="col-sm-6">
-            <div class="mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Last Name"
+                v-model="lastName"
+                required
+              />
               <label class="form-label">Last Name</label>
-              <input type="text" class="form-control" v-model="lastName" required />
             </div>
           </div>
         </div>
-        <div class="row gx-3">
-          
+        <div class="row gx-3 mb-3">
           <div class="col-sm-6">
-            <div class="mb-3">
-              <label class="form-label">Phone Number</label>
-              <input type="text" class="form-control" v-model="phoneNumber" required />
+            <div class="form-floating">
+              <input
+                type="email"
+                class="form-control"
+                placeholder="Email address"
+                autocomplete="on"
+                v-model="email"
+                required
+              />
+              <label>Email address</label>
             </div>
           </div>
           <div class="col-sm-6">
-            <div class="mb-3">
-              <label class="form-label">Email address</label>
-              <input type="email" class="form-control" autocomplete="on" v-model="email" required />
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Phone Number"
+                v-model="phoneNumber"
+                required
+              />
+              <label>Phone Number</label>
             </div>
           </div>
         </div>
-        <div class="row gx-3">
-          <div class="col-sm-6">
-            <div class="mb-3">
-              <label class="form-label">Password</label>
-              <input type="password" class="form-control" v-model="password" required />
+        <div class="row gx-3 mb-4">
+          <div class="col-sm-12">
+            <div class="form-floating">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Password"
+                v-model="password"
+                required
+              />
+              <label>Password</label>
             </div>
           </div>
         </div>
-        <div class="row gx-3">
+        <div class="row gx-3 align-items-center mb-2">
           <div class="col-sm-6">
             <p class="text-muted m-0">
               Already have an account?
               <router-link to="/login" class="text-info text-decoration-none">Login</router-link>
             </p>
           </div>
-          <div class="col-sm-6 justify-content-end d-flex pt-4">
-            <button type="submit" class="btn px-4 mb-3 btn-info" :disabled="loading">
+          <div class="col-sm-6 justify-content-end d-flex">
+            <button type="submit" class="btn btn-lg px-4 btn-info" :disabled="loading">
               Register
               <span v-if="loading" class="spinner-border spinner-border-sm ms-2"></span>
             </button>

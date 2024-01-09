@@ -19,7 +19,7 @@
         <i class="fa-solid fa-qrcode"></i>
       </button>
       <button type="button" class="btn btn-info me-1" @click="guestSignInModal = true">
-        Guest SignIn
+        Guest Sign In
       </button>
       <button
         type="button"
@@ -209,10 +209,12 @@ const handleOnSubmit = async (data: any) => {
       payload.parent = selectedUser.value.id;
       payload.student = selectedStudent.value?.id;
     }
-    const res = await logBookStore.signIn(payload);
+
+    await logBookStore.signIn(payload);
 
     signInModal.value = false;
     toast.success('Signed Successfully');
+    clearSearch();
     logBookStore.fetchList();
   } finally {
     signing.value = false;

@@ -3,14 +3,16 @@ import { onMounted, onUnmounted } from 'vue';
 
 import Sidebar from '@/components/Sidebar.vue';
 
-import { useLogBookStore } from '@/stores';
+import { useLogBookStore, useStudentStore } from '@/stores';
 import CentreHeader from '@/components/CentreHeader.vue';
 
+const studentStore = useStudentStore();
 const logBookStore = useLogBookStore();
 
 let logBookTimer: any = null;
 
 onMounted(async () => {
+  studentStore.dueStudents().then();
   await logBookStore.fetchList();
   logBookTimer = setInterval(async () => {
     await logBookStore.fetchList();

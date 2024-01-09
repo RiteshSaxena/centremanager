@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { SearchResult } from '@/types';
+
 import { computed } from 'vue';
+
+import { useStudentStore } from '@/stores';
+
+const studentStore = useStudentStore();
 
 const props = defineProps<{
   item: SearchResult;
@@ -20,13 +25,31 @@ const iconColorClass = computed(() => {
   }
   return 'icon-general';
 });
+
+const isStudentDue = computed(() => {
+  if (props.item?.type === 'student') {
+    if (!studentStore.books.enabled) {
+      return false;
+    }
+    const student = studentStore.books.dueStudents.find((student) => student.id === props.item?.id);
+    if (student) {
+      return true;
+    }
+  }
+  return false;
+});
 </script>
 
 <template>
   <div class="child-list-item d-flex align-items-center gap-3" @click="$emit('click')">
     <i class="fa-solid fa-user" :class="iconColorClass"></i>
     <div>
-      <span class="name">{{ item?.firstName }} {{ item?.lastName }}</span>
+      <span class="name d-flex align-items-center">
+        <span>{{ item?.firstName }} {{ item?.lastName }}</span>
+        <span v-if="isStudentDue" class="badge cursor-pointer badge-yellow rounded-pill ms-2">
+          <i class="fa-solid fa-dollar-sign"></i>
+        </span>
+      </span>
       <span class="desc" v-if="item?.type === 'student'">
         Student {{ item?.schoolYear ? '- ' + item?.schoolYear : '' }}
       </span>

@@ -31,15 +31,28 @@ const login = async () => {
     <div class="login-card rounded shadow bg-white my-5">
       <h3 class="mb-4">Login</h3>
       <form @submit.prevent="login">
-        <div class="mb-3">
-          <label class="form-label">Email address</label>
-          <input type="email" class="form-control" autocomplete="on" v-model="email" required />
+        <div class="form-floating mb-3">
+          <input
+            placeholder="Email address"
+            type="email"
+            class="form-control"
+            autocomplete="on"
+            v-model="email"
+            required
+          />
+          <label>Email address</label>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-control" v-model="password" required />
+        <div class="form-floating mb-4">
+          <input
+            type="password"
+            class="form-control"
+            v-model="password"
+            placeholder="Password"
+            required
+          />
+          <label>Password</label>
         </div>
-        <button type="submit" class="btn px-4 btn-info mb-3" :disabled="loading">
+        <button type="submit" class="btn btn-lg px-4 btn-info mb-4" :disabled="loading">
           Login
           <span v-if="loading" class="spinner-border spinner-border-sm ms-2"></span>
         </button>
