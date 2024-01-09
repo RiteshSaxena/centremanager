@@ -30,8 +30,8 @@ export default ({ env }) => {
             credentials: {
               accessKeyId: env('AWS_ACCESS_KEY_ID'),
               secretAccessKey: env('AWS_ACCESS_SECRET'),
-            }
-          }
+            },
+          },
         },
         actionOptions: {
           upload: {},

@@ -44,20 +44,24 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
     let booksEnabled = false;
 
     if (center.zohobooks && center.zohobooks.enabled) {
-      booksStudents = await strapi.service('api::zoho-books.zoho-books').fetchContacts(center.id as number, center.zohobooks);
+      booksStudents = await strapi
+        .service('api::zoho-books.zoho-books')
+        .fetchContacts(center.id as number, center.zohobooks);
       booksEnabled = true;
     }
 
-    const dueStudents = booksStudents.filter((student: any) => student.parent.outstanding_receivable_amount > 0).map((student: any) => {
-      return {
-        id: parseInt(student.designation),
-        dueAmount: student.parent.outstanding_receivable_amount,
-      };
-    });
+    const dueStudents = booksStudents
+      .filter((student: any) => student.parent.outstanding_receivable_amount > 0)
+      .map((student: any) => {
+        return {
+          id: parseInt(student.designation),
+          dueAmount: student.parent.outstanding_receivable_amount,
+        };
+      });
 
     return {
       booksEnabled,
       dueStudents,
-    }
+    };
   },
 }));

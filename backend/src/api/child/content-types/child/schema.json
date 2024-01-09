@@ -22,11 +22,7 @@
     },
     "gender": {
       "type": "enumeration",
-      "enum": [
-        "Male",
-        "Female",
-        "Others"
-      ]
+      "enum": ["Male", "Female", "Others"]
     },
     "houseNumber": {
       "type": "string"

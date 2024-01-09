@@ -31,11 +31,11 @@ export default factories.createCoreController('api::center.center', () => ({
     const currentInviteCode = inviteCode[0];
 
     if (!currentInviteCode.active) {
-      throw new ValidationError('Invite code is not active')
+      throw new ValidationError('Invite code is not active');
     }
 
     if (currentInviteCode.isUsed) {
-      throw new ValidationError('Invite code already used')
+      throw new ValidationError('Invite code already used');
     }
 
     const adminUserAlreadyExists = await strapi.entityService.count('admin::user', {
@@ -78,8 +78,7 @@ export default factories.createCoreController('api::center.center', () => ({
     const newCenter = await strapi.entityService.create('api::center.center', {
       data: {
         name: payload.centerName,
-        region: payload.centerRegion
-      }
+      },
     });
 
     const newRole = await strapi.service('admin::role').create({

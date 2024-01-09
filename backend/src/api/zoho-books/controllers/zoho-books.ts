@@ -13,5 +13,5 @@ export default {
       clientSecret: payload.clientSecret,
       domain: payload.domain,
     });
-  }
+  },
 };

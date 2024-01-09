@@ -12,7 +12,6 @@ const firstName = ref('');
 const lastName = ref('');
 const phoneNumber = ref('');
 const centerName = ref('');
-const centerRegion = ref('');
 const email = ref('');
 const password = ref('');
 const loading = ref(false);
@@ -30,7 +29,6 @@ const login = async () => {
       lastName: lastName.value,
       phoneNumber: phoneNumber.value,
       centerName: centerName.value,
-      centerRegion: centerRegion.value,
       email: email.value,
       password: password.value
     });

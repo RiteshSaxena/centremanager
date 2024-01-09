@@ -44,7 +44,9 @@ const studentDueAmount = computed(() => {
   if (!studentStore.books.enabled) {
     return 0;
   }
-  const student = studentStore.books.dueStudents.find((student) => student.id === props.student?.id);
+  const student = studentStore.books.dueStudents.find(
+    (student) => student.id === props.student?.id
+  );
   if (student) {
     return student.dueAmount;
   }

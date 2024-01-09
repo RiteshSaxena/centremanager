@@ -12,7 +12,6 @@ const centreRegisterSchema = yup
     password: yup.string().trim().min(8).max(32).label('Password'),
     phoneNumber: yup.string().trim().required().min(6).max(15).label('Phone Number'),
     centerName: yup.string().trim().required().min(4).max(32).label('Centre Name'),
-    centerRegion: yup.string().trim().required().min(4).max(32).label('Centre Region'),
   })
   .noUnknown();
 

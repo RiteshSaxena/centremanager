@@ -12,7 +12,6 @@ interface RegisterPayload {
   password: string;
   phoneNumber: string;
   centerName: string;
-  centerRegion: string;
 }
 
 export const userStore = defineStore('user', {

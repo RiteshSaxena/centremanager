@@ -1,13 +1,11 @@
 export default {
-  'permissions': [
+  permissions: [
     {
-      'action': 'plugin::content-manager.explorer.create',
-      'subject': 'plugin::users-permissions.user',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
+      action: 'plugin::content-manager.explorer.create',
+      subject: 'plugin::users-permissions.user',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: [
           'username',
           'email',
           'provider',
@@ -25,13 +23,11 @@ export default {
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.read',
-      'subject': 'plugin::users-permissions.user',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
+      action: 'plugin::content-manager.explorer.read',
+      subject: 'plugin::users-permissions.user',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: [
           'username',
           'email',
           'provider',
@@ -49,13 +45,11 @@ export default {
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.update',
-      'subject': 'plugin::users-permissions.user',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
+      action: 'plugin::content-manager.explorer.update',
+      subject: 'plugin::users-permissions.user',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: [
           'username',
           'email',
           'provider',
@@ -73,21 +67,17 @@ export default {
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.delete',
-      'subject': 'plugin::users-permissions.user',
-      'properties': {},
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
+      action: 'plugin::content-manager.explorer.delete',
+      subject: 'plugin::users-permissions.user',
+      properties: {},
+      conditions: ['admin::is-my-centre-data'],
     },
     {
-      'action': 'plugin::content-manager.explorer.read',
-      'subject': 'api::center.center',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
+      action: 'plugin::content-manager.explorer.read',
+      subject: 'api::center.center',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: [
           'name',
           'region',
           'displayText',
@@ -104,13 +94,11 @@ export default {
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.create',
-      'subject': 'api::child.child',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
+      action: 'plugin::content-manager.explorer.create',
+      subject: 'api::child.child',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: [
           'firstName',
           'lastName',
           'gender',
@@ -140,13 +128,11 @@ export default {
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.read',
-      'subject': 'api::child.child',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
+      action: 'plugin::content-manager.explorer.read',
+      subject: 'api::child.child',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: [
           'firstName',
           'lastName',
           'gender',
@@ -176,13 +162,11 @@ export default {
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.update',
-      'subject': 'api::child.child',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
+      action: 'plugin::content-manager.explorer.update',
+      subject: 'api::child.child',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: [
           'firstName',
           'lastName',
           'gender',
@@ -212,21 +196,17 @@ export default {
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.delete',
-      'subject': 'api::child.child',
-      'properties': {},
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
+      action: 'plugin::content-manager.explorer.delete',
+      subject: 'api::child.child',
+      properties: {},
+      conditions: ['admin::is-my-centre-data'],
     },
     {
-      'action': 'plugin::content-manager.explorer.create',
-      'subject': 'api::log-book.log-book',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
+      action: 'plugin::content-manager.explorer.create',
+      subject: 'api::log-book.log-book',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: [
           'signatureIn',
           'student',
           'parent',
@@ -244,13 +224,11 @@ export default {
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.read',
-      'subject': 'api::log-book.log-book',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
+      action: 'plugin::content-manager.explorer.read',
+      subject: 'api::log-book.log-book',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: [
           'signatureIn',
           'student',
           'parent',
@@ -268,151 +246,85 @@ export default {
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.delete',
-      'subject': 'api::log-book.log-book',
-      'properties': {},
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
+      action: 'plugin::content-manager.explorer.delete',
+      subject: 'api::log-book.log-book',
+      properties: {},
+      conditions: ['admin::is-my-centre-data'],
     },
     {
-      'action': 'plugin::content-manager.explorer.create',
-      'subject': 'api::parent.parent',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
-          'firstName',
-          'lastName',
-          'email',
-          'contactNumber',
-          'children',
-          'center',
-        ],
+      action: 'plugin::content-manager.explorer.create',
+      subject: 'api::parent.parent',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: ['firstName', 'lastName', 'email', 'contactNumber', 'children', 'center'],
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.read',
-      'subject': 'api::parent.parent',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
-          'firstName',
-          'lastName',
-          'email',
-          'contactNumber',
-          'children',
-          'center',
-        ],
+      action: 'plugin::content-manager.explorer.read',
+      subject: 'api::parent.parent',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: ['firstName', 'lastName', 'email', 'contactNumber', 'children', 'center'],
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.update',
-      'subject': 'api::parent.parent',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
-          'firstName',
-          'lastName',
-          'email',
-          'contactNumber',
-          'children',
-          'center',
-        ],
+      action: 'plugin::content-manager.explorer.update',
+      subject: 'api::parent.parent',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: ['firstName', 'lastName', 'email', 'contactNumber', 'children', 'center'],
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.delete',
-      'subject': 'api::parent.parent',
-      'properties': {},
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
+      action: 'plugin::content-manager.explorer.delete',
+      subject: 'api::parent.parent',
+      properties: {},
+      conditions: ['admin::is-my-centre-data'],
     },
     {
-      'action': 'plugin::content-manager.explorer.read',
-      'subject': 'api::school.school',
-      'conditions': [],
-      'properties': {
-        'fields': [
-          'name',
-          'city',
-          'postcode',
-        ],
+      action: 'plugin::content-manager.explorer.read',
+      subject: 'api::school.school',
+      conditions: [],
+      properties: {
+        fields: ['name', 'city', 'postcode'],
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.create',
-      'subject': 'api::slot.slot',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
-          'center',
-          'name',
-          'day',
-          'startTime',
-          'endTime',
-          'children',
-        ],
+      action: 'plugin::content-manager.explorer.create',
+      subject: 'api::slot.slot',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: ['center', 'name', 'day', 'startTime', 'endTime', 'children'],
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.read',
-      'subject': 'api::slot.slot',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
-          'center',
-          'name',
-          'day',
-          'startTime',
-          'endTime',
-          'children',
-        ],
+      action: 'plugin::content-manager.explorer.read',
+      subject: 'api::slot.slot',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: ['center', 'name', 'day', 'startTime', 'endTime', 'children'],
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.update',
-      'subject': 'api::slot.slot',
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
-      'properties': {
-        'fields': [
-          'center',
-          'name',
-          'day',
-          'startTime',
-          'endTime',
-          'children',
-        ],
+      action: 'plugin::content-manager.explorer.update',
+      subject: 'api::slot.slot',
+      conditions: ['admin::is-my-centre-data'],
+      properties: {
+        fields: ['center', 'name', 'day', 'startTime', 'endTime', 'children'],
       },
     },
     {
-      'action': 'plugin::content-manager.explorer.delete',
-      'subject': 'api::slot.slot',
-      'properties': {},
-      'conditions': [
-        'admin::is-my-centre-data',
-      ],
+      action: 'plugin::content-manager.explorer.delete',
+      subject: 'api::slot.slot',
+      properties: {},
+      conditions: ['admin::is-my-centre-data'],
     },
     {
-      'action': 'plugin::content-manager.explorer.read',
-      'subject': 'api::subject.subject',
-      'conditions': [],
-      'properties': {
-        'fields': [
-          'name',
-        ],
+      action: 'plugin::content-manager.explorer.read',
+      subject: 'api::subject.subject',
+      conditions: [],
+      properties: {
+        fields: ['name'],
       },
     },
   ],
