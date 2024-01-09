@@ -46,57 +46,88 @@ const login = async () => {
 
 <template>
   <div class="w-100 d-flex justify-content-center align-items-center">
-    <div class="login-card rounded shadow bg-white my-5">
+    <div class="register-card rounded shadow bg-white my-5">
       <h3 class="mb-4">Register</h3>
       <form @submit.prevent="login">
-        <div class="mb-3">
-          <label class="form-label">Invite Code</label>
-          <input type="text" class="form-control" v-model="inviteCode" required />
+        <div class="row gx-3">
+          <div class="col-sm-6">
+            <div class="mb-3">
+              <label class="form-label">Invite Code</label>
+              <input type="text" class="form-control" v-model="inviteCode" required />
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="mb-3">
+              <label class="form-label">Centre Name</label>
+              <input type="text" class="form-control" v-model="centerName" required />
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Centre Name</label>
-          <input type="text" class="form-control" v-model="centerName" required />
+        <div class="row gx-3">
+          <!-- <div class="col-sm-6">
+            <div class="mb-3">
+              <label class="form-label">Centre Region</label>
+              <input type="text" class="form-control" v-model="centerRegion" required />
+            </div>
+          </div> -->
+          <div class="col-sm-6">
+            <div class="mb-3">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-control" v-model="firstName" required />
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="mb-3">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-control" v-model="lastName" required />
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Centre Region</label>
-          <input type="text" class="form-control" v-model="centerRegion" required />
+        <div class="row gx-3">
+          
+          <div class="col-sm-6">
+            <div class="mb-3">
+              <label class="form-label">Phone Number</label>
+              <input type="text" class="form-control" v-model="phoneNumber" required />
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="mb-3">
+              <label class="form-label">Email address</label>
+              <input type="email" class="form-control" autocomplete="on" v-model="email" required />
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">First Name</label>
-          <input type="text" class="form-control" v-model="firstName" required />
+        <div class="row gx-3">
+          <div class="col-sm-6">
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-control" v-model="password" required />
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Last Name</label>
-          <input type="text" class="form-control" v-model="lastName" required />
+        <div class="row gx-3">
+          <div class="col-sm-6">
+            <p class="text-muted m-0">
+              Already have an account?
+              <router-link to="/login" class="text-info text-decoration-none">Login</router-link>
+            </p>
+          </div>
+          <div class="col-sm-6 justify-content-end d-flex pt-4">
+            <button type="submit" class="btn px-4 mb-3 btn-info" :disabled="loading">
+              Register
+              <span v-if="loading" class="spinner-border spinner-border-sm ms-2"></span>
+            </button>
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Phone Number</label>
-          <input type="text" class="form-control" v-model="phoneNumber" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Email address</label>
-          <input type="email" class="form-control" autocomplete="on" v-model="email" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-control" v-model="password" required />
-        </div>
-        <button type="submit" class="btn px-4 mb-3 btn-info" :disabled="loading">
-          Register
-          <span v-if="loading" class="spinner-border spinner-border-sm ms-2"></span>
-        </button>
-        <p class="text-muted m-0">
-          Already have an account?
-          <router-link to="/login" class="text-info text-decoration-none">Login</router-link>
-        </p>
       </form>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.login-card {
-  width: 450px;
+.register-card {
+  width: 650px;
   padding: 30px;
 }
 </style>
