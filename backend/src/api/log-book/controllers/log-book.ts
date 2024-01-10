@@ -5,7 +5,8 @@
 import { factories } from '@strapi/strapi';
 import schema from '../schema';
 import utils from '@strapi/utils';
-import { sanitizeUser, sanitizeChild } from '../../../utils/sanitize';
+import { sanitizeChild, sanitizeUser } from '../../../utils/sanitize';
+import moment from 'moment';
 
 const { ValidationError } = utils.errors;
 
@@ -88,7 +89,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
   async guestSignIn(ctx) {
     const payload = await schema.guestSignIn(ctx.request.body);
 
-    const entry = await strapi.entityService.create('api::log-book.log-book', {
+    return await strapi.entityService.create('api::log-book.log-book', {
       data: {
         type: 'Guest',
         signatureIn: payload.signature,
@@ -102,8 +103,6 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
         },
       },
     });
-
-    return entry;
   },
   async signIn(ctx) {
     const payload = await schema.signIn(ctx.request.body);
@@ -151,7 +150,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       throw new ValidationError('Already signed in');
     }
 
-    const entry = await strapi.entityService.create('api::log-book.log-book', {
+    return await strapi.entityService.create('api::log-book.log-book', {
       data: {
         type: payload.type,
         signatureIn: payload.signature,
@@ -160,8 +159,6 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
         ...data,
       },
     });
-
-    return entry;
   },
   async signOut(ctx) {
     const payload = await schema.signOut(ctx.request.body);
@@ -186,17 +183,35 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     return true;
   },
   async list(ctx) {
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
+    let date = new Date();
+
+    if (ctx.request.query.date) {
+      date = moment.utc(ctx.request.query.date, 'YYYY-MM-DD').toDate();
+    }
+
+    const minDate = moment.utc(date).hours(0).minutes(0).seconds(0).toDate();
+    const maxDate = moment.utc(date).hours(23).minutes(59).seconds(59).toDate();
 
     const entries = await strapi.entityService.findMany('api::log-book.log-book', {
       filters: {
-        center: ctx.state.center.id as any,
-        signInTime: {
-          $gte: date,
-        },
+        $and: [
+          {
+            center: ctx.state.center.id as any,
+          },
+          {
+            signInTime: {
+              $gte: minDate,
+            },
+          },
+          {
+            signInTime: {
+              $lte: maxDate,
+            },
+          },
+        ],
       },
       populate: ['student', 'parent', 'staff', 'guest'],
+      sort: 'signInTime',
     });
 
     return entries.map((entry: any) => {

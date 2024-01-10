@@ -10,6 +10,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import Login from '@/views/Login.vue';
 import ZohoToken from '@/views/ZohoToken.vue';
 import Register from '@/views/Register.vue';
+import AttendanceReport from '@/views/AttendanceReport.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,6 +61,16 @@ const router = createRouter({
         auth: true,
         layout: DashboardLayout,
         title: 'Attendance'
+      }
+    },
+    {
+      path: '/attendance-report',
+      name: 'AttendanceReport',
+      component: AttendanceReport,
+      meta: {
+        auth: true,
+        layout: DashboardLayout,
+        title: 'Attendance Report'
       }
     },
     {

@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import VueToast, { POSITION, useToast } from 'vue-toastification';
+import VueToast, { POSITION } from 'vue-toastification';
 import * as Sentry from '@sentry/vue';
 
 import App from './App.vue';

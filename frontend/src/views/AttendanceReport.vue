@@ -1,0 +1,120 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import moment from 'moment';
+
+import { useLogBookStore } from '@/stores';
+import type { LogRecord } from '@/types';
+
+const logBookStore = useLogBookStore();
+
+const reportDate = ref<string>('');
+const records = ref<LogRecord[]>([]);
+const isSearched = ref(false);
+const loading = ref(false);
+
+const todayDate = moment().format('YYYY-MM-DD');
+
+const sortOrder: any = {
+  Student: 1,
+  'Student & Parent': 1,
+  Parent: 2,
+  Guest: 3,
+  Staff: 4
+};
+
+const reportList = computed(() => {
+  return records.value
+    .map((record) => {
+      let name = '';
+      let type = '';
+      if (record.type === 'Student') {
+        name = `${record.student?.firstName} ${record.student?.lastName}`;
+        type = 'Student';
+      } else if (record.type === 'StudentWithParent') {
+        name = `${record.student?.firstName} ${record.student?.lastName} & ${record.parent?.firstName} ${record.parent?.lastName}`;
+        type = 'Student & Parent';
+      } else if (record.type === 'Staff') {
+        name = `${record.staff?.firstName} ${record.staff?.lastName}`;
+        type = 'Staff';
+      } else if (record.type === 'Parent') {
+        name = `${record.parent?.firstName} ${record.parent?.lastName}`;
+        type = 'Parent';
+      } else if (record.type === 'Guest') {
+        name = `${record.guest?.firstName} ${record.guest?.lastName}`;
+        type = 'Guest';
+      }
+      return {
+        id: record.id,
+        name,
+        type,
+        signInTime: record.signInTime,
+        signOutTime: record.signOutTime
+      };
+    })
+    .sort((a, b) => {
+      if (sortOrder[a.type] < sortOrder[b.type]) {
+        return -1;
+      }
+      if (sortOrder[a.type] > sortOrder[b.type]) {
+        return 1;
+      }
+
+      return 0;
+    });
+});
+
+const formatTime = (date: Date | null) => {
+  if (!date) {
+    return '-';
+  }
+  return moment(date).format('DD-MM-YYYY hh:mmA');
+};
+
+const onSubmit = async () => {
+  try {
+    if (!reportDate.value) {
+      return;
+    }
+    isSearched.value = true;
+    loading.value = true;
+    records.value = await logBookStore.fetchListByDate(reportDate.value);
+  } finally {
+    loading.value = false;
+  }
+};
+</script>
+
+<template>
+  <form class="mt-4 d-flex gap-2 align-items-end" @submit.prevent="onSubmit">
+    <div>
+      <label for="formFile" class="form-label">Select date for report:</label>
+      <input class="form-control" type="date" :max="todayDate" v-model="reportDate" required />
+    </div>
+    <button type="submit" class="btn btn-info" :disabled="loading">
+      {{ loading ? '...' : 'View' }}
+    </button>
+  </form>
+  <p class="mt-4 mb-0" v-if="isSearched && !records.length && !loading">No records found</p>
+  <table class="table mt-4" v-if="records.length">
+    <thead class="table-secondary">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Type</th>
+        <th scope="col">Name</th>
+        <th scope="col">Sign In Time</th>
+        <th scope="col">Sign Out Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(record, index) in reportList" :key="record.id">
+        <td>{{ index + 1 }}</td>
+        <td>{{ record.type }}</td>
+        <td>{{ record.name }}</td>
+        <td>{{ formatTime(record.signInTime) }}</td>
+        <td>{{ formatTime(record?.signOutTime) }}</td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+
+<style scoped lang="scss"></style>

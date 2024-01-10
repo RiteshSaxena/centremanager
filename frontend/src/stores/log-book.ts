@@ -79,6 +79,10 @@ export const logBookStore = defineStore('log-book', {
       } finally {
         this.fetching = false;
       }
+    },
+    async fetchListByDate(date: string) {
+      const res = await axios.get<LogRecord[]>(`/log-book/list?date=${date}`);
+      return res.data;
     }
   }
 });
