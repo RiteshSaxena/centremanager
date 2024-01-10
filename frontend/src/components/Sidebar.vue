@@ -113,6 +113,10 @@ const logout = async () => {
         <i class="fa-solid fa-calendar-week"></i>
         <span>Calendar</span>
       </router-link>
+      <router-link to="/attendance-report" class="sidebar-item">
+        <i class="fa-solid fa-clipboard-user"></i>
+        <span>Attendance</span>
+      </router-link>
       <router-link to="/qr" class="sidebar-item">
         <i class="fa-solid fa-qrcode"></i>
         <span>QR Codes</span>

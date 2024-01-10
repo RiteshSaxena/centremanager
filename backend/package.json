@@ -31,7 +31,6 @@
     "@strapi/strapi": "^4.16.2",
     "@strapi/utils": "^4.16.2",
     "axios": "^1.6.3",
-    "axios-cache-interceptor": "^1.4.1",
     "csv-parse": "^5.5.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
