@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import moment from 'moment';
 
-import { useLogBookStore } from '@/stores';
-import type { LogRecord } from '@/types';
+import { useLogBookStore, useSearchStore } from '@/stores';
+import type { LogRecord, SearchResult } from '@/types';
+import InputField from '@/components/base/InputField.vue';
+import SearchResults from '@/components/SearchResults.vue';
+import { debounce } from 'lodash';
 
+const searchStore = useSearchStore();
 const logBookStore = useLogBookStore();
 
 const reportDate = ref<string>('');
+const search = ref<string>('');
+const studentId = ref<number | null>(null);
+const staffId = ref<number | null>(null);
 const records = ref<LogRecord[]>([]);
 const isSearched = ref(false);
 const loading = ref(false);
@@ -63,6 +70,36 @@ const reportList = computed(() => {
     });
 });
 
+const debouncedSearch = debounce((value: string) => {
+  searchStore.search(value);
+}, 500);
+
+const clearSearch = () => {
+  search.value = '';
+  reportDate.value = '';
+  searchStore.clearResults();
+};
+
+watch(search, () => {
+  if (search.value.trim().length) {
+    debouncedSearch(search.value.trim());
+  } else {
+    clearSearch();
+  }
+});
+
+const onSelectFromSearch = (item: SearchResult) => {
+  studentId.value = null;
+  staffId.value = null;
+  if (item.type === 'student') {
+    studentId.value = item.id;
+  } else if (item.type === 'staff') {
+    staffId.value = item.id;
+  }
+  clearSearch();
+  onSubmit();
+};
+
 const formatTime = (date: Date | null) => {
   if (!date) {
     return '-';
@@ -70,14 +107,31 @@ const formatTime = (date: Date | null) => {
   return moment(date).format('DD-MM-YYYY hh:mmA');
 };
 
+const searchFromDate = () => {
+  if (!reportDate.value) {
+    return;
+  }
+  studentId.value = null;
+  staffId.value = null;
+  onSubmit();
+};
+
 const onSubmit = async () => {
   try {
-    if (!reportDate.value) {
+    if (!reportDate.value && !studentId.value && !staffId.value) {
       return;
     }
+    records.value = [];
     isSearched.value = true;
     loading.value = true;
-    records.value = await logBookStore.fetchListByDate(reportDate.value);
+    if (studentId.value) {
+      records.value = await logBookStore.fetchListByStudent(studentId.value);
+    } else if (staffId.value) {
+      records.value = await logBookStore.fetchListByStaff(staffId.value);
+    } else {
+      records.value = await logBookStore.fetchListByDate(reportDate.value);
+    }
+    clearSearch();
   } finally {
     loading.value = false;
   }
@@ -85,16 +139,33 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <form class="mt-4 d-flex gap-2 align-items-end" @submit.prevent="onSubmit">
+  <form class="mt-4 d-flex gap-2 align-items-end" @submit.prevent="searchFromDate">
+    <div class="d-flex gap-1 me-3 report-search">
+      <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
+      <button
+        v-if="search.trim().length"
+        type="button"
+        class="btn btn-secondary rounded-3"
+        @click="clearSearch"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
     <div>
       <label for="formFile" class="form-label">Select date for report:</label>
-      <input class="form-control" type="date" :max="todayDate" v-model="reportDate" required />
+      <InputField type="date" :max="todayDate" v-model="reportDate" required />
     </div>
     <button type="submit" class="btn btn-info" :disabled="loading">
       {{ loading ? '...' : 'View' }}
     </button>
   </form>
+  <SearchResults
+    class="mt-3 report-search"
+    v-if="search.trim().length"
+    @onSelect="onSelectFromSearch"
+  />
   <p class="mt-4 mb-0" v-if="isSearched && !records.length && !loading">No records found</p>
+  <p class="mt-4 mb-0" v-if="loading">Loading...</p>
   <table class="table mt-4" v-if="records.length">
     <thead class="table-secondary">
       <tr>
@@ -117,4 +188,9 @@ const onSubmit = async () => {
   </table>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.report-search {
+  width: 100%;
+  max-width: 400px;
+}
+</style>

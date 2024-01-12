@@ -4,7 +4,7 @@ withDefaults(
     placeholder?: string;
     type?: string;
     required?: boolean;
-    modelValue: string;
+    modelValue?: string;
   }>(),
   {
     placeholder: '',
@@ -46,6 +46,10 @@ input.form-control {
     font-size: 14px;
     line-height: 21px;
     border-radius: 10px;
+  }
+
+  &[type='file'] {
+    height: 35px;
   }
 }
 
