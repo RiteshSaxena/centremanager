@@ -183,35 +183,60 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     return true;
   },
   async list(ctx) {
+    const andFilters: any[] = [
+      {
+        center: ctx.state.center.id as any,
+      },
+    ];
+    let sort = 'signInTime';
+
+    andFilters.push();
+
     let date = new Date();
 
     if (ctx.request.query.date) {
       date = moment.utc(ctx.request.query.date, 'YYYY-MM-DD').toDate();
-    }
+      const minDate = moment.utc(date).hours(0).minutes(0).seconds(0).toDate();
 
-    const minDate = moment.utc(date).hours(0).minutes(0).seconds(0).toDate();
-    const maxDate = moment.utc(date).hours(23).minutes(59).seconds(59).toDate();
+      andFilters.push({
+        signInTime: {
+          $gte: minDate,
+        },
+      });
+
+      const maxDate = moment.utc(date).hours(23).minutes(59).seconds(59).toDate();
+
+      andFilters.push({
+        signInTime: {
+          $lte: maxDate,
+        },
+      });
+    } else if (ctx.request.query.student) {
+      andFilters.push({
+        student: parseInt(ctx.request.query.student),
+      });
+      sort = 'signInTime:desc';
+    } else if (ctx.request.query.staff) {
+      andFilters.push({
+        staff: parseInt(ctx.request.query.staff),
+      });
+      sort = 'signInTime:desc';
+    } else {
+      const minDate = moment.utc(date).hours(0).minutes(0).seconds(0).toDate();
+
+      andFilters.push({
+        signInTime: {
+          $gte: minDate,
+        },
+      });
+    }
 
     const entries = await strapi.entityService.findMany('api::log-book.log-book', {
       filters: {
-        $and: [
-          {
-            center: ctx.state.center.id as any,
-          },
-          {
-            signInTime: {
-              $gte: minDate,
-            },
-          },
-          {
-            signInTime: {
-              $lte: maxDate,
-            },
-          },
-        ],
+        $and: [...andFilters],
       },
       populate: ['student', 'parent', 'staff', 'guest'],
-      sort: 'signInTime',
+      sort: sort as any,
     });
 
     return entries.map((entry: any) => {

@@ -70,4 +70,17 @@ const login = async () => {
   width: 450px;
   padding: 30px;
 }
+
+input.form-control {
+  color: #193b4d;
+}
+
+label {
+  color: rgba(33, 37, 41, 0.75);
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #193b4d;
+}
 </style>

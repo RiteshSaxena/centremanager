@@ -181,4 +181,26 @@ const register = async () => {
   width: 650px;
   padding: 30px;
 }
+
+input.form-control {
+  color: #193b4d;
+}
+
+label {
+  color: rgba(33, 37, 41, 0.75);
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #193b4d;
+}
 </style>

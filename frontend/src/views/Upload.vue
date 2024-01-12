@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
 import { useLogBookStore } from '@/stores';
+import InputField from '@/components/base/InputField.vue';
 
 const toast = useToast();
 const logBookStore = useLogBookStore();
@@ -37,14 +38,7 @@ const onSubmit = async () => {
   <form class="mt-4 d-flex flex-column align-items-start" @submit.prevent="onSubmit">
     <div class="mb-3">
       <label for="formFile" class="form-label">Select file to import data:</label>
-      <input
-        class="form-control"
-        type="file"
-        id="formFile"
-        @change="onSelect"
-        accept=".csv"
-        required
-      />
+      <InputField type="file" id="formFile" @change="onSelect" accept=".csv" required />
     </div>
     <button type="submit" class="btn btn-info" :disabled="loading">
       {{ loading ? 'Uploading...' : 'Upload' }}
