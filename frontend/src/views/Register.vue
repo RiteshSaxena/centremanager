@@ -182,6 +182,13 @@ const register = async () => {
   padding: 30px;
 }
 
+input.form-control {
+  color: #193b4d;
+}
+
+label {
+  color: rgba(33, 37, 41, 0.75);
+}
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
