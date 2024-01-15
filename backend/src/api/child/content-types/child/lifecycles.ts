@@ -5,7 +5,7 @@ const { ValidationError } = utils.errors;
 export default {
   beforeCreate(event) {
     const { data } = event.params;
-    if (!data.center.connect.length) {
+    if (!(typeof data.center === 'number' || data.center?.connect?.length)) {
       throw new ValidationError('Center is required');
     }
   },
