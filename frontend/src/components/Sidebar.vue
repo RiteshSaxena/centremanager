@@ -10,6 +10,8 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const logout = async () => {
+  const confirmed = window.confirm('Are you sure you want to logout?');
+  if (!confirmed) return;
   userStore.logout();
   await router.push({ name: 'Login' });
 };
