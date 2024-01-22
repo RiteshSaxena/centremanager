@@ -223,6 +223,12 @@ export default {
           child.gender = childGender;
         }
 
+        const enrollmentDate = statusLog.find((status) => status.status === 'Send to KSiS')
+
+        if (enrollmentDate) {
+          child.enrollmentDate = enrollmentDate.date;
+        }
+
         if (existingChild.length) {
           const pastStatues = statusLog.map((status) => status.status);
           const latestStatus = pastStatues.pop();

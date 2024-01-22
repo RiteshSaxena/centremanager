@@ -577,6 +577,7 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
     lastName: Attribute.String;
     center: Attribute.Relation<'plugin::users-permissions.user', 'oneToOne', 'api::center.center'>;
     phoneNumber: Attribute.String;
+    type: Attribute.Enumeration<['admin', 'staff']> & Attribute.DefaultTo<'admin'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'plugin::users-permissions.user', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -602,6 +603,7 @@ export interface ApiCenterCenter extends Schema.CollectionType {
     lastImportDate: Attribute.DateTime;
     zohobooks: Attribute.Component<'accounting.zoho-books'>;
     displayName: Attribute.String;
+    subscription: Attribute.Component<'subscription.subscription'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::center.center', 'oneToOne', 'admin::user'> & Attribute.Private;

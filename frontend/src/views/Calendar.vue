@@ -119,7 +119,7 @@ onMounted(async () => {
   setTimeout(() => {
     new Popover('.calendar-container', {
       selector: '[data-bs-toggle="popover"]',
-      trigger: 'click',
+      trigger: 'hover',
       container: 'body',
       placement: 'top'
     });

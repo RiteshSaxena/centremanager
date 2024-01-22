@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { debounce } from 'lodash';
 import { useToast } from 'vue-toastification';
 
@@ -220,4 +220,19 @@ const handleOnSubmit = async (data: any) => {
     signing.value = false;
   }
 };
+
+let logBookTimer: any = null;
+
+onMounted(async () => {
+  await logBookStore.fetchList();
+  logBookTimer = setInterval(async () => {
+    await logBookStore.fetchList();
+  }, 1000 * 60);
+});
+
+onUnmounted(() => {
+  if (logBookTimer) {
+    clearInterval(logBookTimer);
+  }
+});
 </script>

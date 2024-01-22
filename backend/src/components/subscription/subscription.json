@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_subscription_subscriptions",
+  "info": {
+    "displayName": "Subscription",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "status": {
+      "type": "enumeration",
+      "enum": ["paid", "trial", "free", "inactive"]
+    },
+    "trialExpiryDate": {
+      "type": "datetime"
+    },
+    "transactions": {
+      "type": "component",
+      "repeatable": true,
+      "component": "subscription.transaction"
+    },
+    "freePlanLimit": {
+      "type": "integer",
+      "default": 10
+    }
+  }
+}

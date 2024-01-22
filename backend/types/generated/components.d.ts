@@ -44,12 +44,41 @@ export interface StatusStatusChange extends Schema.Component {
   };
 }
 
+export interface SubscriptionSubscription extends Schema.Component {
+  collectionName: 'components_subscription_subscriptions';
+  info: {
+    displayName: 'Subscription';
+    description: '';
+  };
+  attributes: {
+    status: Attribute.Enumeration<['paid', 'trial', 'free', 'inactive']>;
+    trialExpiryDate: Attribute.DateTime;
+    transactions: Attribute.Component<'subscription.transaction', true>;
+    freePlanLimit: Attribute.Integer & Attribute.DefaultTo<10>;
+  };
+}
+
+export interface SubscriptionTransaction extends Schema.Component {
+  collectionName: 'components_subscription_transactions';
+  info: {
+    displayName: 'Transaction';
+  };
+  attributes: {
+    customerId: Attribute.String & Attribute.Required;
+    status: Attribute.Enumeration<['pending', 'completed', 'expired']>;
+    sessionId: Attribute.String & Attribute.Required;
+    updatedDate: Attribute.DateTime;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface Components {
       'accounting.zoho-books': AccountingZohoBooks;
       'guest.guest': GuestGuest;
       'status.status-change': StatusStatusChange;
+      'subscription.subscription': SubscriptionSubscription;
+      'subscription.transaction': SubscriptionTransaction;
     }
   }
 }

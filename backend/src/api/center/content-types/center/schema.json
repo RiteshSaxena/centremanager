@@ -36,6 +36,11 @@
     },
     "displayName": {
       "type": "string"
+    },
+    "subscription": {
+      "type": "component",
+      "repeatable": false,
+      "component": "subscription.subscription"
     }
   }
 }

@@ -2,13 +2,44 @@
  * log-book controller
  */
 
-import { factories } from '@strapi/strapi';
+import { factories, Strapi } from '@strapi/strapi';
 import schema from '../schema';
 import utils from '@strapi/utils';
 import { sanitizeChild, sanitizeUser } from '../../../utils/sanitize';
 import moment from 'moment';
 
 const { ValidationError } = utils.errors;
+
+const checkSubscription = async (strapi: Strapi, centerId: number) => {
+  const center = await strapi.entityService.findOne('api::center.center', centerId, {
+    populate: ['subscription'],
+  });
+
+  if (!center) {
+    throw new ValidationError('Center not found');
+  }
+
+  if (!center.subscription || center.subscription.status === 'inactive') {
+    throw new ValidationError('Centre doesnt have a valid subscription');
+  }
+
+  if (center.subscription.status === 'free') {
+    const startOfMonth = moment().utc().startOf('week').toDate();
+
+    const entries = await strapi.entityService.count('api::log-book.log-book', {
+      filters: {
+        center: centerId as any,
+        signInTime: {
+          $gte: startOfMonth,
+        },
+      },
+    });
+
+    if (entries >= center.subscription.freePlanLimit) {
+      throw new ValidationError('Centre exceeded free plan limit');
+    }
+  }
+};
 
 export default factories.createCoreController('api::log-book.log-book', ({ strapi }) => ({
   async search(ctx) {
@@ -89,6 +120,8 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
   async guestSignIn(ctx) {
     const payload = await schema.guestSignIn(ctx.request.body);
 
+    await checkSubscription(strapi, ctx.state.center.id as number);
+
     return await strapi.entityService.create('api::log-book.log-book', {
       data: {
         type: 'Guest',
@@ -106,6 +139,8 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
   },
   async signIn(ctx) {
     const payload = await schema.signIn(ctx.request.body);
+
+    await checkSubscription(strapi, ctx.state.center.id as number);
 
     const data: any = {};
 
@@ -222,11 +257,9 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       });
       sort = 'signInTime:desc';
     } else {
-      const minDate = moment.utc(date).hours(0).minutes(0).seconds(0).toDate();
-
       andFilters.push({
-        signInTime: {
-          $gte: minDate,
+        signOutTime: {
+          $null: true
         },
       });
     }

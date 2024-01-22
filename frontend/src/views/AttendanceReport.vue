@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import moment from 'moment';
 
-import { useLogBookStore, useSearchStore } from '@/stores';
+import { useLogBookStore, useSearchStore, useSlotStore } from '@/stores';
 import type { LogRecord, SearchResult } from '@/types';
 import InputField from '@/components/base/InputField.vue';
 import SearchResults from '@/components/SearchResults.vue';
@@ -10,8 +10,9 @@ import { debounce } from 'lodash';
 
 const searchStore = useSearchStore();
 const logBookStore = useLogBookStore();
+const slotStore = useSlotStore();
 
-const reportDate = ref<string>('');
+const reportDate = ref<string>(moment().format('YYYY-MM-DD'));
 const search = ref<string>('');
 const studentId = ref<number | null>(null);
 const staffId = ref<number | null>(null);
@@ -28,6 +29,8 @@ const sortOrder: any = {
   Guest: 3,
   Staff: 4
 };
+
+const searchMode = ref('date');
 
 const reportList = computed(() => {
   return records.value
@@ -76,7 +79,6 @@ const debouncedSearch = debounce((value: string) => {
 
 const clearSearch = () => {
   search.value = '';
-  reportDate.value = '';
   searchStore.clearResults();
 };
 
@@ -96,6 +98,7 @@ const onSelectFromSearch = (item: SearchResult) => {
   } else if (item.type === 'staff') {
     staffId.value = item.id;
   }
+  reportDate.value = '';
   clearSearch();
   onSubmit();
 };
@@ -125,10 +128,13 @@ const onSubmit = async () => {
     isSearched.value = true;
     loading.value = true;
     if (studentId.value) {
+      searchMode.value = 'student';
       records.value = await logBookStore.fetchListByStudent(studentId.value);
     } else if (staffId.value) {
+      searchMode.value = 'staff';
       records.value = await logBookStore.fetchListByStaff(staffId.value);
     } else {
+      searchMode.value = 'date';
       records.value = await logBookStore.fetchListByDate(reportDate.value);
     }
     clearSearch();
@@ -136,11 +142,35 @@ const onSubmit = async () => {
     loading.value = false;
   }
 };
+
+const todayDay = moment().format('dddd');
+
+const absentChildren = computed(() => {
+  const allChildren: any[] = [];
+  const todaySlots = slotStore.slots.filter((slot) => slot.day === todayDay);
+  todaySlots.forEach((slot) => {
+    slot.children.forEach((child) => {
+      const isChildExists = allChildren.find((c) => c.id === child.id);
+      if (!isChildExists) {
+        allChildren.push(child);
+      }
+    });
+  });
+  const presentChildren = records.value
+    .filter((r) => r.student)
+    .map((record) => record.student?.id);
+
+  return allChildren.filter((child) => !presentChildren.includes(child.id));
+});
+
+onMounted(async () => {
+  await slotStore.fetchSlots();
+});
 </script>
 
 <template>
-  <form class="mt-4 d-flex gap-2 align-items-end" @submit.prevent="searchFromDate">
-    <div class="d-flex gap-1 me-3 report-search">
+  <form class="mt-4 d-flex gap-2 align-items-center" @submit.prevent="searchFromDate">
+    <div class="d-flex gap-1 report-search">
       <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
       <button
         v-if="search.trim().length"
@@ -151,8 +181,8 @@ const onSubmit = async () => {
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
+    <span class="divider text-muted"> - OR - </span>
     <div>
-      <label for="formFile" class="form-label">Select date for report:</label>
       <InputField type="date" :max="todayDate" v-model="reportDate" required />
     </div>
     <button type="submit" class="btn btn-info" :disabled="loading">
@@ -186,6 +216,30 @@ const onSubmit = async () => {
       </tr>
     </tbody>
   </table>
+
+  <div class="mt-5" v-if="absentChildren.length && searchMode === 'date'">
+    <h4>Absent Students</h4>
+    <table class="table mt-3">
+      <thead class="table-danger">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Type</th>
+          <th scope="col">Name</th>
+          <th scope="col">Sign In Time</th>
+          <th scope="col">Sign Out Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(record, index) in absentChildren" :key="record.id">
+          <td>{{ index + 1 }}</td>
+          <td>Student</td>
+          <td>{{ record.firstName }} {{ record.lastName }}</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <style scoped lang="scss">
