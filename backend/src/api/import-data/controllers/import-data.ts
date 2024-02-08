@@ -223,7 +223,7 @@ export default {
           child.gender = childGender;
         }
 
-        const enrollmentDate = statusLog.find((status) => status.status === 'Send to KSiS')
+        const enrollmentDate = statusLog.find((status) => status.status === 'Send to KSiS');
 
         if (enrollmentDate) {
           child.enrollmentDate = enrollmentDate.date;

@@ -5,7 +5,7 @@ import Card from '@/components/base/Card.vue';
 import UserListItem from '@/components/UserListItem.vue';
 import AddGuardianModal from '@/components/AddGuardianModal.vue';
 
-import { useSearchStore, useStudentStore } from '@/stores';
+import { useLogBookStore, useSearchStore, useStudentStore } from '@/stores';
 
 import type { Student } from '@/types';
 
@@ -19,8 +19,11 @@ const props = withDefaults(
   }
 );
 
+const emit = defineEmits(['onSelectSignIn', 'onSelectSignOut', 'onAddGuardian']);
+
 const studentStore = useStudentStore();
 const searchStore = useSearchStore();
+const logBookStore = useLogBookStore();
 
 const loading = ref(false);
 
@@ -53,7 +56,14 @@ const studentDueAmount = computed(() => {
   return 0;
 });
 
-const emit = defineEmits(['onSelect', 'onAddGuardian']);
+const isSignedInRecord = computed(() => {
+  return logBookStore.list.find(
+    (log) =>
+      (log.type === 'Student' || log.type === 'StudentWithParent') &&
+      log.student?.id === props.student.id &&
+      !log.signOutTime
+  );
+});
 </script>
 
 <template>
@@ -68,15 +78,28 @@ const emit = defineEmits(['onSelect', 'onAddGuardian']);
     <p class="small text-muted mt-1 mb-0" v-if="studentDueAmount > 0">
       <span class="fw-bold">Due Amount:</span> £{{ studentDueAmount }}
     </p>
-    <p class="small text-muted" v-if="!student.parents.length">No guardian found.</p>
-    <p class="small mt-4"><strong>Guardians</strong></p>
-    <UserListItem
-      v-for="(item, index) in student.parents"
-      :key="index"
-      :item="item as any"
-      @click="$emit('onSelect', item)"
-    />
-    <button type="button" class="btn btn-secondary" @click="showModal = true">Add Guardian</button>
+    <div v-if="isSignedInRecord">
+      <button
+        type="button"
+        class="btn btn-secondary mt-3"
+        @click="$emit('onSelectSignOut', isSignedInRecord)"
+      >
+        Sign Out
+      </button>
+    </div>
+    <div v-else>
+      <p class="small text-muted" v-if="!student.parents.length">No guardian found.</p>
+      <p class="small mt-4"><strong>Guardians</strong></p>
+      <UserListItem
+        v-for="(item, index) in student.parents"
+        :key="index"
+        :item="item as any"
+        @click="$emit('onSelectSignIn', item)"
+      />
+      <button type="button" class="btn btn-secondary" @click="showModal = true">
+        Add Guardian
+      </button>
+    </div>
   </Card>
   <AddGuardianModal v-model:show="showModal" :loading="loading" @onSubmit="onSubmit" />
 </template>

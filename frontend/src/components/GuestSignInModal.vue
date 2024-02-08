@@ -66,8 +66,8 @@ const onSubmit = async () => {
     await logBookStore.guestSignIn(payload);
 
     toast.success('Guest signed successfully');
-    logBookStore.fetchList();
     emit('update:show', false);
+    await logBookStore.fetchList();
   } finally {
     loading.value = false;
   }
@@ -86,6 +86,8 @@ const emit = defineEmits(['update:show']);
   >
     <form id="add-guardian-form" v-if="step === 1" @submit.prevent="step = 2">
       <InputField
+        :is-floating="true"
+        :is-white="true"
         v-model="guestData.firstName"
         type="text"
         :required="true"
@@ -93,14 +95,25 @@ const emit = defineEmits(['update:show']);
         placeholder="First Name"
       />
       <InputField
+        :is-floating="true"
+        :is-white="true"
         v-model="guestData.lastName"
         type="text"
         :required="true"
         class="mb-2"
         placeholder="Last Name"
       />
-      <InputField v-model="guestData.email" type="email" class="mb-2" placeholder="Email" />
       <InputField
+        :is-floating="true"
+        :is-white="true"
+        v-model="guestData.email"
+        type="email"
+        class="mb-2"
+        placeholder="Email"
+      />
+      <InputField
+        :is-floating="true"
+        :is-white="true"
         v-model="guestData.phoneNumber"
         type="number"
         :required="true"

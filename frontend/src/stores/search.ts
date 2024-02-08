@@ -25,6 +25,18 @@ export const searchStore = defineStore('search', {
         this.loading = false;
       }
     },
+    async searchByLastName(lastName: string, phoneNumber: string) {
+      try {
+        this.loading = true;
+        const res = await axios.post<SearchResult[]>('/log-book/search-by-last-name', {
+          lastName,
+          phoneNumber
+        });
+        this.results = [...res.data];
+      } finally {
+        this.loading = false;
+      }
+    },
     clearResults() {
       this.results = [];
     },

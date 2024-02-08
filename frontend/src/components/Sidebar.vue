@@ -9,6 +9,9 @@ const sidebarExpanded = ref(false);
 const router = useRouter();
 const userStore = useUserStore();
 
+const isMainApp = APP_TYPE === 'app-main';
+const isKioskApp = APP_TYPE === 'app-kiosk';
+
 const logout = async () => {
   const confirmed = window.confirm('Are you sure you want to logout?');
   if (!confirmed) return;
@@ -107,23 +110,23 @@ const logout = async () => {
         <i class="fa-solid fa-house"></i>
         <span>Home</span>
       </router-link>
-      <router-link to="/attendance" class="sidebar-item">
+      <router-link v-if="isMainApp" to="/attendance" class="sidebar-item">
         <i class="fa-solid fa-calendar"></i>
         <span>Today</span>
       </router-link>
-      <router-link to="/calendar" class="sidebar-item">
+      <router-link v-if="isMainApp" to="/calendar" class="sidebar-item">
         <i class="fa-solid fa-calendar-week"></i>
         <span>Calendar</span>
       </router-link>
-      <router-link to="/attendance-report" class="sidebar-item">
+      <router-link v-if="isMainApp" to="/attendance-report" class="sidebar-item">
         <i class="fa-solid fa-clipboard-user"></i>
         <span>Attendance</span>
       </router-link>
-      <router-link to="/qr" class="sidebar-item">
+      <router-link v-if="isMainApp" to="/qr" class="sidebar-item">
         <i class="fa-solid fa-qrcode"></i>
         <span>QR Codes</span>
       </router-link>
-      <router-link to="/upload" class="sidebar-item">
+      <router-link v-if="isMainApp" to="/upload" class="sidebar-item">
         <i class="fa-solid fa-upload"></i>
         <span>Upload</span>
       </router-link>

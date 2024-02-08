@@ -117,6 +117,41 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
 
     return [...studentsArr, ...staffArr];
   },
+  async searchByLastName(ctx) {
+    const { lastName, phoneNumber } = await schema.searchByLastName(ctx.request.body);
+
+    const students = await strapi.entityService.findMany('api::child.child', {
+      fields: ['firstName', 'lastName', 'gender', 'schoolYear'] as any[],
+      filters: {
+        center: ctx.state.center.id,
+        lastName: {
+          $eqi: lastName,
+        },
+      },
+      populate: ['parents'],
+    });
+
+    let sanitizedPhone = phoneNumber;
+
+    if (sanitizedPhone.startsWith('0')) {
+      sanitizedPhone = sanitizedPhone.substring(1);
+    }
+
+    if (sanitizedPhone.startsWith('+44')) {
+      sanitizedPhone = sanitizedPhone.substring(3);
+    }
+
+    const studentsArr = students.filter((student) => {
+      return student.parents.some((parent) => parent.contactNumber.includes(sanitizedPhone));
+    });
+
+    return studentsArr.map((student) => {
+      return {
+        type: 'student',
+        ...student,
+      };
+    });
+  },
   async guestSignIn(ctx) {
     const payload = await schema.guestSignIn(ctx.request.body);
 
@@ -225,8 +260,6 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     ];
     let sort = 'signInTime';
 
-    andFilters.push();
-
     let date = new Date();
 
     if (ctx.request.query.date) {
@@ -259,7 +292,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     } else {
       andFilters.push({
         signOutTime: {
-          $null: true
+          $null: true,
         },
       });
     }
