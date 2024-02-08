@@ -1,6 +1,7 @@
 <template>
   <div class="row mt-5">
-    <div class="col-md-4 order-2 order-md-1">
+    <div class="col-md-1"></div>
+    <div class="col-md-5 order-2 order-md-1">
       <form class="d-flex flex-column gap-3 mb-3" @submit.prevent="searchStudents">
         <InputField
           :is-floating="true"
@@ -15,27 +16,37 @@
           placeholder="Enter Parent Phone Number"
           required
         />
-        <button type="submit" class="btn btn-info btn-lg rounded-3" :disabled="isSearching">
+        <button
+          type="submit"
+          class="btn btn-info btn-lg button-large rounded-3"
+          :disabled="isSearching"
+        >
           {{ isSearching ? '...' : 'Sign In / Sign Out' }}
         </button>
       </form>
       <SearchResults v-if="isSearched" class="mt-3" @onSelect="onSelectFromSearch" />
     </div>
-    <div class="col-md-4 order-1 order-md-2">
-      <button type="button" class="btn btn-info btn-lg me-1" @click="qrSignIn">
-        Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
-      </button>
-      <button type="button" class="btn btn-info btn-lg me-1" @click="guestSignInModal = true">
-        Guest Sign In
-      </button>
-      <button
-        type="button"
-        class="btn btn-secondary btn-lg"
-        @click="clearSearch"
-        v-if="selectedStudent"
-      >
-        Clear
-      </button>
+    <div class="col-md-5 order-1 order-md-2">
+      <div class="button-grid">
+        <button type="button" class="btn btn-info btn-lg button-large py-3" @click="qrSignIn">
+          Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-info btn-lg button-large"
+          @click="guestSignInModal = true"
+        >
+          Guest Sign In
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg button-large"
+          @click="clearSearch"
+          v-if="selectedStudent"
+        >
+          Clear
+        </button>
+      </div>
       <div class="mt-3">
         <GuardianList
           v-if="selectedStudent"
@@ -92,6 +103,8 @@ const isSearching = computed(() => {
 });
 
 const clearSearch = () => {
+  studentLastName.value = '';
+  studentPhone.value = '';
   isSearched.value = false;
   selectedStudent.value = null;
   selectedSignInItem.value = null;
@@ -174,3 +187,13 @@ onUnmounted(() => {
   }
 });
 </script>
+<style scoped lang="scss">
+.button-large {
+  padding: 0.8rem 1.3rem !important;
+}
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+</style>
