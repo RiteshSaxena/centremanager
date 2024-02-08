@@ -12,10 +12,11 @@ import SignaturePad from '@/components/SignaturePad.vue';
 const props = withDefaults(
   defineProps<{
     show: boolean;
-    item?: LogRecord;
+    item: LogRecord | null;
   }>(),
   {
-    show: false
+    show: false,
+    item: null
   }
 );
 
