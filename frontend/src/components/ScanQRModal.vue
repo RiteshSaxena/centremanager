@@ -13,6 +13,8 @@ const props = withDefaults(
   }
 );
 
+const isKioskApp = APP_TYPE === 'app-kiosk';
+
 const emit = defineEmits(['update:show', 'student']);
 
 let qrScannerIns: any = null;
@@ -65,7 +67,7 @@ const startScan = async () => {
       returnDetailedScanResult: true,
       maxScansPerSecond: 1,
       highlightScanRegion: true,
-      preferredCamera: 'environment',
+      preferredCamera: isKioskApp ? 'user' : 'environment',
       onDecodeError: (err) => {
         if (typeof err === 'string' && !err.includes('No QR code found')) {
           window.alert(err);

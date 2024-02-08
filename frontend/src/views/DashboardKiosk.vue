@@ -16,7 +16,7 @@
           required
         />
         <button type="submit" class="btn btn-info btn-lg rounded-3" :disabled="isSearching">
-          {{ isSearching ? '...' : 'Sign In' }}
+          {{ isSearching ? '...' : 'Sign In / Sign Out' }}
         </button>
       </form>
       <SearchResults v-if="isSearched" class="mt-3" @onSelect="onSelectFromSearch" />
@@ -46,40 +46,6 @@
         />
       </div>
     </div>
-    <div class="col-md-4 order-3">
-      <div class="d-flex gap-1">
-        <InputField v-model="signedInFilter" placeholder="Filter" />
-        <button
-          v-if="signedInFilter.length || signedInFilterId"
-          type="button"
-          class="btn btn-secondary rounded-3"
-          @click="
-            signedInFilter = '';
-            signedInFilterId = null;
-          "
-        >
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary rounded-3"
-          @click="logBookStore.fetchList"
-          :disabled="logBookStore.fetching"
-        >
-          <i class="fa-solid fa-arrows-rotate"></i>
-        </button>
-        <button type="button" class="btn btn-info rounded-3" @click="qrSignOut">
-          <i class="fa-solid fa-qrcode"></i>
-        </button>
-      </div>
-      <div class="mt-3">
-        <SignedInList
-          :filter="signedInFilter"
-          :filter-id="signedInFilterId"
-          @onSelect="onSelectSignOut"
-        />
-      </div>
-    </div>
   </div>
 
   <ScanQRModal v-model:show="scanQRModal" @student="handleQrStudent" />
@@ -96,7 +62,6 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import InputField from '@/components/base/InputField.vue';
 import SearchResults from '@/components/SearchResults.vue';
 import GuardianList from '@/components/GuardianList.vue';
-import SignedInList from '@/components/SignedInList.vue';
 import ScanQRModal from '@/components/ScanQRModal.vue';
 import GuestSignInModal from '@/components/GuestSignInModal.vue';
 import SignInModal from '@/components/SignInModal.vue';
@@ -117,7 +82,6 @@ const isSearched = ref(false);
 
 const studentLastName = ref('');
 const studentPhone = ref('');
-const signedInFilter = ref('');
 const signedInFilterId = ref<number | null>(null);
 const selectedStudent = ref<Student | null>(null);
 const selectedSignInItem = ref<SearchResult | null>(null);
@@ -192,11 +156,6 @@ const handleQrStudent = async (id: number) => {
 
 const qrSignIn = () => {
   qrMode.value = 'signIn';
-  scanQRModal.value = true;
-};
-
-const qrSignOut = () => {
-  qrMode.value = 'signOut';
   scanQRModal.value = true;
 };
 
