@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import moment from 'moment';
 
 import { useSlotStore, useLogBookStore, useStudentStore } from '@/stores';
 import { Popover } from 'bootstrap';
+import type { LogRecord } from '@/types';
 
 const studentStore = useStudentStore();
 const slotStore = useSlotStore();
@@ -18,6 +19,8 @@ interface Timing {
 }
 
 const day = moment().format('dddd');
+
+const logRecords = ref<LogRecord[]>([]);
 
 const formatTime = (time: string) => {
   let timeArr = time.split(':');
@@ -73,7 +76,7 @@ const getStudents = computed(() => {
       return slot[0].children.map((child) => {
         let attendance = '';
         const timeLog: string[] = [];
-        const studentFilteredList = logBookStore.list.filter((log) => log.student?.id === child.id);
+        const studentFilteredList = logRecords.value.filter((log) => log.student?.id === child.id);
 
         if (studentFilteredList.length) {
           studentFilteredList.map((log) => {
@@ -123,17 +126,29 @@ const getStudents = computed(() => {
   };
 });
 
+let logBookTimer: any = null;
+
 onMounted(async () => {
   await slotStore.fetchSlots();
+  logRecords.value = await logBookStore.fetchListByDate(moment().format('YYYY-MM-DD'));
+  logBookTimer = setInterval(async () => {
+    logRecords.value = await logBookStore.fetchListByDate(moment().format('YYYY-MM-DD'));
+  }, 1000 * 60);
   setTimeout(() => {
     new Popover('.calendar-container', {
       selector: '[data-bs-toggle="popover"]',
-      trigger: 'click',
+      trigger: 'hover',
       container: 'body',
       placement: 'top',
       html: true
     });
   }, 1000);
+});
+
+onUnmounted(() => {
+  if (logBookTimer) {
+    clearInterval(logBookTimer);
+  }
 });
 </script>
 

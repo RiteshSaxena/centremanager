@@ -1,31 +1,38 @@
 <template>
   <div class="row mt-5">
     <div class="col-md-4 order-2 order-md-1">
-      <div class="d-flex gap-1 mb-3">
-        <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
-        <button
-          v-if="search.trim().length"
-          type="button"
-          class="btn btn-secondary rounded-3"
-          @click="clearSearch"
-        >
-          <i class="fa-solid fa-xmark"></i>
+      <form class="d-flex flex-column gap-3 mb-3" @submit.prevent="searchStudents">
+        <InputField
+          :is-floating="true"
+          v-model="studentLastName"
+          placeholder="Enter Student Last Name"
+          required
+        />
+        <InputField
+          :is-floating="true"
+          type="number"
+          v-model="studentPhone"
+          placeholder="Enter Parent Phone Number"
+          required
+        />
+        <button type="submit" class="btn btn-info btn-lg rounded-3" :disabled="isSearching">
+          {{ isSearching ? '...' : 'Sign In' }}
         </button>
-      </div>
-      <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
+      </form>
+      <SearchResults v-if="isSearched" class="mt-3" @onSelect="onSelectFromSearch" />
     </div>
     <div class="col-md-4 order-1 order-md-2">
-      <button type="button" class="btn btn-info me-1" @click="qrSignIn">
+      <button type="button" class="btn btn-info btn-lg me-1" @click="qrSignIn">
         Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
       </button>
-      <button type="button" class="btn btn-info me-1" @click="guestSignInModal = true">
+      <button type="button" class="btn btn-info btn-lg me-1" @click="guestSignInModal = true">
         Guest Sign In
       </button>
       <button
         type="button"
-        class="btn btn-secondary"
+        class="btn btn-secondary btn-lg"
         @click="clearSearch"
-        v-if="selectedStudent && !search"
+        v-if="selectedStudent"
       >
         Clear
       </button>
@@ -84,8 +91,7 @@
 <script setup lang="ts">
 import type { LogRecord, SearchResult, Student } from '@/types';
 
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { debounce } from 'lodash';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 import InputField from '@/components/base/InputField.vue';
 import SearchResults from '@/components/SearchResults.vue';
@@ -104,36 +110,35 @@ const studentStore = useStudentStore();
 
 const qrMode = ref('');
 const scanQRModal = ref(false);
-const signOutModal = ref(false);
 const guestSignInModal = ref(false);
 const signInModal = ref(false);
+const signOutModal = ref(false);
+const isSearched = ref(false);
 
-const search = ref('');
+const studentLastName = ref('');
+const studentPhone = ref('');
 const signedInFilter = ref('');
 const signedInFilterId = ref<number | null>(null);
 const selectedStudent = ref<Student | null>(null);
 const selectedSignInItem = ref<SearchResult | null>(null);
 const selectedSignOutItem = ref<LogRecord | null>(null);
 
-const debouncedSearch = debounce((value: string) => {
-  searchStore.search(value);
-}, 500);
+const isSearching = computed(() => {
+  return searchStore.loading;
+});
 
 const clearSearch = () => {
-  search.value = '';
+  isSearched.value = false;
   selectedStudent.value = null;
   selectedSignInItem.value = null;
   selectedSignOutItem.value = null;
   searchStore.clearResults();
 };
 
-watch(search, () => {
-  if (search.value.trim().length) {
-    debouncedSearch(search.value.trim());
-  } else {
-    clearSearch();
-  }
-});
+const searchStudents = async () => {
+  await searchStore.searchByLastName(studentLastName.value, studentPhone.value.toString());
+  isSearched.value = true;
+};
 
 const onAddGuardian = (data: any) => {
   selectedStudent.value?.parents.push({

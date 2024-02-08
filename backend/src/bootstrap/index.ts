@@ -10,24 +10,25 @@ export default async ({ strapi }: { strapi: Strapi }) => {
     displayName: 'Is my centre data',
     name: 'is-my-centre-data',
     plugin: 'admin',
-    async handler(user) {
-      if (!user.roles[0].description) {
-        return false;
-      }
+    handler(user) {
+      const centreIds = user.roles.map((role) => parseInt(role.description)).filter((id: number) => !isNaN(id));
 
-      const centreId = parseInt(user.roles[0].description);
-
-      if (isNaN(centreId)) {
+      if (!centreIds.length) {
         return false;
       }
 
       if (user.permission.subject === 'api::center.center') {
         return {
-          id: centreId,
+          id: {
+            $in: centreIds,
+          },
         };
       }
+
       return {
-        'center.id': centreId,
+        'center.id': {
+          $in: centreIds,
+        },
       };
     },
   });

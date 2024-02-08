@@ -78,6 +78,10 @@ export default factories.createCoreController('api::center.center', () => ({
     const newCenter = await strapi.entityService.create('api::center.center', {
       data: {
         name: payload.centerName,
+        subscription: {
+          status: 'trial',
+          trialExpiryDate: new Date().setDate(new Date().getDate() + 60),
+        },
       },
     });
 

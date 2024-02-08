@@ -8,3 +8,5 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+declare const APP_TYPE: 'app-main' | 'app-kiosk';

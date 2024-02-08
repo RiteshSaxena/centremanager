@@ -1,26 +1,19 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useToast } from 'vue-toastification';
+import { computed } from 'vue';
 
 import Card from '@/components/base/Card.vue';
 import SignedInListItem from '@/components/SignedInListItem.vue';
-import SignOutModal from '@/components/SignOutModal.vue';
 
 import { useLogBookStore } from '@/stores';
-
-import type { LogRecord } from '@/types';
 
 const props = defineProps<{
   filter?: string;
   filterId: number | null;
 }>();
 
-const toast = useToast();
-const logBookStore = useLogBookStore();
+const emit = defineEmits(['onSelect']);
 
-const signing = ref(false);
-const showModal = ref(false);
-const selectedRecord = ref<LogRecord | null>(null);
+const logBookStore = useLogBookStore();
 
 const loading = computed(() => logBookStore.fetching);
 
@@ -83,47 +76,6 @@ const signedIn = computed(() => {
   }
   return list;
 });
-
-const selectedName = computed(() => {
-  if (selectedRecord.value) {
-    if (
-      selectedRecord.value.type === 'Student' ||
-      selectedRecord.value.type === 'StudentWithParent' ||
-      selectedRecord.value.type === 'Parent'
-    ) {
-      return `${selectedRecord.value.parent?.firstName} ${selectedRecord.value.parent?.lastName}`;
-    } else if (selectedRecord.value?.type === 'Staff') {
-      return `${selectedRecord.value.staff?.firstName} ${selectedRecord.value.staff?.lastName}`;
-    } else if (selectedRecord.value?.type === 'Guest') {
-      return `${selectedRecord.value.guest?.firstName} ${selectedRecord.value.guest?.lastName}`;
-    }
-  }
-
-  return '';
-});
-
-const onSelect = (item: LogRecord) => {
-  selectedRecord.value = item;
-  showModal.value = true;
-};
-
-const onSubmit = async (data: any) => {
-  try {
-    signing.value = true;
-    const payload: any = {
-      signature: data.signature,
-      signIn: selectedRecord.value?.id
-    };
-
-    await logBookStore.signOut(payload);
-
-    showModal.value = false;
-    toast.success('Signed out Successfully');
-    logBookStore.fetchList().then();
-  } finally {
-    signing.value = false;
-  }
-};
 </script>
 
 <template>
@@ -139,15 +91,9 @@ const onSubmit = async (data: any) => {
       v-for="item in signedIn"
       :key="item.id"
       :item="item"
-      @onSelect="onSelect(item)"
-    ></SignedInListItem>
+      @onSelect="emit('onSelect', item)"
+    />
   </Card>
-  <SignOutModal
-    v-model:show="showModal"
-    :loading="signing"
-    @onSubmit="onSubmit"
-    :name="selectedName"
-  />
 </template>
 
 <style scoped lang="scss">

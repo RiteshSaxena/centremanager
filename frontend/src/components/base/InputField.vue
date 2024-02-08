@@ -5,11 +5,17 @@ withDefaults(
     type?: string;
     required?: boolean;
     modelValue?: string;
+    isFloating?: boolean;
+    isWhite?: boolean;
+    label?: '';
   }>(),
   {
     placeholder: '',
     type: 'text',
-    required: false
+    required: false,
+    isFloating: false,
+    label: '',
+    isWhite: false
   }
 );
 
@@ -21,51 +27,89 @@ const onInput = (e: Event) => {
 </script>
 
 <template>
-  <input
-    :type="type"
-    class="form-control"
-    :placeholder="placeholder"
-    :aria-label="placeholder"
-    :required="required"
-    :value="modelValue"
-    @input="onInput"
-  />
+  <div class="field-container" :class="{ 'form-floating': isFloating, 'form-white': isWhite }">
+    <label v-if="label && !isFloating">{{ label }}</label>
+    <input
+      :type="type"
+      class="form-control"
+      :placeholder="placeholder"
+      :required="required"
+      :value="modelValue"
+      @input="onInput"
+    />
+    <label v-if="isFloating">{{ placeholder }}</label>
+  </div>
 </template>
 
 <style scoped lang="scss">
-input.form-control {
-  background: #e5e5e5;
-  color: #193b4d;
-  font-size: 14px;
-  line-height: 21px;
-  border-radius: 10px;
-  height: 40px;
+.field-container {
+  flex: 1;
 
-  &::placeholder {
+  .form-control {
+    background: #e5e5e5;
+    color: #193b4d;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &[type='number'] {
+      -moz-appearance: textfield;
+    }
+
+    &:focus {
+      box-shadow: none;
+      border-color: #193b4d;
+    }
+  }
+}
+
+.field-container.form-floating {
+  label {
     color: #9e9e9e;
+  }
+
+  .form-control {
+    border-radius: 12px;
+
+    &:focus ~ label::after,
+    &:not(:placeholder-shown) ~ label::after {
+      background: #e5e5e5;
+    }
+  }
+}
+
+.field-container:not(.form-floating) {
+  input.form-control {
     font-size: 14px;
     line-height: 21px;
     border-radius: 10px;
+    height: 40px;
+
+    &::placeholder {
+      color: #9e9e9e;
+      font-size: 14px;
+      line-height: 21px;
+      border-radius: 10px;
+    }
+
+    &[type='file'] {
+      height: 35px;
+    }
   }
+}
 
-  &[type='file'] {
-    height: 35px;
+.field-container.form-white {
+  .form-control {
+    background: #fff;
+    color: #193b4d;
+
+    &:focus ~ label::after,
+    &:not(:placeholder-shown) ~ label::after {
+      background: #fff;
+    }
   }
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type='number'] {
-  -moz-appearance: textfield;
-}
-
-.form-control:focus {
-  box-shadow: none;
-  border-color: #193b4d;
 }
 </style>

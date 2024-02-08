@@ -1,28 +1,15 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted } from 'vue';
 
 import Sidebar from '@/components/Sidebar.vue';
 
-import { useLogBookStore, useStudentStore } from '@/stores';
+import { useStudentStore } from '@/stores';
 import CentreHeader from '@/components/CentreHeader.vue';
 
 const studentStore = useStudentStore();
-const logBookStore = useLogBookStore();
-
-let logBookTimer: any = null;
 
 onMounted(async () => {
-  studentStore.dueStudents().then();
-  await logBookStore.fetchList();
-  logBookTimer = setInterval(async () => {
-    await logBookStore.fetchList();
-  }, 1000 * 60);
-});
-
-onUnmounted(() => {
-  if (logBookTimer) {
-    clearInterval(logBookTimer);
-  }
+  await studentStore.dueStudents();
 });
 </script>
 

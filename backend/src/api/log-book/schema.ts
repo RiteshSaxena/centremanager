@@ -9,6 +9,14 @@ const searchSchema = yup
   })
   .noUnknown();
 
+const searchByLastNameSchema = yup
+  .object()
+  .shape({
+    lastName: yup.string().trim().required().min(1).max(250).label('Last Name'),
+    phoneNumber: yup.string().trim().min(10).required().label('Phone Number'),
+  })
+  .noUnknown();
+
 const guestSignInSchema = yup
   .object()
   .shape({
@@ -44,4 +52,5 @@ export default {
   guestSignIn: validateYupSchema(guestSignInSchema),
   signIn: validateYupSchema(signInSchema),
   signOut: validateYupSchema(signOutSchema),
+  searchByLastName: validateYupSchema(searchByLastNameSchema),
 };

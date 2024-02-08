@@ -3,4 +3,5 @@ import type { Staff } from './staff';
 
 export interface SearchResult extends Student, Staff {
   type: 'student' | 'staff' | 'parent';
+  student: number;
 }

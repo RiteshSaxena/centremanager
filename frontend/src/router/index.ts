@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
 import { getToken } from '@/utils/token';
 
 import Dashboard from '@/views/Dashboard.vue';
@@ -11,98 +12,126 @@ import Login from '@/views/Login.vue';
 import ZohoToken from '@/views/ZohoToken.vue';
 import Register from '@/views/Register.vue';
 import AttendanceReport from '@/views/AttendanceReport.vue';
+import DashboardKiosk from '@/views/DashboardKiosk.vue';
+
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+    meta: {
+      guest: true,
+      title: 'Login'
+    }
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register,
+    meta: {
+      guest: true,
+      title: 'Register'
+    }
+  },
+  {
+    path: '/',
+    name: 'Dashboard',
+    component: Dashboard,
+    meta: {
+      auth: true,
+      layout: DashboardLayout,
+      title: 'Dashboard',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/',
+    name: 'Dashboard',
+    component: DashboardKiosk,
+    meta: {
+      auth: true,
+      layout: DashboardLayout,
+      title: 'Dashboard',
+      app: ['app-kiosk']
+    }
+  },
+  {
+    path: '/calendar',
+    name: 'Calendar',
+    component: Calendar,
+    meta: {
+      auth: true,
+      layout: DashboardLayout,
+      title: 'Calendar',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/attendance',
+    name: 'Attendance',
+    component: Attendance,
+    meta: {
+      auth: true,
+      layout: DashboardLayout,
+      title: 'Attendance',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/attendance-report',
+    name: 'AttendanceReport',
+    component: AttendanceReport,
+    meta: {
+      auth: true,
+      layout: DashboardLayout,
+      title: 'Attendance Report',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/qr',
+    name: 'QrGenerator',
+    component: QrGenerator,
+    meta: {
+      auth: true,
+      layout: DashboardLayout,
+      title: 'QR Generator',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/upload',
+    name: 'Upload',
+    component: Upload,
+    meta: {
+      auth: true,
+      layout: DashboardLayout,
+      title: 'Upload',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/zoho-books/token',
+    name: 'ZohoBooksToken',
+    component: ZohoToken,
+    meta: {
+      auth: true,
+      title: 'Zoho Books',
+      app: ['app-main']
+    }
+  }
+];
+
+const filteredRoutes = routes.filter((route) => {
+  if (route.meta?.app) {
+    return (route.meta.app as Array<string>).includes(APP_TYPE);
+  }
+  return true;
+});
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login,
-      meta: {
-        guest: true,
-        title: 'Login'
-      }
-    },
-    {
-      path: '/register',
-      name: 'Register',
-      component: Register,
-      meta: {
-        guest: true,
-        title: 'Register'
-      }
-    },
-    {
-      path: '/',
-      name: 'Dashboard',
-      component: Dashboard,
-      meta: {
-        auth: true,
-        layout: DashboardLayout,
-        title: 'Dashboard'
-      }
-    },
-    {
-      path: '/calendar',
-      name: 'Calendar',
-      component: Calendar,
-      meta: {
-        auth: true,
-        layout: DashboardLayout,
-        title: 'Calendar'
-      }
-    },
-    {
-      path: '/attendance',
-      name: 'Attendance',
-      component: Attendance,
-      meta: {
-        auth: true,
-        layout: DashboardLayout,
-        title: 'Attendance'
-      }
-    },
-    {
-      path: '/attendance-report',
-      name: 'AttendanceReport',
-      component: AttendanceReport,
-      meta: {
-        auth: true,
-        layout: DashboardLayout,
-        title: 'Attendance Report'
-      }
-    },
-    {
-      path: '/qr',
-      name: 'QrGenerator',
-      component: QrGenerator,
-      meta: {
-        auth: true,
-        layout: DashboardLayout,
-        title: 'QR Generator'
-      }
-    },
-    {
-      path: '/upload',
-      name: 'Upload',
-      component: Upload,
-      meta: {
-        auth: true,
-        layout: DashboardLayout,
-        title: 'Upload'
-      }
-    },
-    {
-      path: '/zoho-books/token',
-      name: 'ZohoBooksToken',
-      component: ZohoToken,
-      meta: {
-        auth: true,
-        title: 'Zoho Books'
-      }
-    }
-  ]
+  routes: filteredRoutes
 });
 
 router.beforeEach(async (to, from, next) => {

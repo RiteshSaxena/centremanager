@@ -79,6 +79,12 @@
     },
     "phoneNumber": {
       "type": "string"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": ["admin", "staff"],
+      "default": "admin",
+      "required": false
     }
   }
 }
