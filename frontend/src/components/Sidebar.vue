@@ -10,7 +10,6 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const isMainApp = APP_TYPE === 'app-main';
-const isKioskApp = APP_TYPE === 'app-kiosk';
 
 const logout = async () => {
   const confirmed = window.confirm('Are you sure you want to logout?');

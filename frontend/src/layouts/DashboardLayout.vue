@@ -8,6 +8,8 @@ import CentreHeader from '@/components/CentreHeader.vue';
 
 const studentStore = useStudentStore();
 
+const isKioskApp = APP_TYPE === 'app-kiosk';
+
 onMounted(async () => {
   await studentStore.dueStudents();
 });
@@ -15,7 +17,7 @@ onMounted(async () => {
 
 <template>
   <div class="d-flex flex-column flex-md-row">
-    <Sidebar />
+    <Sidebar v-if="!isKioskApp" />
     <div class="main-container overflow-auto vh-100 w-100">
       <div class="p-4">
         <centre-header />

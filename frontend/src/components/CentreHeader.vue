@@ -1,7 +1,14 @@
 <template>
-  <div class="centre-name">
-    <h1>{{ centre?.displayName || centre?.name }}</h1>
-    <span>{{ date }}</span>
+  <div class="d-flex justify-content-between">
+    <div class="centre-name">
+      <h1>{{ centre?.displayName || centre?.name }}</h1>
+      <span>{{ date }}</span>
+    </div>
+    <div v-if="isKioskApp">
+      <button type="button" class="btn btn-secondary">
+        Logout <i class="ms-2 fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -16,6 +23,8 @@ const userStore = useUserStore();
 const centre = ref<any>(null);
 
 const date = moment().format('DD MMMM, YYYY');
+
+const isKioskApp = APP_TYPE === 'app-kiosk';
 
 onMounted(async () => {
   const data = await userStore.getCentre();
