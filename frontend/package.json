@@ -10,7 +10,7 @@
     "build:kiosk": "npm run lint && npm run type-check && npm run build-only:kiosk",
     "preview": "vite preview",
     "build-only:app": "vite build -c app.config.ts",
-    "build-only:kiosk": "vite build -c app.config.ts",
+    "build-only:kiosk": "vite build -c app-kiosk.config.ts",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
