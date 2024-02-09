@@ -1,60 +1,56 @@
 <template>
   <div class="row mt-5">
-    <div class="col-md-1"></div>
-    <div class="col-md-5 order-2 order-md-1">
-      <form class="d-flex flex-column gap-3 mb-3" @submit.prevent="searchStudents">
-        <InputField
-          :is-floating="true"
-          v-model="studentLastName"
-          placeholder="Enter Student Last Name"
-          required
-        />
-        <InputField
-          :is-floating="true"
-          type="number"
-          v-model="studentPhone"
-          placeholder="Enter Parent Phone Number"
-          required
-        />
-        <button
-          type="submit"
-          class="btn btn-info btn-lg button-large rounded-3"
-          :disabled="isSearching"
+    <div class="col-md-3"></div>
+    <div class="col-md-6 order-2 order-md-1">
+      <div v-if="!(isSearched || selectedStudent)">
+        <form
+          class="d-flex flex-column gap-3 mb-3"
+          v-if="!(isSearched || selectedStudent)"
+          @submit.prevent="searchStudents"
         >
-          {{ isSearching ? '...' : 'Sign In / Sign Out' }}
-        </button>
-      </form>
-      <SearchResults v-if="isSearched" class="mt-3" @onSelect="onSelectFromSearch" />
-    </div>
-    <div class="col-md-5 order-1 order-md-2">
-      <div class="button-grid">
-        <button type="button" class="btn btn-info btn-lg button-large py-3" @click="qrSignIn">
-          Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
-        </button>
-        <button
-          type="button"
-          class="btn btn-info btn-lg button-large"
-          @click="guestSignInModal = true"
-        >
-          Guest Sign In
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary btn-lg button-large"
-          @click="clearSearch"
-          v-if="selectedStudent"
-        >
-          Clear
-        </button>
+          <InputField
+            :is-floating="true"
+            v-model="studentLastName"
+            placeholder="Enter Student Last Name"
+            required
+          />
+          <InputField
+            :is-floating="true"
+            type="number"
+            v-model="studentPhone"
+            placeholder="Enter Parent Phone Number"
+            required
+          />
+          <button type="submit" class="btn btn-info btn-lg rounded-3 mt-3" :disabled="isSearching">
+            {{ isSearching ? '...' : 'Sign In / Sign Out' }}
+          </button>
+        </form>
+        <hr />
+        <div class="d-flex justify-content-between gap-2">
+          <button type="button" class="btn btn-info btn-lg flex-1" @click="qrSignIn">
+            Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
+          </button>
+          <button type="button" class="btn btn-info btn-lg flex-1" @click="guestSignInModal = true">
+            Guest Sign In
+          </button>
+        </div>
       </div>
-      <div class="mt-3">
-        <GuardianList
-          v-if="selectedStudent"
-          :student="selectedStudent"
-          @onSelectSignIn="onSelectGuardian"
-          @onSelectSignOut="onSelectSignOut"
-          @onAddGuardian="onAddGuardian"
-        />
+      <SearchResults
+        v-if="isSearched && !selectedStudent"
+        class="mt-4"
+        @onSelect="onSelectFromSearch"
+      />
+      <GuardianList
+        v-if="selectedStudent"
+        :student="selectedStudent"
+        @onSelectSignIn="onSelectGuardian"
+        @onSelectSignOut="onSelectSignOut"
+        @onAddGuardian="onAddGuardian"
+      />
+      <div v-if="isSearched || selectedStudent" class="d-flex justify-content-center mt-3">
+        <button type="button" class="btn w-100 btn-outline-secondary" @click="clearSearch">
+          Back
+        </button>
       </div>
     </div>
   </div>
@@ -159,6 +155,7 @@ const handleQrStudent = async (id: number) => {
     selectedStudent.value.parents = student.parents.map((parent) => {
       return {
         ...parent,
+        student: id,
         type: 'parent'
       };
     });
