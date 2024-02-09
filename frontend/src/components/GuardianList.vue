@@ -96,7 +96,7 @@ const isSignedInRecord = computed(() => {
         :item="item as any"
         @click="$emit('onSelectSignIn', item)"
       />
-      <button type="button" class="btn btn-secondary" @click="showModal = true">
+      <button type="button" class="btn btn-secondary mt-2" @click="showModal = true">
         Add Guardian
       </button>
     </div>
