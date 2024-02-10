@@ -8,6 +8,8 @@ import { useSearchStore } from '@/stores';
 
 const searchStore = useSearchStore();
 
+const isKioskApp = APP_TYPE === 'app-kiosk';
+
 const results = computed(() => {
   return searchStore.results;
 });
@@ -17,7 +19,9 @@ defineEmits(['onSelect']);
 
 <template>
   <Card class="signed-in-list mb-3">
-    <template #header> Results </template>
+    <template #header>
+      {{ isKioskApp ? 'Select the student you want to Sign In / Sign out' : 'Results' }}
+    </template>
     <div class="text-center mb-3" v-if="searchStore.loading">
       <div class="spinner-border text-dark text-center" role="status">
         <span class="visually-hidden">Loading...</span>

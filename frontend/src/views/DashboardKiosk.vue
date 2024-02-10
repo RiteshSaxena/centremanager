@@ -110,6 +110,9 @@ const clearSearch = () => {
 
 const searchStudents = async () => {
   await searchStore.searchByLastName(studentLastName.value, studentPhone.value.toString());
+  if (searchStore.results.length === 1) {
+    onSelectFromSearch(searchStore.results[0]);
+  }
   isSearched.value = true;
 };
 
