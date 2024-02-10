@@ -25,6 +25,8 @@ const studentStore = useStudentStore();
 const searchStore = useSearchStore();
 const logBookStore = useLogBookStore();
 
+const isKioskApp = APP_TYPE === 'app-kiosk';
+
 const loading = ref(false);
 
 const onSubmit = async (data: any) => {
@@ -89,7 +91,8 @@ const isSignedInRecord = computed(() => {
     </div>
     <div v-else>
       <p class="small text-muted" v-if="!student.parents.length">No guardian found.</p>
-      <p class="small mt-4"><strong>Guardians</strong></p>
+      <p class="small mt-4" v-if="isKioskApp"><strong>Select your name below</strong></p>
+      <p class="small mt-4" v-else><strong>Guardians</strong></p>
       <UserListItem
         v-for="(item, index) in student.parents"
         :key="index"
