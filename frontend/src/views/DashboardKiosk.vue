@@ -119,6 +119,7 @@ const searchStudents = async () => {
 const onAddGuardian = (data: any) => {
   selectedStudent.value?.parents.push({
     type: 'parent',
+    student: selectedStudent.value?.id,
     ...data
   });
 };
