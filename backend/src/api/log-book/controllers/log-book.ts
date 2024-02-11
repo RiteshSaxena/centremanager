@@ -118,7 +118,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     return [...studentsArr, ...staffArr];
   },
   async searchByLastName(ctx) {
-    const { lastName, phoneNumber } = await schema.searchByLastName(ctx.request.body);
+    const { lastName } = await schema.searchByLastName(ctx.request.body);
 
     const students = await strapi.entityService.findMany('api::child.child', {
       fields: ['firstName', 'lastName', 'gender', 'schoolYear'] as any[],
@@ -131,21 +131,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       populate: ['parents'],
     });
 
-    let sanitizedPhone = phoneNumber;
-
-    if (sanitizedPhone.startsWith('0')) {
-      sanitizedPhone = sanitizedPhone.substring(1);
-    }
-
-    if (sanitizedPhone.startsWith('+44')) {
-      sanitizedPhone = sanitizedPhone.substring(3);
-    }
-
-    const studentsArr = students.filter((student) => {
-      return student.parents.some((parent) => parent.contactNumber.includes(sanitizedPhone));
-    });
-
-    return studentsArr.map((student) => {
+    return students.map((student) => {
       return {
         type: 'student',
         ...student,

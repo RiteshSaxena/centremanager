@@ -4,7 +4,7 @@
     <div class="col-md-6 order-2 order-md-1">
       <div v-if="!(isSearched || selectedStudent)">
         <form
-          class="d-flex flex-column gap-3 mb-3"
+          class="d-flex flex-column gap-3 mb-4"
           v-if="!(isSearched || selectedStudent)"
           @submit.prevent="searchStudents"
         >
@@ -14,19 +14,12 @@
             placeholder="Enter Student Last Name"
             required
           />
-          <InputField
-            :is-floating="true"
-            type="number"
-            v-model="studentPhone"
-            placeholder="Enter Parent Phone Number"
-            required
-          />
-          <button type="submit" class="btn btn-info btn-lg rounded-3 mt-3" :disabled="isSearching">
+          <button type="submit" class="btn btn-info btn-lg rounded-3" :disabled="isSearching">
             {{ isSearching ? '...' : 'Sign In / Sign Out' }}
           </button>
         </form>
         <hr />
-        <div class="d-flex justify-content-between gap-2">
+        <div class="d-flex justify-content-between gap-2 mt-4">
           <button type="button" class="btn btn-info btn-lg flex-1" @click="qrSignIn">
             Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
           </button>
@@ -109,7 +102,7 @@ const clearSearch = () => {
 };
 
 const searchStudents = async () => {
-  await searchStore.searchByLastName(studentLastName.value, studentPhone.value.toString());
+  await searchStore.searchByLastName(studentLastName.value);
   if (searchStore.results.length === 1) {
     onSelectFromSearch(searchStore.results[0]);
   }
