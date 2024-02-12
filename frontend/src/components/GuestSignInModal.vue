@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
+
 import { useLogBookStore } from '@/stores';
 
 import Modal from '@/components/base/Modal.vue';
@@ -49,7 +50,8 @@ const onSubmit = async () => {
   try {
     loading.value = true;
     if (!signaturePad.value || signaturePad.value.isEmpty()) {
-      throw new Error('Please sign to continue');
+      toast.error('Please sign to continue');
+      return;
     }
 
     const payload: any = {

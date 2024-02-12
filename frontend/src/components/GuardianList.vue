@@ -71,14 +71,14 @@ const isSignedInRecord = computed(() => {
 <template>
   <Card>
     <template #header> Student</template>
-    <p class="small text-muted mt-0 mb-0">
-      <span class="fw-bold">Name:</span> {{ student.firstName }} {{ student.lastName }}
+    <p class="text-display">
+      Name: <span class="fw-bold">{{ student.firstName }} {{ student.lastName }}</span>
     </p>
-    <p class="small text-muted mt-1 mb-0" v-if="student.schoolYear">
-      <span class="fw-bold">School Year:</span> {{ student.schoolYear }}
+    <p class="text-display" v-if="student.schoolYear">
+      School Year: <span class="fw-bold">{{ student.schoolYear }}</span>
     </p>
-    <p class="small text-muted mt-1 mb-0" v-if="studentDueAmount > 0">
-      <span class="fw-bold">Due Amount:</span> £{{ studentDueAmount }}
+    <p class="text-display text-danger" v-if="studentDueAmount > 0">
+      Due Amount: <span class="fw-bold">£{{ studentDueAmount }}</span>
     </p>
     <div v-if="isSignedInRecord">
       <button
@@ -106,3 +106,11 @@ const isSignedInRecord = computed(() => {
   </Card>
   <AddGuardianModal v-model:show="showModal" :loading="loading" @onSubmit="onSubmit" />
 </template>
+
+<style lang="scss" scoped>
+.text-display {
+  font-size: 16px;
+  color: #505050;
+  margin: 0 0 0.6rem 0;
+}
+</style>
