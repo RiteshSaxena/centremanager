@@ -41,11 +41,13 @@ const isParentWithStudent = ref(false);
 
 const onSubmit = async () => {
   if (!signaturePad.value || signaturePad.value.isEmpty()) {
-    throw new Error('Please sign to continue');
+    toast.error('Please sign to continue');
+    return;
   }
 
   if (!props.item) {
-    throw new Error('User not found');
+    toast.error('User not found');
+    return;
   }
 
   // if (props.item.type === 'parent') {

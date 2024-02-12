@@ -23,13 +23,19 @@ app.config.errorHandler = (err: any) => {
 };
 
 if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
-  let sentryEnv = 'staging';
+  let sentryEnv = '';
 
-  if (window.location.hostname === 'app.centre-manager.com') {
-    sentryEnv = 'production';
-  } else if (window.location.hostname === 'localhost') {
+  if (window.location.hostname === 'localhost') {
     sentryEnv = 'development';
+  } else if (window.location.hostname.includes('.stage')) {
+    sentryEnv = 'staging';
+  } else {
+    sentryEnv = 'production';
   }
+
+  const regexApiUrl = new RegExp(
+    '^' + import.meta.env.VITE_BASE_API_URL.replace(/\//g, '\\/').replace(/\./g, '\\.')
+  );
 
   Sentry.init({
     app,
@@ -38,10 +44,13 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
     integrations: [
       new Sentry.BrowserTracing({
         routingInstrumentation: Sentry.vueRouterInstrumentation(router)
-      })
+      }),
+      new Sentry.Replay()
     ],
-    tracePropagationTargets: ['localhost', import.meta.env.VITE_BASE_API_URL],
-    tracesSampleRate: 1.0
+    tracePropagationTargets: ['localhost', regexApiUrl],
+    tracesSampleRate: 1.0,
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0
   });
 }
 

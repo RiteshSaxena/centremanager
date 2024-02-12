@@ -7,6 +7,7 @@ withDefaults(
     modelValue?: string;
     isFloating?: boolean;
     isWhite?: boolean;
+    hasDarkPlaceholder?: boolean;
     label?: '';
   }>(),
   {
@@ -15,7 +16,8 @@ withDefaults(
     required: false,
     isFloating: false,
     label: '',
-    isWhite: false
+    isWhite: false,
+    hasDarkPlaceholder: false
   }
 );
 
@@ -27,7 +29,14 @@ const onInput = (e: Event) => {
 </script>
 
 <template>
-  <div class="field-container" :class="{ 'form-floating': isFloating, 'form-white': isWhite }">
+  <div
+    class="field-container"
+    :class="{
+      'form-floating': isFloating,
+      'form-white': isWhite,
+      'form-has-dark-placeholder': hasDarkPlaceholder
+    }"
+  >
     <label v-if="label && !isFloating">{{ label }}</label>
     <input
       :type="type"
@@ -56,6 +65,7 @@ const onInput = (e: Event) => {
     }
 
     &[type='number'] {
+      appearance: textfield;
       -moz-appearance: textfield;
     }
 
@@ -79,6 +89,13 @@ const onInput = (e: Event) => {
       background: #e5e5e5;
     }
   }
+
+  &.form-has-dark-placeholder {
+    label {
+      color: #193b4d;
+      font-weight: 500;
+    }
+  }
 }
 
 .field-container:not(.form-floating) {
@@ -97,6 +114,13 @@ const onInput = (e: Event) => {
 
     &[type='file'] {
       height: 35px;
+    }
+  }
+
+  &.form-has-dark-placeholder {
+    input.form-control::placeholder {
+      color: #193b4d;
+      font-weight: 500;
     }
   }
 }

@@ -9,6 +9,7 @@
           @submit.prevent="searchStudents"
         >
           <InputField
+            :has-dark-placeholder="true"
             :is-floating="true"
             v-model="studentLastName"
             placeholder="Enter Student Last Name"
