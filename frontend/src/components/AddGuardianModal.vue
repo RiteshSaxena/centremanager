@@ -43,6 +43,8 @@ const emit = defineEmits(['update:show', 'onSubmit']);
     <form id="add-guardian-form" @submit.prevent="onSubmit">
       <InputField
         v-model="guardianData.firstName"
+        :is-floating="true"
+        :is-white="true"
         type="text"
         :required="true"
         class="mb-2"
@@ -50,14 +52,25 @@ const emit = defineEmits(['update:show', 'onSubmit']);
       />
       <InputField
         v-model="guardianData.lastName"
+        :is-floating="true"
+        :is-white="true"
         type="text"
         :required="true"
         class="mb-2"
         placeholder="Last Name"
       />
-      <InputField v-model="guardianData.email" type="email" class="mb-2" placeholder="Email" />
+      <InputField
+        v-model="guardianData.email"
+        :is-floating="true"
+        :is-white="true"
+        type="email"
+        class="mb-2"
+        placeholder="Email"
+      />
       <InputField
         v-model="guardianData.phoneNumber"
+        :is-floating="true"
+        :is-white="true"
         type="text"
         :required="true"
         placeholder="Phone Number"
