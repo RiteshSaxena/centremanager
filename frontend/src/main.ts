@@ -42,10 +42,10 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
     environment: sentryEnv,
     dsn: import.meta.env.VITE_SENTRY_DSN,
     integrations: [
-      new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.vueRouterInstrumentation(router)
+      Sentry.browserTracingIntegration({
+        router
       }),
-      new Sentry.Replay()
+      Sentry.replayIntegration()
     ],
     tracePropagationTargets: ['localhost', regexApiUrl],
     tracesSampleRate: 1.0,
