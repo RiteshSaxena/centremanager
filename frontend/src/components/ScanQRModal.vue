@@ -65,7 +65,7 @@ const startScan = async () => {
     const video = document.getElementById('qr-scanner') as HTMLVideoElement;
     qrScannerIns = new QrScanner(video, onScanCompleted, {
       returnDetailedScanResult: true,
-      maxScansPerSecond: 1,
+      maxScansPerSecond: 5,
       highlightScanRegion: true,
       preferredCamera: isKioskApp ? 'user' : 'environment',
       onDecodeError: (err) => {

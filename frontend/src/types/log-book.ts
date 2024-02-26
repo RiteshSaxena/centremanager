@@ -9,6 +9,7 @@ export interface LogRecord {
   student?: Student;
   parent?: Parent;
   staff?: Staff;
+  signatureId?: number;
   guest?: {
     id: number;
     firstName: string;

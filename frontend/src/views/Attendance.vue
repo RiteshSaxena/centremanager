@@ -135,13 +135,18 @@ onMounted(async () => {
     logRecords.value = await logBookStore.fetchListByDate(moment().format('YYYY-MM-DD'));
   }, 1000 * 60);
   setTimeout(() => {
-    new Popover('.calendar-container', {
-      selector: '[data-bs-toggle="popover"]',
-      trigger: 'hover',
-      container: 'body',
-      placement: 'top',
-      html: true
-    });
+    const popover = document.querySelectorAll('[data-bs-toggle="popover"]');
+
+    if (popover.length) {
+      popover.forEach((el) => {
+        new Popover(el, {
+          trigger: 'hover',
+          container: 'body',
+          placement: 'top',
+          html: true
+        });
+      });
+    }
   }, 1000);
 });
 

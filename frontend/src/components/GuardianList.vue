@@ -7,7 +7,7 @@ import AddGuardianModal from '@/components/AddGuardianModal.vue';
 
 import { useLogBookStore, useSearchStore, useStudentStore } from '@/stores';
 
-import type { Student } from '@/types';
+import type { Parent, Student } from '@/types';
 
 const props = withDefaults(
   defineProps<{
@@ -66,6 +66,13 @@ const isSignedInRecord = computed(() => {
       !log.signOutTime
   );
 });
+
+const onSelectSignIn = (item: Parent) => {
+  emit('onSelectSignIn', {
+    ...item,
+    student: props.student.id
+  });
+};
 </script>
 
 <template>
@@ -97,7 +104,7 @@ const isSignedInRecord = computed(() => {
         v-for="(item, index) in student.parents"
         :key="index"
         :item="item as any"
-        @click="$emit('onSelectSignIn', item)"
+        @click="onSelectSignIn(item)"
       />
       <button type="button" class="btn btn-secondary mt-2" @click="showModal = true">
         Add Guardian

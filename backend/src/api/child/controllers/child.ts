@@ -33,7 +33,38 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
       throw new ValidationError('Child not found');
     }
 
-    return sanitizeChild(entry);
+    const parents = await Promise.all(entry.parents.map(async (parent) => {
+      const hasLogBook = await strapi.entityService.findMany('api::log-book.log-book', {
+        filters: {
+          type: {
+            $in: ['Student', 'StudentWithParent'],
+          },
+          parent: {
+            id: parent.id,
+          },
+          signInTime: {
+            $notNull: true,
+          },
+        },
+        sort: 'signInTime:desc',
+        populate: ['signatureIn'],
+        limit: 1,
+      });
+
+      if (hasLogBook.length) {
+        return {
+          ...parent,
+          signatureId: (hasLogBook[0] as any).signatureIn.id,
+        }
+      }
+
+      return parent;
+    }));
+
+    return sanitizeChild({
+      ...entry,
+      parents,
+    });
   },
   async dueStudents(ctx) {
     const center = await strapi.entityService.findOne('api::center.center', ctx.state.center.id, {

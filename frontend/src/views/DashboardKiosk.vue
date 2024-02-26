@@ -51,8 +51,18 @@
 
   <ScanQRModal v-model:show="scanQRModal" @student="handleQrStudent" />
   <GuestSignInModal v-model:show="guestSignInModal" />
-  <SignInModal v-model:show="signInModal" :item="selectedSignInItem" @onSuccess="clearSearch" />
-  <SignOutModal v-model:show="signOutModal" :item="selectedSignOutItem" @onSuccess="clearSearch" />
+  <SignInModal
+    v-model:show="signInModal"
+    :is-qr-mode="qrMode !== ''"
+    :item="selectedSignInItem"
+    @onSuccess="clearSearch"
+  />
+  <SignOutModal
+    v-model:show="signOutModal"
+    :is-qr-mode="qrMode !== ''"
+    :item="selectedSignOutItem"
+    @onSuccess="clearSearch"
+  />
 </template>
 
 <script setup lang="ts">
@@ -82,8 +92,6 @@ const signOutModal = ref(false);
 const isSearched = ref(false);
 
 const studentLastName = ref('');
-const studentPhone = ref('');
-const signedInFilterId = ref<number | null>(null);
 const selectedStudent = ref<Student | null>(null);
 const selectedSignInItem = ref<SearchResult | null>(null);
 const selectedSignOutItem = ref<LogRecord | null>(null);
@@ -94,7 +102,6 @@ const isSearching = computed(() => {
 
 const clearSearch = () => {
   studentLastName.value = '';
-  studentPhone.value = '';
   isSearched.value = false;
   selectedStudent.value = null;
   selectedSignInItem.value = null;
@@ -103,6 +110,7 @@ const clearSearch = () => {
 };
 
 const searchStudents = async () => {
+  qrMode.value = '';
   await searchStore.searchByLastName(studentLastName.value);
   if (searchStore.results.length === 1) {
     onSelectFromSearch(searchStore.results[0]);
@@ -157,8 +165,6 @@ const handleQrStudent = async (id: number) => {
         type: 'parent'
       };
     });
-  } else if (qrMode.value === 'signOut') {
-    signedInFilterId.value = id;
   }
 };
 
