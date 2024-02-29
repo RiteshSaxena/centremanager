@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import Card from '@/components/base/Card.vue';
 import UserListItem from '@/components/UserListItem.vue';
@@ -73,6 +73,14 @@ const onSelectSignIn = (item: Parent) => {
     student: props.student.id
   });
 };
+
+onMounted(() => {
+  setTimeout(() => {
+    if (isSignedInRecord.value) {
+      emit('onSelectSignOut', isSignedInRecord.value);
+    }
+  }, 500);
+});
 </script>
 
 <template>

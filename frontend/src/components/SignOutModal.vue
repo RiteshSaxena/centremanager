@@ -75,7 +75,7 @@ const onSubmit = async () => {
 
     emit('onSuccess');
     emit('update:show', false);
-    toast.success('Signed out Successfully');
+    toast.success(`Successfully signed out - ${selectedName.value}`);
     logBookStore.fetchList().then();
   } finally {
     loading.value = false;
@@ -89,6 +89,9 @@ const selectedName = computed(() => {
       props.item.type === 'StudentWithParent' ||
       props.item.type === 'Parent'
     ) {
+      if (props.item.student) {
+        return `${props.item.student.firstName} ${props.item.student.lastName} (${props.item.parent?.firstName} ${props.item.parent?.lastName})`;
+      }
       return `${props.item.parent?.firstName} ${props.item.parent?.lastName}`;
     } else if (props.item?.type === 'Staff') {
       return `${props.item.staff?.firstName} ${props.item.staff?.lastName}`;
