@@ -13,10 +13,12 @@ const props = withDefaults(
   defineProps<{
     show: boolean;
     item: SearchResult | null;
+    isQrMode?: boolean;
   }>(),
   {
     show: false,
-    item: null
+    item: null,
+    isQrMode: false
   }
 );
 
@@ -25,6 +27,7 @@ const emit = defineEmits(['update:show', 'onSuccess']);
 const toast = useToast();
 const logBookStore = useLogBookStore();
 
+const qrMode = ref(false);
 const loading = ref(false);
 const signaturePad = ref<typeof SignaturePad | null>(null);
 
@@ -32,6 +35,12 @@ watch(
   () => props.show,
   (val) => {
     if (val) {
+      qrMode.value = props.isQrMode && !!props.item?.signatureId;
+      if (qrMode.value) {
+        setTimeout(() => {
+          onSubmit();
+        }, 500);
+      }
       signaturePad.value?.reset();
     }
   }
@@ -40,14 +49,16 @@ watch(
 const isParentWithStudent = ref(false);
 
 const onSubmit = async () => {
-  if (!signaturePad.value || signaturePad.value.isEmpty()) {
-    toast.error('Please sign to continue');
-    return;
-  }
-
   if (!props.item) {
     toast.error('User not found');
     return;
+  }
+
+  if (!qrMode.value) {
+    if (!signaturePad.value || signaturePad.value.isEmpty()) {
+      toast.error('Please sign to continue');
+      return;
+    }
   }
 
   // if (props.item.type === 'parent') {
@@ -63,9 +74,14 @@ const onSubmit = async () => {
 
   try {
     loading.value = true;
-    const payload: any = {
-      signature: signaturePad.value.getImage().signature
-    };
+    const payload: any = {};
+
+    if (qrMode.value) {
+      payload.signatureId = props.item?.signatureId;
+    } else {
+      payload.signature = signaturePad.value?.getImage();
+    }
+
     if (props.item.type === 'staff') {
       payload.staff = props.item.id;
       payload.type = 'Staff';
@@ -95,10 +111,16 @@ const onSubmit = async () => {
   <Modal
     v-if="show"
     :large="true"
+    :show-footer-close-button="!qrMode"
     :title="`Sign In - ${item?.firstName} ${item?.lastName}`"
     @close="emit('update:show', false)"
   >
-    <div>
+    <div v-if="qrMode" class="w-100 text-center my-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <div v-else>
       <signature-pad ref="signaturePad" />
       <div class="form-check" v-if="item?.type === 'parent'">
         <input
@@ -113,7 +135,13 @@ const onSubmit = async () => {
       </div>
     </div>
     <template #footer>
-      <button type="button" class="btn btn-info" @click.prevent="onSubmit" :disabled="loading">
+      <button
+        v-if="!qrMode"
+        type="button"
+        class="btn btn-info"
+        @click.prevent="onSubmit"
+        :disabled="loading"
+      >
         {{ loading ? '...' : 'Submit' }}
       </button>
     </template>

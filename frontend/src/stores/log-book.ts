@@ -53,19 +53,33 @@ export const logBookStore = defineStore('log-book', {
       return res.data;
     },
     async signIn(payload: any) {
-      const fileUploadRes = await this.uploadImage(payload.signature);
-      const fileId = fileUploadRes.data[0].id;
+      const { signatureId, ...data } = payload;
+      let fileId = null;
+      if (signatureId) {
+        fileId = signatureId;
+      } else {
+        const fileUploadRes = await this.uploadImage(payload.signature);
+        fileId = fileUploadRes.data[0].id;
+      }
+
       const res = await axios.post('/log-book/sign-in', {
-        ...payload,
+        ...data,
         signature: fileId
       });
       return res.data;
     },
     async signOut(payload: any) {
-      const fileUploadRes = await this.uploadImage(payload.signature);
-      const fileId = fileUploadRes.data[0].id;
+      const { signatureId, ...data } = payload;
+      let fileId = null;
+      if (signatureId) {
+        fileId = signatureId;
+      } else {
+        const fileUploadRes = await this.uploadImage(payload.signature);
+        fileId = fileUploadRes.data[0].id;
+      }
+
       const res = await axios.post('/log-book/sign-out', {
-        ...payload,
+        ...data,
         signature: fileId
       });
       return res.data;

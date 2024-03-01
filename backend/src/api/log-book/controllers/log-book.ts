@@ -101,7 +101,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       },
     });
 
-    const studentsArr = students.map((student) => {
+    const studentsArr =students.map((student) => {
       return {
         type: 'student',
         ...student,
@@ -131,12 +131,41 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       populate: ['parents'],
     });
 
-    return students.map((student) => {
+    return await Promise.all(students.map(async (student) => {
+      const parents = await Promise.all(student.parents.map(async (parent) => {
+        const hasLogBook = await strapi.entityService.findMany('api::log-book.log-book', {
+          filters: {
+            type: {
+              $in: ['Student', 'StudentWithParent'],
+            },
+            parent: {
+              id: parent.id,
+            },
+            signInTime: {
+              $notNull: true,
+            },
+          },
+          sort: 'signInTime:desc',
+          populate: ['signatureIn'],
+          limit: 1,
+        });
+
+        if (hasLogBook.length) {
+          return {
+            ...parent,
+            signatureId: (hasLogBook[0] as any).signatureIn.id,
+          }
+        }
+
+        return parent;
+      }));
+
       return {
         type: 'student',
         ...student,
+        parents,
       };
-    });
+    }));
   },
   async guestSignIn(ctx) {
     const payload = await schema.guestSignIn(ctx.request.body);
@@ -239,6 +268,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     return true;
   },
   async list(ctx) {
+    const populate = ['student', 'parent', 'staff', 'guest'];
     const andFilters: any[] = [
       {
         center: ctx.state.center.id as any,
@@ -281,13 +311,14 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
           $null: true,
         },
       });
+      populate.push('signatureIn');
     }
 
     const entries = await strapi.entityService.findMany('api::log-book.log-book', {
       filters: {
         $and: [...andFilters],
       },
-      populate: ['student', 'parent', 'staff', 'guest'],
+      populate: populate as any,
       sort: sort as any,
     });
 
@@ -298,6 +329,13 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       if (entry.staff) {
         entry.staff = sanitizeUser(entry.staff);
       }
+
+      if (entry.signatureIn) {
+        entry.signatureId = entry.signatureIn.id;
+      }
+
+      delete entry.signatureIn;
+
       return entry;
     });
   },

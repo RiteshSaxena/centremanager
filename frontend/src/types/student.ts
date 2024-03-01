@@ -7,6 +7,7 @@ export interface Parent {
   contactNumber: string;
   createdAt: string;
   updatedAt: string;
+  signatureId?: number;
 }
 
 export interface Student {

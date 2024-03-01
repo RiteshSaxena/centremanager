@@ -13,10 +13,12 @@ const props = withDefaults(
   defineProps<{
     show: boolean;
     item: LogRecord | null;
+    isQrMode?: boolean;
   }>(),
   {
     show: false,
-    item: null
+    item: null,
+    isQrMode: false
   }
 );
 
@@ -25,6 +27,7 @@ const emit = defineEmits(['update:show', 'onSuccess']);
 const toast = useToast();
 const logBookStore = useLogBookStore();
 
+const qrMode = ref(false);
 const loading = ref(false);
 const signaturePad = ref<typeof SignaturePad | null>(null);
 
@@ -32,29 +35,47 @@ watch(
   () => props.show,
   (val) => {
     if (val) {
+      qrMode.value = props.isQrMode && !!props.item?.signatureId;
+      if (qrMode.value) {
+        setTimeout(() => {
+          onSubmit();
+        }, 500);
+      }
       signaturePad.value?.reset();
     }
   }
 );
 
 const onSubmit = async () => {
-  if (!signaturePad.value || signaturePad.value.isEmpty()) {
-    toast.error('Please sign to continue');
+  if (!props.item) {
+    toast.error('User not found');
     return;
+  }
+
+  if (!qrMode.value) {
+    if (!signaturePad.value || signaturePad.value.isEmpty()) {
+      toast.error('Please sign to continue');
+      return;
+    }
   }
 
   try {
     loading.value = true;
     const payload: any = {
-      signature: signaturePad.value.getImage(),
       signIn: props.item?.id
     };
+
+    if (qrMode.value) {
+      payload.signatureId = props.item?.signatureId;
+    } else {
+      payload.signature = signaturePad.value?.getImage();
+    }
 
     await logBookStore.signOut(payload);
 
     emit('onSuccess');
     emit('update:show', false);
-    toast.success('Signed out Successfully');
+    toast.success(`Successfully signed out - ${selectedName.value}`);
     logBookStore.fetchList().then();
   } finally {
     loading.value = false;
@@ -68,6 +89,9 @@ const selectedName = computed(() => {
       props.item.type === 'StudentWithParent' ||
       props.item.type === 'Parent'
     ) {
+      if (props.item.student) {
+        return `${props.item.student.firstName} ${props.item.student.lastName} (${props.item.parent?.firstName} ${props.item.parent?.lastName})`;
+      }
       return `${props.item.parent?.firstName} ${props.item.parent?.lastName}`;
     } else if (props.item?.type === 'Staff') {
       return `${props.item.staff?.firstName} ${props.item.staff?.lastName}`;
@@ -84,14 +108,27 @@ const selectedName = computed(() => {
   <Modal
     :large="true"
     v-if="show"
+    :show-footer-close-button="!qrMode"
     :title="`Sign Out - ${selectedName}`"
     @close="emit('update:show', false)"
   >
-    <div>
+    <div v-if="qrMode" class="w-100 text-center my-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <div v-else>
       <signature-pad ref="signaturePad" />
     </div>
+
     <template #footer>
-      <button type="button" class="btn btn-info" @click.prevent="onSubmit" :disabled="loading">
+      <button
+        v-if="!qrMode"
+        type="button"
+        class="btn btn-info"
+        @click.prevent="onSubmit"
+        :disabled="loading"
+      >
         {{ loading ? '...' : 'Submit' }}
       </button>
     </template>

@@ -77,8 +77,18 @@
 
   <ScanQRModal v-model:show="scanQRModal" @student="handleQrStudent" />
   <GuestSignInModal v-model:show="guestSignInModal" />
-  <SignInModal v-model:show="signInModal" :item="selectedSignInItem" @onSuccess="clearSearch" />
-  <SignOutModal v-model:show="signOutModal" :item="selectedSignOutItem" @onSuccess="clearSearch" />
+  <SignInModal
+    v-model:show="signInModal"
+    :is-qr-mode="qrMode !== ''"
+    :item="selectedSignInItem"
+    @onSuccess="clearSearch"
+  />
+  <SignOutModal
+    v-model:show="signOutModal"
+    :is-qr-mode="qrMode !== ''"
+    :item="selectedSignOutItem"
+    @onSuccess="clearSearch"
+  />
 </template>
 
 <script setup lang="ts">
@@ -121,6 +131,8 @@ const debouncedSearch = debounce((value: string) => {
 
 const clearSearch = () => {
   search.value = '';
+  signedInFilter.value = '';
+  signedInFilterId.value = null;
   selectedStudent.value = null;
   selectedSignInItem.value = null;
   selectedSignOutItem.value = null;
@@ -143,6 +155,7 @@ const onAddGuardian = (data: any) => {
 };
 
 const onSelectFromSearch = (item: SearchResult) => {
+  qrMode.value = '';
   selectedStudent.value = null;
   selectedSignInItem.value = null;
   if (item.type === 'student') {
@@ -166,6 +179,10 @@ const onSelectGuardian = (item: SearchResult) => {
 };
 
 const onSelectSignOut = (item: LogRecord) => {
+  if (!signedInFilterId.value) {
+    qrMode.value = '';
+  }
+
   selectedSignOutItem.value = item;
   signOutModal.value = true;
 };

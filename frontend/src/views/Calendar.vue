@@ -117,12 +117,18 @@ const getStudents = computed(() => {
 onMounted(async () => {
   await slotStore.fetchSlots();
   setTimeout(() => {
-    new Popover('.calendar-container', {
-      selector: '[data-bs-toggle="popover"]',
-      trigger: 'hover',
-      container: 'body',
-      placement: 'top'
-    });
+    const popover = document.querySelectorAll('.calendar-container [data-bs-toggle="popover"]');
+
+    if (popover.length) {
+      popover.forEach((el) => {
+        new Popover(el, {
+          trigger: 'hover',
+          container: 'body',
+          placement: 'top',
+          html: true
+        });
+      });
+    }
   }, 1000);
 });
 </script>
