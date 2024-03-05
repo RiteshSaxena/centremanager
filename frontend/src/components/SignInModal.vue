@@ -99,6 +99,8 @@ const onSubmit = async () => {
 
     emit('onSuccess');
     emit('update:show', false);
+    const audio = new Audio('../assets/click.mp3');
+    await audio.play();
     toast.success('Signed Successfully');
     logBookStore.fetchList().then();
   } finally {
