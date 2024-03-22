@@ -24,8 +24,17 @@
           <button type="button" class="btn btn-info btn-lg flex-1" @click="qrSignIn">
             Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
           </button>
+        </div>
+        <div class="d-flex justify-content-between gap-2 mt-4">
           <button type="button" class="btn btn-info btn-lg flex-1" @click="guestSignInModal = true">
             Guest Sign In
+          </button>
+          <button
+            type="button"
+            class="btn btn-info btn-lg flex-1"
+            @click="guestSignOutModal = true"
+          >
+            Guest Sign Out
           </button>
         </div>
       </div>
@@ -51,6 +60,7 @@
 
   <ScanQRModal v-model:show="scanQRModal" @student="handleQrStudent" />
   <GuestSignInModal v-model:show="guestSignInModal" />
+  <GuestSignOutModal v-model:show="guestSignOutModal" @onSelect="onSelectSignOut" />
   <SignInModal
     v-model:show="signInModal"
     :is-qr-mode="qrMode !== ''"
@@ -75,6 +85,7 @@ import SearchResults from '@/components/SearchResults.vue';
 import GuardianList from '@/components/GuardianList.vue';
 import ScanQRModal from '@/components/ScanQRModal.vue';
 import GuestSignInModal from '@/components/GuestSignInModal.vue';
+import GuestSignOutModal from '@/components/GuestSignOutModal.vue';
 import SignInModal from '@/components/SignInModal.vue';
 import SignOutModal from '@/components/SignOutModal.vue';
 
@@ -87,6 +98,7 @@ const studentStore = useStudentStore();
 const qrMode = ref('');
 const scanQRModal = ref(false);
 const guestSignInModal = ref(false);
+const guestSignOutModal = ref(false);
 const signInModal = ref(false);
 const signOutModal = ref(false);
 const isSearched = ref(false);
