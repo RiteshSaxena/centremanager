@@ -54,19 +54,22 @@ const isStudentDue = computed(() => {
     <span v-if="isStudentDue" class="badge cursor-pointer badge-yellow rounded-pill">
       <i class="fa-solid fa-dollar-sign"></i>
     </span>
+    <i class="fa-solid fa-chevron-right" ></i>
   </div>
 </template>
 
 <style scoped lang="scss">
 .child-list-item {
-  background: #f5f5f5;
+  background: #eff9ff;
   border-radius: 10px;
   padding: 10px 25px;
   margin-bottom: 10px;
+  border: 2px solid #a7d3f0;
   cursor: pointer;
+  box-shadow: 2px 4px 0px 0px #5493c26e;
 
   &:hover {
-    background: #ffe08a;
+    background: #ffffff;
   }
 
   .name,
@@ -87,6 +90,6 @@ const isStudentDue = computed(() => {
   color: #eb72ff;
 }
 .icon-general {
-  color: #b5b5b5;
+  color: #193b4d;
 }
 </style>
