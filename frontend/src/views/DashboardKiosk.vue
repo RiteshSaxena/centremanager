@@ -1,7 +1,7 @@
 <template>
   <div class="row mt-5">
-    <div class="col-md-3"></div>
-    <div class="col-md-6 order-2 order-md-1">
+    <div class="col-md-2 col-lg-3"></div>
+    <div class="col-md-8 col-lg-6 order-2 order-md-1">
       <div v-if="!(isSearched || selectedStudent)">
         <form
           class="d-flex flex-column gap-3 mb-4"
