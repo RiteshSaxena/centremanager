@@ -89,8 +89,10 @@ import GuestSignOutModal from '@/components/GuestSignOutModal.vue';
 import SignInModal from '@/components/SignInModal.vue';
 import SignOutModal from '@/components/SignOutModal.vue';
 
-import { useSearchStore, useLogBookStore, useStudentStore } from '@/stores';
+import { useSearchStore, useLogBookStore, useStudentStore, useSlotStore } from '@/stores';
+import errorHandler from '@/utils/error-handler';
 
+const slotStore = useSlotStore();
 const searchStore = useSearchStore();
 const logBookStore = useLogBookStore();
 const studentStore = useStudentStore();
@@ -188,7 +190,14 @@ const qrSignIn = () => {
 let logBookTimer: any = null;
 
 onMounted(async () => {
-  await logBookStore.fetchList();
+  logBookStore
+    .fetchList()
+    .then()
+    .catch((err) => errorHandler(err));
+  slotStore
+    .fetchSlots()
+    .then()
+    .catch((err) => errorHandler(err));
   logBookTimer = setInterval(async () => {
     await logBookStore.fetchList();
   }, 1000 * 60);

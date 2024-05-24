@@ -5,9 +5,10 @@ import Card from '@/components/base/Card.vue';
 import UserListItem from '@/components/UserListItem.vue';
 import AddGuardianModal from '@/components/AddGuardianModal.vue';
 
-import { useLogBookStore, useSearchStore, useStudentStore } from '@/stores';
+import { useLogBookStore, useSearchStore, useStudentStore, useSlotStore } from '@/stores';
 
 import type { Parent, Student } from '@/types';
+import moment from 'moment/moment';
 
 const props = withDefaults(
   defineProps<{
@@ -21,6 +22,9 @@ const props = withDefaults(
 
 const emit = defineEmits(['onSelectSignIn', 'onSelectSignOut', 'onAddGuardian']);
 
+const todayDay = moment().format('dddd');
+
+const slotStore = useSlotStore();
 const studentStore = useStudentStore();
 const searchStore = useSearchStore();
 const logBookStore = useLogBookStore();
@@ -56,6 +60,30 @@ const studentDueAmount = computed(() => {
     return student.dueAmount;
   }
   return 0;
+});
+
+const isStudentLate = computed(() => {
+  const slots = slotStore.slots.filter(
+    (slot) =>
+      slot.day === todayDay &&
+      moment().unix() > moment(slot.startTime, 'HH:mm:ss.SSS').unix() &&
+      moment().unix() < moment(slot.endTime, 'HH:mm:ss.SSS').unix()
+  );
+  const studentSlot = slots.find((slot) =>
+    slot.children.find((child) => child.id === props.student.id)
+  );
+
+  if (!studentSlot) {
+    return null;
+  }
+
+  const startTime = moment(studentSlot.startTime, 'HH:mm:ss.SSS');
+
+  return {
+    ...studentSlot,
+    late: moment().diff(startTime, 'minutes'),
+    startTime: startTime.format('h:mma')
+  };
 });
 
 const isSignedInRecord = computed(() => {
@@ -94,6 +122,10 @@ onMounted(() => {
     </p>
     <p class="text-display text-danger" v-if="studentDueAmount > 0">
       Due Amount: <span class="fw-bold">£{{ studentDueAmount }}</span>
+    </p>
+    <p class="text-display text-danger mt-3" v-if="isStudentLate && isStudentLate.late > 5">
+      You are {{ isStudentLate.late }} minutes late. Your time of arrival is
+      {{ isStudentLate.startTime }}.
     </p>
     <div v-if="isSignedInRecord">
       <button

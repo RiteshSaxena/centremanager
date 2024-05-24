@@ -16,7 +16,7 @@ body {
 }
 
 @media(min-width: 768px) and (max-width: 1350px){
-  #app {
+  .app-kiosk #app {
     zoom: 125%;
   }
 }

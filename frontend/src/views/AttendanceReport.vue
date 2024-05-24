@@ -13,6 +13,7 @@ const logBookStore = useLogBookStore();
 const slotStore = useSlotStore();
 
 const reportDate = ref<string>(moment().format('YYYY-MM-DD'));
+const reportDay = ref<string>(moment().format('dddd'));
 const search = ref<string>('');
 const studentId = ref<number | null>(null);
 const staffId = ref<number | null>(null);
@@ -136,6 +137,7 @@ const onSubmit = async () => {
     } else {
       searchMode.value = 'date';
       records.value = await logBookStore.fetchListByDate(reportDate.value);
+      reportDay.value = moment(reportDate.value, 'YYYY-MM-DD').format('dddd');
     }
     clearSearch();
   } finally {
@@ -143,11 +145,11 @@ const onSubmit = async () => {
   }
 };
 
-const todayDay = moment().format('dddd');
+// const todayDay = moment().format('dddd');
 
 const absentChildren = computed(() => {
   const allChildren: any[] = [];
-  const todaySlots = slotStore.slots.filter((slot) => slot.day === todayDay);
+  const todaySlots = slotStore.slots.filter((slot) => slot.day === reportDay.value);
   todaySlots.forEach((slot) => {
     slot.children.forEach((child) => {
       const isChildExists = allChildren.find((c) => c.id === child.id);
@@ -165,6 +167,7 @@ const absentChildren = computed(() => {
 
 onMounted(async () => {
   await slotStore.fetchSlots();
+  searchFromDate();
 });
 </script>
 
