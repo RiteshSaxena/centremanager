@@ -55,14 +55,14 @@ const onSubmit = async () => {
     }
 
     const payload: any = {
-      firstName: guestData.firstName,
-      lastName: guestData.lastName,
-      phoneNumber: guestData.phoneNumber.toString(),
+      firstName: guestData.firstName.trim(),
+      lastName: guestData.lastName.trim(),
+      phoneNumber: guestData.phoneNumber.toString().trim(),
       signature: signaturePad.value.getImage()
     };
 
     if (guestData.email) {
-      payload.email = guestData.email;
+      payload.email = guestData.email.toLowerCase().trim();
     }
 
     await logBookStore.guestSignIn(payload);

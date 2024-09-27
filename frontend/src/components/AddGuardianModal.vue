@@ -24,13 +24,13 @@ const guardianData = reactive({
 
 const onSubmit = () => {
   const payload: any = {
-    firstName: guardianData.firstName,
-    lastName: guardianData.lastName,
-    phoneNumber: guardianData.phoneNumber
+    firstName: guardianData.firstName.trim(),
+    lastName: guardianData.lastName.trim(),
+    phoneNumber: guardianData.phoneNumber.trim()
   };
 
   if (guardianData.email) {
-    payload.email = guardianData.email;
+    payload.email = guardianData.email.toLowerCase().trim();
   }
   emit('onSubmit', payload);
 };
