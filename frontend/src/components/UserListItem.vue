@@ -54,7 +54,7 @@ const isStudentDue = computed(() => {
     <span v-if="isStudentDue" class="badge cursor-pointer badge-yellow rounded-pill">
       <i class="fa-solid fa-dollar-sign"></i>
     </span>
-    <i class="fa-solid fa-chevron-right" ></i>
+    <i class="fa-solid fa-chevron-right"></i>
   </div>
 </template>
 

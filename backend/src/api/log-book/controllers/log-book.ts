@@ -101,7 +101,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       },
     });
 
-    const studentsArr =students.map((student) => {
+    const studentsArr = students.map((student) => {
       return {
         type: 'student',
         ...student,
@@ -131,41 +131,45 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       populate: ['parents'],
     });
 
-    return await Promise.all(students.map(async (student) => {
-      const parents = await Promise.all(student.parents.map(async (parent) => {
-        const hasLogBook = await strapi.entityService.findMany('api::log-book.log-book', {
-          filters: {
-            type: {
-              $in: ['Student', 'StudentWithParent'],
-            },
-            parent: {
-              id: parent.id,
-            },
-            signInTime: {
-              $notNull: true,
-            },
-          },
-          sort: 'signInTime:desc',
-          populate: ['signatureIn'],
-          limit: 1,
-        });
+    return await Promise.all(
+      students.map(async (student) => {
+        const parents = await Promise.all(
+          student.parents.map(async (parent) => {
+            const hasLogBook = await strapi.entityService.findMany('api::log-book.log-book', {
+              filters: {
+                type: {
+                  $in: ['Student', 'StudentWithParent'],
+                },
+                parent: {
+                  id: parent.id,
+                },
+                signInTime: {
+                  $notNull: true,
+                },
+              },
+              sort: 'signInTime:desc',
+              populate: ['signatureIn'],
+              limit: 1,
+            });
 
-        if (hasLogBook.length) {
-          return {
-            ...parent,
-            signatureId: (hasLogBook[0] as any).signatureIn.id,
-          }
-        }
+            if (hasLogBook.length) {
+              return {
+                ...parent,
+                signatureId: (hasLogBook[0] as any).signatureIn.id,
+              };
+            }
 
-        return parent;
-      }));
+            return parent;
+          })
+        );
 
-      return {
-        type: 'student',
-        ...student,
-        parents,
-      };
-    }));
+        return {
+          type: 'student',
+          ...student,
+          parents,
+        };
+      })
+    );
   },
   async guestSignIn(ctx) {
     const payload = await schema.guestSignIn(ctx.request.body);
