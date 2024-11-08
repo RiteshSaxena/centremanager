@@ -57,12 +57,15 @@ const onSubmit = async () => {
     const payload: any = {
       firstName: guestData.firstName.trim(),
       lastName: guestData.lastName.trim(),
-      phoneNumber: guestData.phoneNumber.toString().trim(),
       signature: signaturePad.value.getImage()
     };
 
     if (guestData.email) {
       payload.email = guestData.email.toLowerCase().trim();
+    }
+
+    if (guestData.phoneNumber) {
+      payload.phoneNumber = guestData.phoneNumber.toString().trim();
     }
 
     await logBookStore.guestSignIn(payload);
@@ -118,7 +121,6 @@ const emit = defineEmits(['update:show']);
         :is-white="true"
         v-model="guestData.phoneNumber"
         type="number"
-        :required="true"
         placeholder="Phone Number"
       />
     </form>
