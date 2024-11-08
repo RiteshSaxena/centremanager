@@ -111,6 +111,10 @@
     "isEarlyLearner": {
       "type": "boolean",
       "default": false
+    },
+    "showDue": {
+      "type": "boolean",
+      "default": true
     }
   }
 }

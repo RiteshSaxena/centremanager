@@ -658,6 +658,7 @@ export interface ApiChildChild extends Schema.CollectionType {
     notes: Attribute.Text;
     paymentDate: Attribute.Integer;
     isEarlyLearner: Attribute.Boolean & Attribute.DefaultTo<false>;
+    showDue: Attribute.Boolean & Attribute.DefaultTo<true>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::child.child', 'oneToOne', 'admin::user'> & Attribute.Private;
