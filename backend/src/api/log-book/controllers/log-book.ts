@@ -278,7 +278,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
         center: ctx.state.center.id as any,
       },
     ];
-    let sort = 'signInTime';
+    let sort = 'signInTime:desc';
 
     let date = new Date();
 

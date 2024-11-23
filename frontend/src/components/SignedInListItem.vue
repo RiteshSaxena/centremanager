@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { LogRecord } from '@/types';
 import { computed, onMounted, ref, watch } from 'vue';
+import moment from 'moment';
 
 const props = defineProps<{
   item: LogRecord;
@@ -18,6 +19,7 @@ const updateVars = () => {
   type.value = '';
   desc.value = '';
   phoneNumber.value = '';
+  const signInTime = moment(props.item?.signInTime).format('hh:mmA');
   if (props.item?.type === 'Student') {
     name.value = `${props.item?.student?.firstName} ${props.item?.student?.lastName}`;
     type.value = 'Student';
@@ -30,6 +32,7 @@ const updateVars = () => {
       descArr.push(`${props.item?.parent?.contactNumber}`);
       phoneNumber.value = props.item?.parent?.contactNumber;
     }
+    descArr.push(signInTime);
     desc.value = descArr.join(' - ');
   } else if (props.item?.type === 'StudentWithParent') {
     name.value = `${props.item?.student?.firstName} ${props.item?.student?.lastName}, ${props.item?.parent?.firstName} ${props.item?.parent?.lastName}`;
@@ -43,6 +46,7 @@ const updateVars = () => {
       descArr.push(`${props.item?.parent?.contactNumber}`);
       phoneNumber.value = props.item?.parent?.contactNumber;
     }
+    descArr.push(signInTime);
     desc.value = descArr.join(' - ');
   } else if (props.item?.type === 'Staff') {
     name.value = `${props.item?.staff?.firstName} ${props.item?.staff?.lastName}`;
@@ -54,6 +58,7 @@ const updateVars = () => {
     } else if (props.item?.staff?.email) {
       desc.value += `${props.item?.staff?.email}`;
     }
+    desc.value += ` - ${signInTime}`;
   } else if (props.item?.type === 'Parent') {
     name.value = `${props.item?.parent?.firstName} ${props.item?.parent?.lastName}`;
     type.value = 'Parent';
@@ -64,6 +69,7 @@ const updateVars = () => {
     } else if (props.item?.parent?.email) {
       desc.value += `${props.item?.parent?.email}`;
     }
+    desc.value += ` - ${signInTime}`;
   } else if (props.item?.type === 'Guest') {
     name.value = `${props.item?.guest?.firstName} ${props.item?.guest?.lastName}`;
     type.value = 'Guest';
@@ -74,6 +80,7 @@ const updateVars = () => {
     } else if (props.item?.guest?.email) {
       desc.value += `${props.item?.guest?.email}`;
     }
+    desc.value += ` - ${signInTime}`;
   }
 };
 

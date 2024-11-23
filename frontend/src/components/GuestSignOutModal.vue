@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useToast } from 'vue-toastification';
 
 import { useLogBookStore } from '@/stores';
 
