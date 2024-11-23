@@ -54,12 +54,12 @@ export default factories.createCoreController('api::center.center', () => ({
       throw new ValidationError('Email already taken');
     }
 
-    const roles = await strapi.entityService.findMany('plugin::users-permissions.role', {
+    const roles = (await strapi.entityService.findMany('plugin::users-permissions.role', {
       filters: {
         type: 'authenticated',
       },
       limit: 1,
-    });
+    })) as any[];
 
     if (!roles.length) {
       throw new ValidationError('Authenticated role not found');
