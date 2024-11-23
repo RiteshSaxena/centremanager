@@ -19,7 +19,7 @@ const updateVars = () => {
   type.value = '';
   desc.value = '';
   phoneNumber.value = '';
-  const signInTime = moment(props.item?.signInTime).format('hh:mmA, DD MMM, YY');
+  const signInTime = moment(props.item?.signInTime).format('hh:mmA');
   if (props.item?.type === 'Student') {
     name.value = `${props.item?.student?.firstName} ${props.item?.student?.lastName}`;
     type.value = 'Student';

@@ -45,9 +45,7 @@ const isStudentDue = computed(() => {
     <i class="fa-solid fa-user" :class="iconColorClass"></i>
     <div class="w-100">
       <span class="name">{{ item?.firstName }} {{ item?.lastName }}</span>
-      <span class="desc" v-if="item?.type === 'student'">
-        Student {{ item?.schoolYear ? '- ' + item?.schoolYear : '' }}
-      </span>
+      <span class="desc" v-if="item?.type === 'student'"> Student </span>
       <span class="desc" v-if="item?.type === 'staff'"> Staff - {{ item?.email }} </span>
       <span class="desc" v-if="item?.type === 'parent'"> {{ (item as any)?.contactNumber }} </span>
     </div>
