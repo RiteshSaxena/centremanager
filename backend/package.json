@@ -23,38 +23,44 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@strapi/plugin-content-manager": "file:./packages/strapi-plugin-content-manager",
-    "@strapi/plugin-i18n": "^4.16.2",
-    "@strapi/plugin-sentry": "^4.16.2",
-    "@strapi/plugin-users-permissions": "^4.16.2",
-    "@strapi/provider-upload-aws-s3": "^4.16.2",
-    "@strapi/strapi": "^4.16.2",
-    "@strapi/utils": "^4.16.2",
-    "axios": "^1.6.3",
-    "csv-parse": "^5.5.2",
+    "@strapi/plugin-i18n": "^4.25.17",
+    "@strapi/plugin-sentry": "^4.25.17",
+    "@strapi/plugin-users-permissions": "^4.25.17",
+    "@strapi/provider-upload-aws-s3": "^4.25.17",
+    "@strapi/strapi": "^4.25.17",
+    "@strapi/utils": "^4.25.17",
+    "axios": "^1.7.7",
+    "csv-parse": "^5.6.0",
     "lodash": "^4.17.21",
-    "moment": "^2.29.4",
-    "mysql2": "^3.6.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "moment": "^2.30.1",
+    "mysql2": "^3.11.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^5.3.4",
-    "strapi-advanced-uuid": "^1.1.4",
+    "strapi-advanced-uuid": "^1.4.2",
     "styled-components": "^5.3.11"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "better-sqlite3": "^9.1.1",
+    "braces": "^3.0.3",
+    "cookie": "^1.0.2",
     "eslint": "^8.52.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "micromatch": "^4.0.8",
     "prettier": "^3.0.3",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.3",
+    "vite": "^5.4.11"
   },
   "overrides": {
-    "@strapi/plugin-content-manager": "file:./packages/strapi-plugin-content-manager"
+    "braces": "^3.0.3",
+    "cookie": "^1.0.2",
+    "micromatch": "^4.0.8",
+    "vite": "^5.4.11"
   },
   "license": "MIT"
 }
