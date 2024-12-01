@@ -22,7 +22,11 @@
     },
     "gender": {
       "type": "enumeration",
-      "enum": ["Male", "Female", "Others"]
+      "enum": [
+        "Male",
+        "Female",
+        "Others"
+      ]
     },
     "houseNumber": {
       "type": "string"
@@ -112,9 +116,15 @@
       "type": "boolean",
       "default": false
     },
-    "showDue": {
+    "isDue": {
       "type": "boolean",
-      "default": true
+      "default": false
+    },
+    "dueAmount": {
+      "type": "decimal"
+    },
+    "paymentAmount": {
+      "type": "decimal"
     }
   }
 }

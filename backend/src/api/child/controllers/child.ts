@@ -73,24 +73,41 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
       populate: ['zohobooks'],
     });
 
-    let booksStudents = [];
+    let dueStudents = [];
     let booksEnabled = false;
 
-    if (center.zohobooks && center.zohobooks.enabled) {
-      booksStudents = await strapi
-        .service('api::zoho-books.zoho-books')
-        .fetchContacts(center.id as number, center.zohobooks);
-      booksEnabled = true;
-    }
+    if (center.paymentHandler === 'zohobooks') {
+      let booksStudents = [];
+      if (center.zohobooks) {
+        booksEnabled = true;
+        booksStudents = await strapi
+          .service('api::zoho-books.zoho-books')
+          .fetchContacts(center.id as number, center.zohobooks);
+        booksEnabled = true;
+      }
 
-    const dueStudents = booksStudents
-      .filter((student: any) => student.parent.outstanding_receivable_amount > 0)
-      .map((student: any) => {
-        return {
-          id: parseInt(student.designation),
-          dueAmount: student.parent.outstanding_receivable_amount,
-        };
+      dueStudents = booksStudents
+        .filter((student: any) => student.parent.outstanding_receivable_amount > 0)
+        .map((student: any) => {
+          return {
+            id: parseInt(student.designation),
+            dueAmount: student.parent.outstanding_receivable_amount,
+          };
+        });
+    } else if (center.paymentHandler === 'inbuilt') {
+      booksEnabled = true;
+      dueStudents = await strapi.entityService.findMany('api::child.child', {
+        filters: {
+          center: ctx.state.center.id,
+          isDue: true,
+        },
       });
+      dueStudents = dueStudents.map((student) => ({
+        ...sanitizeChild(student),
+        id: student.id,
+        dueAmount: student.dueAmount || center.defaultDueAmount || 1,
+      }));
+    }
 
     return {
       booksEnabled,

@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "payments",
+  "info": {
+    "singularName": "payment",
+    "pluralName": "payments",
+    "displayName": "Payment",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "center": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::center.center"
+    },
+    "child": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::child.child"
+    },
+    "paymentDate": {
+      "type": "date",
+      "required": true
+    },
+    "notes": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "decimal",
+      "required": true
+    }
+  }
+}

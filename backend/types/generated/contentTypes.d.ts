@@ -299,10 +299,21 @@ export interface ApiCenterCenter extends Schema.CollectionType {
   attributes: {
     createdAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::center.center', 'oneToOne', 'admin::user'> & Attribute.Private;
+    defaultDueAmount: Attribute.Decimal;
+    defaultPaymentDate: Attribute.Integer &
+      Attribute.SetMinMax<
+        {
+          max: 31;
+          min: 1;
+        },
+        number
+      > &
+      Attribute.DefaultTo<1>;
     displayName: Attribute.String;
     lastImportDate: Attribute.DateTime;
     logo: Attribute.Media<'images'>;
     name: Attribute.String & Attribute.Required & Attribute.Unique;
+    paymentHandler: Attribute.Enumeration<['none', 'inbuilt', 'zohobooks']>;
     region: Attribute.String;
     subscription: Attribute.Component<'subscription.subscription'>;
     updatedAt: Attribute.DateTime;
@@ -328,22 +339,24 @@ export interface ApiChildChild extends Schema.CollectionType {
     city: Attribute.String;
     createdAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::child.child', 'oneToOne', 'admin::user'> & Attribute.Private;
+    dueAmount: Attribute.Decimal;
     enquiryDate: Attribute.DateTime;
     enrollmentDate: Attribute.DateTime;
     firstName: Attribute.String & Attribute.Required;
     formType: Attribute.String;
     gender: Attribute.Enumeration<['Male', 'Female', 'Others']>;
     houseNumber: Attribute.String;
+    isDue: Attribute.Boolean & Attribute.DefaultTo<false>;
     isEarlyLearner: Attribute.Boolean & Attribute.DefaultTo<false>;
     lastName: Attribute.String;
     notes: Attribute.Text;
     parents: Attribute.Relation<'api::child.child', 'manyToMany', 'api::parent.parent'>;
+    paymentAmount: Attribute.Decimal;
     paymentDate: Attribute.Integer;
     postcode: Attribute.String;
     referralCode: Attribute.String;
     school: Attribute.Relation<'api::child.child', 'oneToOne', 'api::school.school'>;
     schoolYear: Attribute.String;
-    showDue: Attribute.Boolean & Attribute.DefaultTo<true>;
     slots: Attribute.Relation<'api::child.child', 'manyToMany', 'api::slot.slot'>;
     status: Attribute.Enumeration<
       [
@@ -452,6 +465,30 @@ export interface ApiParentParent extends Schema.CollectionType {
     lastName: Attribute.String;
     updatedAt: Attribute.DateTime;
     updatedBy: Attribute.Relation<'api::parent.parent', 'oneToOne', 'admin::user'> & Attribute.Private;
+  };
+}
+
+export interface ApiPaymentPayment extends Schema.CollectionType {
+  collectionName: 'payments';
+  info: {
+    description: '';
+    displayName: 'Payment';
+    pluralName: 'payments';
+    singularName: 'payment';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    amount: Attribute.Decimal & Attribute.Required;
+    center: Attribute.Relation<'api::payment.payment', 'oneToOne', 'api::center.center'>;
+    child: Attribute.Relation<'api::payment.payment', 'oneToOne', 'api::child.child'>;
+    createdAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::payment.payment', 'oneToOne', 'admin::user'> & Attribute.Private;
+    notes: Attribute.String;
+    paymentDate: Attribute.Date & Attribute.Required;
+    updatedAt: Attribute.DateTime;
+    updatedBy: Attribute.Relation<'api::payment.payment', 'oneToOne', 'admin::user'> & Attribute.Private;
   };
 }
 
@@ -852,6 +889,7 @@ declare module '@strapi/types' {
       'api::invite-code.invite-code': ApiInviteCodeInviteCode;
       'api::log-book.log-book': ApiLogBookLogBook;
       'api::parent.parent': ApiParentParent;
+      'api::payment.payment': ApiPaymentPayment;
       'api::school.school': ApiSchoolSchool;
       'api::slot.slot': ApiSlotSlot;
       'api::subject.subject': ApiSubjectSubject;

@@ -15,6 +15,9 @@ body {
   --bs-pagination-focus-box-shadow: none;
 }
 
+:root {
+  --bs-heading-color: #193b4d;
+}
 @media (min-width: 768px) and (max-width: 1350px) {
   .app-kiosk #app {
     zoom: 125%;

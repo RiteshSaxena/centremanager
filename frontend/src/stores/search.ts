@@ -16,10 +16,14 @@ export const searchStore = defineStore('search', {
     loading: false
   }),
   actions: {
-    async search(text: string) {
+    async search(text: string, isStudentOnly: boolean = false) {
       try {
         this.loading = true;
-        const res = await axios.post<SearchResult[]>('/log-book/search', { text });
+        let query = '';
+        if (isStudentOnly) {
+          query = '?childOnly=true';
+        }
+        const res = await axios.post<SearchResult[]>(`/log-book/search${query}`, { text });
         this.results = [...res.data];
       } finally {
         this.loading = false;

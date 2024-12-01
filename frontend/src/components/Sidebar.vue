@@ -121,6 +121,10 @@ const logout = async () => {
         <i class="fa-solid fa-clipboard-user"></i>
         <span>Attendance</span>
       </router-link>
+      <router-link v-if="isMainApp" to="/payments" class="sidebar-item">
+        <i class="fa-solid fa-money-check-dollar"></i>
+        <span>Payments</span>
+      </router-link>
       <router-link v-if="isMainApp" to="/qr" class="sidebar-item">
         <i class="fa-solid fa-qrcode"></i>
         <span>QR Codes</span>

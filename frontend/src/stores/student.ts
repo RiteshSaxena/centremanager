@@ -51,6 +51,18 @@ export const studentStore = defineStore('student', {
       const res = await axios.get<Student>(`/children/${id}`);
       return res.data;
     },
+    async fetchPayments(childId?: number) {
+      let query = '';
+      if (childId) {
+        query = `?child=${childId}`;
+      }
+      const res = await axios.get(`/payments${query}`);
+      return res.data;
+    },
+    async addPayment(payload: any) {
+      const res = await axios.post(`/payments`, payload);
+      return res.data;
+    },
     async dueStudents() {
       const res = await axios.get('/children/due-students');
       this.books.enabled = res.data.booksEnabled;
