@@ -149,7 +149,7 @@ const logout = async () => {
 .sidebar {
   background: #193b4d;
   width: 100%;
-  transition: width 0.2s ease;
+  transition: all 0.2s ease;
   a {
     text-align: center;
     text-decoration: none;
@@ -173,12 +173,6 @@ const logout = async () => {
       font-size: 20px;
     }
   }
-  @media (max-width: 767px) {
-    &:not(.sidebar-expanded) {
-      max-height: 64px;
-      overflow: hidden;
-    }
-  }
 
   &.sidebar-expanded {
     width: 170px;
@@ -187,6 +181,16 @@ const logout = async () => {
       span {
         visibility: visible;
       }
+    }
+  }
+
+  @media (max-width: 767px) {
+    &.sidebar-expanded {
+      width: 100%;
+    }
+    &:not(.sidebar-expanded) {
+      max-height: 64px;
+      overflow: hidden;
     }
   }
 }
