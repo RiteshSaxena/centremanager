@@ -14,6 +14,7 @@ const searchStore = useSearchStore();
 const studentStore = useStudentStore();
 
 const search = ref<string>('');
+const searchedId = ref<number | null>(null);
 const studentId = ref<number | null>(null);
 const selectedName = ref<string>('');
 const paymentHistory = ref<any[]>([]);
@@ -36,6 +37,7 @@ const clearSearch = () => {
 const clearSelected = () => {
   studentId.value = null;
   selectedName.value = '';
+  searchedId.value = null;
   fetchPayments();
 };
 
@@ -49,8 +51,11 @@ watch(search, () => {
 
 const onSelectFromSearch = (item: SearchResult) => {
   studentId.value = null;
+  selectedName.value = '';
+  searchedId.value = null;
   if (item.type === 'student') {
     studentId.value = item.id;
+    searchedId.value = item.id;
     selectedName.value = `${item.firstName} ${item.lastName}`;
     fetchPayments(item.id);
   }
@@ -64,6 +69,11 @@ const fetchPayments = async (childId?: number) => {
   } finally {
     loading.value = false;
   }
+};
+
+const openPaymentModal = (childId: number) => {
+  studentId.value = childId;
+  showAddPaymentModal.value = true;
 };
 
 const addPayment = async () => {
@@ -92,7 +102,7 @@ onMounted(async () => {
         <i class="fa-solid fa-xmark"></i>
       </button>
       <button
-        v-if="studentId"
+        v-if="searchedId"
         type="button"
         class="btn btn-secondary rounded-3"
         @click="clearSelected"
@@ -106,7 +116,7 @@ onMounted(async () => {
     v-if="search.trim().length"
     @onSelect="onSelectFromSearch"
   />
-  <p class="mt-4 mb-0" v-if="studentId"><strong>Selected:</strong> {{ selectedName }}</p>
+  <p class="mt-4 mb-0" v-if="searchedId"><strong>Selected:</strong> {{ selectedName }}</p>
   <p class="mt-4 mb-0" v-if="!paymentHistory.length && !loading">No records found</p>
   <p class="mt-4 mb-0" v-if="loading">Loading...</p>
   <table class="table mt-4" v-if="paymentHistory.length">
@@ -129,7 +139,7 @@ onMounted(async () => {
       </tr>
     </tbody>
   </table>
-  <div v-if="studentId" class="mt-4">
+  <div v-if="searchedId" class="mt-4">
     <button type="button" class="btn btn-info" @click="showAddPaymentModal = true">
       Add Payment
     </button>
@@ -142,14 +152,23 @@ onMounted(async () => {
         <tr>
           <th scope="col">#</th>
           <th scope="col">Name</th>
-          <th scope="col">Due amount</th>
+          <th scope="col" class="text-center">Due amount</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(record, index) in dueStudents" :key="record.id">
+        <tr class="align-middle" v-for="(record, index) in dueStudents" :key="record.id">
           <th scope="row">{{ index + 1 }}</th>
           <td>{{ record.firstName }} {{ record.lastName }}</td>
-          <td>{{ record.dueAmount || '-' }}</td>
+          <td class="text-center">{{ record.dueAmount || '-' }}</td>
+          <td class="text-center">
+            <button type="button" class="btn btn-info btn-sm" @click="openPaymentModal(record.id)">
+              Add Payment
+            </button>
+          </td>
+        </tr>
+        <tr v-if="!dueStudents.length">
+          <td class="text-center" colspan="4">No records found</td>
         </tr>
       </tbody>
     </table>

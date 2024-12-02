@@ -33,6 +33,10 @@ const isKioskApp = APP_TYPE === 'app-kiosk';
 
 const loading = ref(false);
 
+const getDueAmount = (amount: number) => {
+  return amount > 1 ? `£${amount}` : 'NA';
+};
+
 const onSubmit = async (data: any) => {
   try {
     loading.value = true;
@@ -121,7 +125,7 @@ onMounted(() => {
       School Year: <span class="fw-bold">{{ student.schoolYear }}</span>
     </p>
     <p class="text-display text-danger" v-if="studentDueAmount > 0">
-      Due Amount: <span class="fw-bold">£{{ studentDueAmount }}</span>
+      Due Amount: <span class="fw-bold">{{ getDueAmount(studentDueAmount) }}</span>
     </p>
     <p class="text-display text-danger mt-3" v-if="isStudentLate && isStudentLate.late > 5">
       You are {{ isStudentLate.late }} minutes late. Your time of arrival is

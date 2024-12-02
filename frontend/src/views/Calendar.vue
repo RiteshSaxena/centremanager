@@ -131,6 +131,10 @@ onMounted(async () => {
     }
   }, 1000);
 });
+
+const getDueAmount = (amount: number) => {
+  return amount > 1 ? `£${amount}` : 'NA';
+};
 </script>
 
 <template>
@@ -163,7 +167,7 @@ onMounted(async () => {
             v-if="student.dueAmount && student.dueAmount > 0"
             class="badge cursor-pointer badge-yellow rounded-pill me-1"
             data-bs-toggle="popover"
-            :data-bs-content="`Amount Due: £${student.dueAmount}`"
+            :data-bs-content="`Amount Due: ${getDueAmount(student.dueAmount)}`"
           >
             <i class="fa-solid fa-dollar-sign"></i>
           </span>
