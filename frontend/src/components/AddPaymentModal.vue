@@ -10,6 +10,8 @@ const props = withDefaults(
   defineProps<{
     show: boolean;
     childId: number | null;
+    name: string;
+    amount: number | null;
   }>(),
   {
     show: false
@@ -30,8 +32,8 @@ watch(
   () => props.show,
   (val) => {
     if (val) {
-      guestData.amount = '';
-      guestData.paymentDate = '';
+      guestData.amount = props.amount ? props.amount.toString() : '';
+      guestData.paymentDate = new Date().toISOString().split('T')[0];
       guestData.notes = '';
     }
   }
@@ -61,7 +63,7 @@ const emit = defineEmits(['update:show', 'onSuccess']);
   <Modal
     v-if="show"
     :show-footer-close-button="true"
-    title="Add Payment"
+    :title="`Add Payment - ${name}`"
     @close="emit('update:show', false)"
   >
     <form id="add-guardian-form" @submit.prevent="onSubmit">
@@ -81,7 +83,7 @@ const emit = defineEmits(['update:show', 'onSuccess']);
         type="date"
         :required="true"
         class="mb-2"
-        placeholder="Last Name"
+        placeholder="Payment Date"
       />
       <InputField
         :is-floating="true"

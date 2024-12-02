@@ -175,6 +175,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <h4 class="fw-bold mt-5">Attendance Report</h4>
   <form class="mt-4 d-flex gap-2 align-items-center" @submit.prevent="searchFromDate">
     <div class="d-flex gap-1 report-search">
       <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
@@ -201,9 +202,8 @@ onMounted(async () => {
     @onSelect="onSelectFromSearch"
   />
   <p class="mt-4 mb-0" v-if="studentId || staffId"><strong>Selected:</strong> {{ selectedName }}</p>
-  <p class="mt-4 mb-0" v-if="isSearched && !records.length && !loading">No records found</p>
   <p class="mt-4 mb-0" v-if="loading">Loading...</p>
-  <table class="table mt-4" v-if="records.length">
+  <table class="table mt-4">
     <thead class="">
       <tr>
         <th scope="col">#</th>
@@ -221,11 +221,14 @@ onMounted(async () => {
         <td>{{ formatTime(record.signInTime) }}</td>
         <td>{{ formatTime(record?.signOutTime) }}</td>
       </tr>
+      <tr v-if="!records.length && !loading">
+        <td class="text-center" colspan="5">No records found</td>
+      </tr>
     </tbody>
   </table>
 
   <div class="mt-5" v-if="absentChildren.length && searchMode === 'date'">
-    <h4>Absent Students</h4>
+    <h4 class="fw-bold">Absent Students</h4>
     <table class="table mt-3">
       <thead class="table-danger">
         <tr>
@@ -265,6 +268,7 @@ thead th:first-child {
 thead th:last-child {
   border-top-right-radius: 1rem;
 }
+tbody tr:last-child td:first-child,
 tbody tr:last-child th:first-child {
   border-bottom-left-radius: 1rem;
 }
@@ -272,7 +276,8 @@ tbody tr:last-child th:first-child {
 tbody tr:last-child td:last-child {
   border-bottom-right-radius: 1rem;
 }
-th:first-child {
+th:first-child,
+td:first-child {
   padding-left: 1.5rem;
 }
 tbody tr:last-child td,
@@ -281,6 +286,7 @@ tbody tr:last-child th {
 }
 
 thead.table-danger th {
-  background-color: #ffc7cc;
+  background-color: #ff6961;
+  color: white !important;
 }
 </style>

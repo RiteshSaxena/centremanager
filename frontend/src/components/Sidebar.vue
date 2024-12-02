@@ -25,9 +25,6 @@ const logout = async () => {
     :class="{ 'sidebar-expanded': sidebarExpanded }"
   >
     <div class="d-flex justify-content-between">
-      <div :class="['p-3', sidebarExpanded ? '' : 'd-md-none']">
-        <!--        <h2 class="text-white mb-0 fs-6 fw-bold">Centre <br />Manager</h2>-->
-      </div>
       <div class="d-flex d-md-none burger-menu justify-content-end">
         <div @click="sidebarExpanded = !sidebarExpanded">
           <svg
@@ -152,7 +149,7 @@ const logout = async () => {
 .sidebar {
   background: #193b4d;
   width: 100%;
-  transition: all 1s ease-in-out;
+  transition: width 1s ease;
   a {
     text-align: center;
     text-decoration: none;
@@ -184,7 +181,7 @@ const logout = async () => {
   }
 
   &.sidebar-expanded {
-    min-width: 150px;
+    min-width: 170px;
 
     .sidebar-item {
       span {

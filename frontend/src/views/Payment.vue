@@ -17,6 +17,7 @@ const search = ref<string>('');
 const searchedId = ref<number | null>(null);
 const studentId = ref<number | null>(null);
 const selectedName = ref<string>('');
+const selectedAmount = ref<string | number>('');
 const paymentHistory = ref<any[]>([]);
 const loading = ref(false);
 const showAddPaymentModal = ref(false);
@@ -53,6 +54,7 @@ const onSelectFromSearch = (item: SearchResult) => {
   studentId.value = null;
   selectedName.value = '';
   searchedId.value = null;
+  selectedAmount.value = '';
   if (item.type === 'student') {
     studentId.value = item.id;
     searchedId.value = item.id;
@@ -71,9 +73,11 @@ const fetchPayments = async (childId?: number) => {
   }
 };
 
-const openPaymentModal = (childId: number) => {
-  studentId.value = childId;
+const openPaymentModal = (child: any) => {
+  studentId.value = child.id;
+  selectedName.value = `${child.firstName} ${child.lastName}`;
   showAddPaymentModal.value = true;
+  selectedAmount.value = child.dueAmount || '';
 };
 
 const addPayment = async () => {
@@ -89,7 +93,35 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h3 class="fw-bold mt-4">Payments</h3>
+  <div class="mt-5">
+    <h4 class="fw-bold">Payments Overdue</h4>
+    <table class="table mt-3">
+      <thead class="table-danger">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col" class="text-center">Due amount</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="align-middle" v-for="(record, index) in dueStudents" :key="record.id">
+          <th scope="row">{{ index + 1 }}</th>
+          <td>{{ record.firstName }} {{ record.lastName }}</td>
+          <td class="text-center">{{ record.dueAmount > 1 ? record.dueAmount : '-' }}</td>
+          <td class="text-center">
+            <button type="button" class="btn btn-info btn-sm" @click="openPaymentModal(record)">
+              Add Payment
+            </button>
+          </td>
+        </tr>
+        <tr v-if="!dueStudents.length">
+          <td class="text-center" colspan="4">No records found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="fw-bold mt-5">Recent Payments</h4>
   <form class="mt-4 d-flex gap-2 align-items-center">
     <div class="d-flex gap-1 report-search">
       <InputField v-model="search" placeholder="Enter Student name to search" />
@@ -117,9 +149,8 @@ onMounted(async () => {
     @onSelect="onSelectFromSearch"
   />
   <p class="mt-4 mb-0" v-if="searchedId"><strong>Selected:</strong> {{ selectedName }}</p>
-  <p class="mt-4 mb-0" v-if="!paymentHistory.length && !loading">No records found</p>
   <p class="mt-4 mb-0" v-if="loading">Loading...</p>
-  <table class="table mt-4" v-if="paymentHistory.length">
+  <table class="table mt-4">
     <thead class="">
       <tr>
         <th scope="col">#</th>
@@ -137,6 +168,9 @@ onMounted(async () => {
         <td>{{ record.paymentDate }}</td>
         <td>{{ record.notes }}</td>
       </tr>
+      <tr v-if="!paymentHistory.length && !loading">
+        <td class="text-center" colspan="5">No records found</td>
+      </tr>
     </tbody>
   </table>
   <div v-if="searchedId" class="mt-4">
@@ -144,38 +178,11 @@ onMounted(async () => {
       Add Payment
     </button>
   </div>
-
-  <div class="mt-5">
-    <h4>Due Students</h4>
-    <table class="table mt-3">
-      <thead class="table-danger">
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Name</th>
-          <th scope="col" class="text-center">Due amount</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="align-middle" v-for="(record, index) in dueStudents" :key="record.id">
-          <th scope="row">{{ index + 1 }}</th>
-          <td>{{ record.firstName }} {{ record.lastName }}</td>
-          <td class="text-center">{{ record.dueAmount || '-' }}</td>
-          <td class="text-center">
-            <button type="button" class="btn btn-info btn-sm" @click="openPaymentModal(record.id)">
-              Add Payment
-            </button>
-          </td>
-        </tr>
-        <tr v-if="!dueStudents.length">
-          <td class="text-center" colspan="4">No records found</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
   <AddPaymentModal
     v-model:show="showAddPaymentModal"
     :child-id="studentId"
+    :name="selectedName"
+    :amount="selectedAmount"
     @onSuccess="addPayment"
   />
 </template>
@@ -196,7 +203,8 @@ thead th:first-child {
 thead th:last-child {
   border-top-right-radius: 1rem;
 }
-tbody tr:last-child th:first-child {
+tbody tr:last-child th:first-child,
+tbody tr:last-child td:first-child {
   border-bottom-left-radius: 1rem;
 }
 
@@ -212,6 +220,7 @@ tbody tr:last-child th {
 }
 
 thead.table-danger th {
-  background-color: #ffc7cc;
+  background-color: #ff6961;
+  color: white !important;
 }
 </style>
