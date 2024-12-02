@@ -1,5 +1,5 @@
 <template>
-  <div class="row mt-5">
+  <div class="row mt-2">
     <div class="col-md-4 order-2 order-md-1">
       <div class="d-flex gap-1 mb-3">
         <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
@@ -14,7 +14,7 @@
       </div>
       <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
     </div>
-    <div class="col-md-4 order-1 order-md-2">
+    <div class="col-md-4 order-1 order-md-2" id="student-row">
       <button type="button" class="btn btn-info me-1" @click="qrSignIn">
         Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
       </button>
@@ -29,7 +29,7 @@
       >
         Clear
       </button>
-      <div class="mt-3">
+      <div class="my-3">
         <GuardianList
           v-if="selectedStudent"
           :student="selectedStudent"

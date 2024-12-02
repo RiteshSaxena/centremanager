@@ -142,7 +142,9 @@ onMounted(async () => {
   flex-direction: column;
   gap: 2px;
   border-radius: 10px;
-  padding: 12px;
+  p{
+    padding: 12px;
+  }
 }
 .qr-code {
   width: 110px;

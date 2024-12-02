@@ -203,31 +203,9 @@ onMounted(async () => {
   <p class="mt-4 mb-0" v-if="studentId || staffId"><strong>Selected:</strong> {{ selectedName }}</p>
   <p class="mt-4 mb-0" v-if="isSearched && !records.length && !loading">No records found</p>
   <p class="mt-4 mb-0" v-if="loading">Loading...</p>
-  <table class="table mt-4" v-if="records.length">
-    <thead class="">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Type</th>
-        <th scope="col">Name</th>
-        <th scope="col">Sign In Time</th>
-        <th scope="col">Sign Out Time</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(record, index) in reportList" :key="record.id">
-        <th scope="row">{{ index + 1 }}</th>
-        <td>{{ record.type }}</td>
-        <td>{{ record.name }}</td>
-        <td>{{ formatTime(record.signInTime) }}</td>
-        <td>{{ formatTime(record?.signOutTime) }}</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="mt-5" v-if="absentChildren.length && searchMode === 'date'">
-    <h4>Absent Students</h4>
-    <table class="table mt-3">
-      <thead class="table-danger">
+  <div class="table-responsive">
+    <table class="table mt-4 " v-if="records.length">
+      <thead class="">
         <tr>
           <th scope="col">#</th>
           <th scope="col">Type</th>
@@ -237,19 +215,50 @@ onMounted(async () => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(record, index) in absentChildren" :key="record.id">
+        <tr v-for="(record, index) in reportList" :key="record.id">
           <th scope="row">{{ index + 1 }}</th>
-          <td>Student</td>
-          <td>{{ record.firstName }} {{ record.lastName }}</td>
-          <td>-</td>
-          <td>-</td>
+          <td>{{ record.type }}</td>
+          <td>{{ record.name }}</td>
+          <td>{{ formatTime(record.signInTime) }}</td>
+          <td>{{ formatTime(record?.signOutTime) }}</td>
         </tr>
       </tbody>
     </table>
   </div>
+
+  <div class="mt-5" v-if="absentChildren.length && searchMode === 'date'">
+    <h4>Absent Students</h4>
+    <div class="table-responsive">
+      <table class="table mt-3">
+        <thead class="table-danger">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Type</th>
+            <th scope="col">Name</th>
+            <th scope="col">Sign In Time</th>
+            <th scope="col">Sign Out Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(record, index) in absentChildren" :key="record.id">
+            <th scope="row">{{ index + 1 }}</th>
+            <td>Student</td>
+            <td>{{ record.firstName }} {{ record.lastName }}</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </template>
 
 <style scoped lang="scss">
+  .table-responsive{
+    table{
+      min-width: 600px;
+    }
+  }
 .report-search {
   width: 100%;
   max-width: 400px;
