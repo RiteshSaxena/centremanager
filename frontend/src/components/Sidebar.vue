@@ -149,7 +149,7 @@ const logout = async () => {
 .sidebar {
   background: #193b4d;
   width: 100%;
-  transition: width 1s ease;
+  transition: width 0.2s ease;
   a {
     text-align: center;
     text-decoration: none;
@@ -181,7 +181,7 @@ const logout = async () => {
   }
 
   &.sidebar-expanded {
-    min-width: 170px;
+    width: 170px;
 
     .sidebar-item {
       span {
@@ -197,7 +197,7 @@ const logout = async () => {
 
 @media (min-width: 768px) {
   .sidebar {
-    max-width: 64px;
+    width: 64px;
     &-item {
       span {
         visibility: hidden;
