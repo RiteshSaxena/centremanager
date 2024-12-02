@@ -11,7 +11,7 @@ const props = withDefaults(
     show: boolean;
     childId: number | null;
     name: string;
-    amount: number | null;
+    amount: string | number | null;
   }>(),
   {
     show: false
