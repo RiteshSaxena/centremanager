@@ -121,10 +121,10 @@ onMounted(async () => {
       </tbody>
     </table>
   </div>
-  <h4 class="fw-bold mt-5">Recent Payments</h4>
+  <h4 class="fw-bold mt-5">Payment History</h4>
   <form class="mt-4 d-flex gap-2 align-items-center">
-    <div class="d-flex gap-1 report-search">
-      <InputField v-model="search" placeholder="Enter Student name to search" />
+    <div class="d-flex gap-1 report-search align-items-center">
+      <InputField v-model="search" placeholder="Enter student name to filter payment history" />
       <button
         v-if="search.trim().length"
         type="button"
@@ -133,14 +133,6 @@ onMounted(async () => {
       >
         <i class="fa-solid fa-xmark"></i>
       </button>
-      <button
-        v-if="searchedId"
-        type="button"
-        class="btn btn-secondary rounded-3"
-        @click="clearSelected"
-      >
-        Clear search
-      </button>
     </div>
   </form>
   <SearchResults
@@ -148,7 +140,9 @@ onMounted(async () => {
     v-if="search.trim().length"
     @onSelect="onSelectFromSearch"
   />
-  <p class="mt-4 mb-0" v-if="searchedId"><strong>Selected:</strong> {{ selectedName }}</p>
+  <p class="mt-4 mb-0" v-if="searchedId">
+    Showing payment history for: <strong>{{ selectedName }}</strong>
+  </p>
   <p class="mt-4 mb-0" v-if="loading">Loading...</p>
   <table class="table mt-4">
     <thead class="">
@@ -175,7 +169,10 @@ onMounted(async () => {
   </table>
   <div v-if="searchedId" class="mt-4">
     <button type="button" class="btn btn-info" @click="showAddPaymentModal = true">
-      Add Payment
+      Add Payment for {{ selectedName }}
+    </button>
+    <button type="button" class="btn btn-secondary rounded-3 ms-2" @click="clearSelected">
+      Clear selection
     </button>
   </div>
   <AddPaymentModal

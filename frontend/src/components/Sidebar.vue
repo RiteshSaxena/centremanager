@@ -175,7 +175,7 @@ const logout = async () => {
   }
 
   &.sidebar-expanded {
-    width: 170px;
+    width: 220px;
 
     .sidebar-item {
       span {
