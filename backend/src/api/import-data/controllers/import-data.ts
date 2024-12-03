@@ -193,8 +193,10 @@ export default {
         const referralCode = records[i]['Referral Code'].trim();
         const notes = records[i]['Notes'].trim();
 
-        const hashString = childFirstName + parentFirstName + parentEmail + parentNumber;
-        const md5hash = createHash('md5').update(hashString).digest('hex');
+        const childFirstNameTrimmed = childFirstName.split(' ')[0];
+
+        const hashString = childFirstNameTrimmed + parentFirstName + parentEmail;
+        const md5hash = createHash('md5').update(hashString.toLowerCase()).digest('hex');
 
         const existingChild = await strapi.entityService.findMany('api::child.child', {
           filters: { childHash: md5hash },

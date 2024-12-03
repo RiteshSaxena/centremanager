@@ -24,7 +24,9 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "lastImportDate": {
       "type": "datetime"
@@ -41,6 +43,23 @@
       "type": "component",
       "repeatable": false,
       "component": "subscription.subscription"
+    },
+    "paymentHandler": {
+      "type": "enumeration",
+      "enum": [
+        "none",
+        "inbuilt",
+        "zohobooks"
+      ]
+    },
+    "defaultDueAmount": {
+      "type": "decimal"
+    },
+    "defaultPaymentDate": {
+      "type": "integer",
+      "max": 31,
+      "min": 1,
+      "default": 1
     }
   }
 }

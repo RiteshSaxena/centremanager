@@ -25,9 +25,6 @@ const logout = async () => {
     :class="{ 'sidebar-expanded': sidebarExpanded }"
   >
     <div class="d-flex justify-content-between">
-      <div :class="['p-3', sidebarExpanded ? '' : 'd-md-none']">
-        <!--        <h2 class="text-white mb-0 fs-6 fw-bold">Centre <br />Manager</h2>-->
-      </div>
       <div class="d-flex d-md-none burger-menu justify-content-end">
         <div @click="sidebarExpanded = !sidebarExpanded">
           <svg
@@ -121,6 +118,10 @@ const logout = async () => {
         <i class="fa-solid fa-clipboard-user"></i>
         <span>Attendance</span>
       </router-link>
+      <router-link v-if="isMainApp" to="/payments" class="sidebar-item">
+        <i class="fa-solid fa-money-check-dollar"></i>
+        <span>Payments</span>
+      </router-link>
       <router-link v-if="isMainApp" to="/qr" class="sidebar-item">
         <i class="fa-solid fa-qrcode"></i>
         <span>QR Codes</span>
@@ -148,7 +149,7 @@ const logout = async () => {
 .sidebar {
   background: #193b4d;
   width: 100%;
-  transition: all 1s ease-in-out;
+  transition: all 0.2s ease;
   a {
     text-align: center;
     text-decoration: none;
@@ -172,20 +173,24 @@ const logout = async () => {
       font-size: 20px;
     }
   }
-  @media (max-width: 767px) {
-    &:not(.sidebar-expanded) {
-      max-height: 64px;
-      overflow: hidden;
-    }
-  }
 
   &.sidebar-expanded {
-    min-width: 150px;
+    width: 220px;
 
     .sidebar-item {
       span {
         visibility: visible;
       }
+    }
+  }
+
+  @media (max-width: 767px) {
+    &.sidebar-expanded {
+      width: 100%;
+    }
+    &:not(.sidebar-expanded) {
+      max-height: 64px;
+      overflow: hidden;
     }
   }
 }
@@ -196,7 +201,7 @@ const logout = async () => {
 
 @media (min-width: 768px) {
   .sidebar {
-    max-width: 64px;
+    width: 64px;
     &-item {
       span {
         visibility: hidden;

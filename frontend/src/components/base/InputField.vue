@@ -8,7 +8,7 @@ withDefaults(
     isFloating?: boolean;
     isWhite?: boolean;
     hasDarkPlaceholder?: boolean;
-    label?: '';
+    label?: string;
   }>(),
   {
     placeholder: '',
@@ -37,7 +37,7 @@ const onInput = (e: Event) => {
       'form-has-dark-placeholder': hasDarkPlaceholder
     }"
   >
-    <label v-if="label && !isFloating">{{ label }}</label>
+    <label v-if="label && !isFloating" class="w-100">{{ label }}</label>
     <input
       :type="type"
       class="form-control"

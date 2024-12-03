@@ -13,6 +13,7 @@ import ZohoToken from '@/views/ZohoToken.vue';
 import Register from '@/views/Register.vue';
 import AttendanceReport from '@/views/AttendanceReport.vue';
 import DashboardKiosk from '@/views/DashboardKiosk.vue';
+import Payment from '@/views/Payment.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -85,6 +86,17 @@ const routes: RouteRecordRaw[] = [
       auth: true,
       layout: DashboardLayout,
       title: 'Attendance Report',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/payments',
+    name: 'Payment',
+    component: Payment,
+    meta: {
+      auth: true,
+      layout: DashboardLayout,
+      title: 'Payments',
       app: ['app-main']
     }
   },

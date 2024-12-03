@@ -13,6 +13,8 @@ const PERMISSIONS = [
   { action: 'api::child.child.findOne', role: 'authenticated' },
   { action: 'api::child.child.dueStudents', role: 'authenticated' },
   { action: 'api::parent.parent.create', role: 'authenticated' },
+  { action: 'api::payment.payment.find', role: 'authenticated' },
+  { action: 'api::payment.payment.create', role: 'authenticated' },
   { action: 'api::slot.slot.find', role: 'authenticated' },
   { action: 'api::center.center.find', role: 'authenticated' },
   { action: 'api::center.center.register', role: 'public' },

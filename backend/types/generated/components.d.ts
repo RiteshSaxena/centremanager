@@ -12,7 +12,6 @@ export interface AccountingZohoBooks extends Schema.Component {
     clientId: Attribute.String & Attribute.Required;
     clientSecret: Attribute.String & Attribute.Required;
     domain: Attribute.String & Attribute.Required;
-    enabled: Attribute.Boolean & Attribute.Required & Attribute.DefaultTo<true>;
     organizationId: Attribute.String & Attribute.Required;
     refreshToken: Attribute.String & Attribute.Required;
   };

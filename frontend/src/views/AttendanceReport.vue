@@ -16,6 +16,7 @@ const reportDate = ref<string>(moment().format('YYYY-MM-DD'));
 const reportDay = ref<string>(moment().format('dddd'));
 const search = ref<string>('');
 const studentId = ref<number | null>(null);
+const selectedName = ref<string>('');
 const staffId = ref<number | null>(null);
 const records = ref<LogRecord[]>([]);
 const isSearched = ref(false);
@@ -96,8 +97,10 @@ const onSelectFromSearch = (item: SearchResult) => {
   staffId.value = null;
   if (item.type === 'student') {
     studentId.value = item.id;
+    selectedName.value = `${item.firstName} ${item.lastName}`;
   } else if (item.type === 'staff') {
     staffId.value = item.id;
+    selectedName.value = `${item.firstName} ${item.lastName}`;
   }
   reportDate.value = '';
   clearSearch();
@@ -172,6 +175,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <h4 class="fw-bold mt-5">Attendance Report</h4>
   <form class="mt-4 d-flex gap-2 align-items-center" @submit.prevent="searchFromDate">
     <div class="d-flex gap-1 report-search">
       <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
@@ -193,14 +197,14 @@ onMounted(async () => {
     </button>
   </form>
   <SearchResults
-    class="mt-3 report-search"
+    class="mt-3 report-search position-absolute shadow"
     v-if="search.trim().length"
     @onSelect="onSelectFromSearch"
   />
-  <p class="mt-4 mb-0" v-if="isSearched && !records.length && !loading">No records found</p>
+  <p class="mt-4 mb-0" v-if="studentId || staffId"><strong>Selected:</strong> {{ selectedName }}</p>
   <p class="mt-4 mb-0" v-if="loading">Loading...</p>
-  <table class="table mt-4" v-if="records.length">
-    <thead class="table-secondary">
+  <table class="table mt-4">
+    <thead class="">
       <tr>
         <th scope="col">#</th>
         <th scope="col">Type</th>
@@ -211,17 +215,20 @@ onMounted(async () => {
     </thead>
     <tbody>
       <tr v-for="(record, index) in reportList" :key="record.id">
-        <td>{{ index + 1 }}</td>
+        <th scope="row">{{ index + 1 }}</th>
         <td>{{ record.type }}</td>
         <td>{{ record.name }}</td>
         <td>{{ formatTime(record.signInTime) }}</td>
         <td>{{ formatTime(record?.signOutTime) }}</td>
       </tr>
+      <tr v-if="!records.length && !loading">
+        <td class="text-center" colspan="5">No records found</td>
+      </tr>
     </tbody>
   </table>
 
   <div class="mt-5" v-if="absentChildren.length && searchMode === 'date'">
-    <h4>Absent Students</h4>
+    <h4 class="fw-bold">Absent Students</h4>
     <table class="table mt-3">
       <thead class="table-danger">
         <tr>
@@ -234,7 +241,7 @@ onMounted(async () => {
       </thead>
       <tbody>
         <tr v-for="(record, index) in absentChildren" :key="record.id">
-          <td>{{ index + 1 }}</td>
+          <th scope="row">{{ index + 1 }}</th>
           <td>Student</td>
           <td>{{ record.firstName }} {{ record.lastName }}</td>
           <td>-</td>
@@ -249,5 +256,37 @@ onMounted(async () => {
 .report-search {
   width: 100%;
   max-width: 400px;
+}
+th,
+td {
+  color: #193b4d !important;
+}
+thead th:first-child {
+  border-top-left-radius: 1rem;
+}
+
+thead th:last-child {
+  border-top-right-radius: 1rem;
+}
+tbody tr:last-child td:first-child,
+tbody tr:last-child th:first-child {
+  border-bottom-left-radius: 1rem;
+}
+
+tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 1rem;
+}
+th:first-child,
+td:first-child {
+  padding-left: 1.5rem;
+}
+tbody tr:last-child td,
+tbody tr:last-child th {
+  border-bottom-width: 0;
+}
+
+thead.table-danger th {
+  background-color: #ff6961;
+  color: white !important;
 }
 </style>

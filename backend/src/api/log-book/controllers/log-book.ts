@@ -45,6 +45,8 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
   async search(ctx) {
     const { text } = await schema.search(ctx.request.body);
 
+    const childOnly = ctx.query.childOnly === 'true';
+
     const students = await strapi.entityService.findMany('api::child.child', {
       fields: ['firstName', 'lastName', 'gender', 'schoolYear'] as any[],
       filters: {
@@ -70,6 +72,15 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       },
       populate: ['parents'],
     });
+
+    if (childOnly) {
+      return students.map((student) => {
+        return {
+          type: 'student',
+          ...student,
+        };
+      });
+    }
 
     const staff = await strapi.entityService.findMany('plugin::users-permissions.user', {
       fields: ['firstName', 'lastName', 'email'] as any[],
