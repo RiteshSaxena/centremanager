@@ -143,55 +143,61 @@ const getDueAmount = (amount: number) => {
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
-  <div class="calendar-container" v-else>
-    <div class="calendar-row mb-3">
-      <div></div>
-      <span
-        class="calendar-header"
-        v-for="day in days"
-        :key="day"
-        :class="{ 'calendar-header-active': day === today }"
-      >
-        {{ day }}
-      </span>
-    </div>
-    <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
-      <div class="calendar-header">{{ timing.text }}</div>
-      <div class="student-list" v-for="day in days" :key="day">
+  <div class="calendar-responsive" v-else>
+    <div class="calendar-container">
+      <div class="calendar-row mb-3">
+        <div class="calendar-header"></div>
         <span
-          class="d-flex align-items-center mt-1"
-          v-for="student in getStudents(day, timing)"
-          :key="student.id"
+          class="calendar-header"
+          v-for="day in days"
+          :key="day"
+          :class="{ 'calendar-header-active': day === today }"
         >
-          <span
-            v-if="student.dueAmount && student.dueAmount > 0"
-            class="badge cursor-pointer badge-yellow rounded-pill me-1"
-            data-bs-toggle="popover"
-            :data-bs-content="`Amount Due: ${getDueAmount(student.dueAmount)}`"
-          >
-            <i class="fa-solid fa-dollar-sign"></i>
-          </span>
-          <span v-else-if="student.dueAmount === 0" class="badge badge-grey rounded-pill me-1">
-            <i class="fa-solid fa-dollar-sign"></i>
-          </span>
-          <span class="ms-1 me-2"> {{ student.firstName }} {{ student.lastName }} </span>
-          <span
-            v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
-            class="badge badge-blue cursor-pointer rounded-pill"
-            data-bs-toggle="popover"
-            data-bs-content="Early Learner"
-          >
-            EL
-          </span>
+          {{ day }}
         </span>
+      </div>
+      <div class="calendar-row" v-for="(timing, index) in timings" :key="index">
+        <div class="calendar-header">{{ timing.text }}</div>
+        <div class="student-list" v-for="day in days" :key="day">
+          <span
+            class="d-flex align-items-center mt-1"
+            v-for="student in getStudents(day, timing)"
+            :key="student.id"
+          >
+            <span
+              v-if="student.dueAmount && student.dueAmount > 0"
+              class="badge cursor-pointer badge-yellow rounded-pill me-1"
+              data-bs-toggle="popover"
+              :data-bs-content="`Amount Due: ${getDueAmount(student.dueAmount)}`"
+            >
+              <i class="fa-solid fa-dollar-sign"></i>
+            </span>
+            <span v-else-if="student.dueAmount === 0" class="badge badge-grey rounded-pill me-1">
+              <i class="fa-solid fa-dollar-sign"></i>
+            </span>
+            <span class="ms-1 me-2"> {{ student.firstName }} {{ student.lastName }} </span>
+            <span
+              v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
+              class="badge badge-blue cursor-pointer rounded-pill"
+              data-bs-toggle="popover"
+              data-bs-content="Early Learner"
+            >
+              EL
+            </span>
+          </span>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+.calendar-responsive {
+  overflow: auto;
+}
 .calendar-container {
   margin-top: 20px;
+  min-width: 480px;
 }
 .calendar-row {
   display: grid;
@@ -199,6 +205,7 @@ const getDueAmount = (amount: number) => {
   align-items: center;
   justify-items: center;
   .calendar-header {
+    min-width: 72px;
     color: #64b6e6;
     font-size: 12px;
     line-height: 18px;
@@ -214,6 +221,7 @@ const getDueAmount = (amount: number) => {
   }
 
   .student-list {
+    min-width: 72px;
     background: white;
     min-height: 50px;
     border: 1px solid #dbdbdb;

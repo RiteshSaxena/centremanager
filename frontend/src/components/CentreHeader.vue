@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex justify-content-between">
-    <div class="centre-name">
+    <div class="centre-name d-none d-md-block">
       <h1>{{ centre?.displayName || centre?.name }}</h1>
       <span>{{ date }}</span>
     </div>
