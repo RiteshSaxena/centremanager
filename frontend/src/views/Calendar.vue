@@ -205,7 +205,7 @@ const getDueAmount = (amount: number) => {
   align-items: center;
   justify-items: center;
   .calendar-header {
-    min-width: 72px;
+    min-width: 84px;
     color: #64b6e6;
     font-size: 12px;
     line-height: 18px;
