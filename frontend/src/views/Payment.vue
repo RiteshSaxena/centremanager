@@ -95,31 +95,33 @@ onMounted(async () => {
 <template>
   <div class="mt-5">
     <h4 class="fw-bold">Payments Overdue</h4>
-    <table class="table mt-3">
-      <thead class="table-danger">
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Name</th>
-          <th scope="col" class="text-center">Due amount</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="align-middle" v-for="(record, index) in dueStudents" :key="record.id">
-          <th scope="row">{{ index + 1 }}</th>
-          <td>{{ record.firstName }} {{ record.lastName }}</td>
-          <td class="text-center">{{ record.dueAmount > 1 ? record.dueAmount : '-' }}</td>
-          <td class="text-center">
-            <button type="button" class="btn btn-info btn-sm" @click="openPaymentModal(record)">
-              Add Payment
-            </button>
-          </td>
-        </tr>
-        <tr v-if="!dueStudents.length">
-          <td class="text-center" colspan="4">No records found</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="table mt-3">
+        <thead class="table-danger">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col" class="text-center">Due amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="align-middle" v-for="(record, index) in dueStudents" :key="record.id">
+            <th scope="row">{{ index + 1 }}</th>
+            <td>{{ record.firstName }} {{ record.lastName }}</td>
+            <td class="text-center">{{ record.dueAmount > 1 ? record.dueAmount : '-' }}</td>
+            <td class="text-center">
+              <button type="button" class="btn btn-info btn-sm" @click="openPaymentModal(record)">
+                Add Payment
+              </button>
+            </td>
+          </tr>
+          <tr v-if="!dueStudents.length">
+            <td class="text-center" colspan="4">No records found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
   <h4 class="fw-bold mt-5">Payment History</h4>
   <form class="mt-4 d-flex gap-2 align-items-center">
@@ -144,30 +146,31 @@ onMounted(async () => {
     Showing payment history for: <strong>{{ selectedName }}</strong>
   </p>
   <p class="mt-4 mb-0" v-if="loading">Loading...</p>
-  <table class="table mt-4">
-    <thead class="">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Name</th>
-        <th scope="col">Amount</th>
-        <th scope="col">Payment Date</th>
-        <th scope="col">Notes</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(record, index) in paymentHistory" :key="record.id">
-        <th scope="row">{{ index + 1 }}</th>
-        <td>{{ record.child.firstName }} {{ record.child.lastName }}</td>
-        <td>{{ record.amount }}</td>
-        <td>{{ record.paymentDate }}</td>
-        <td>{{ record.notes }}</td>
-      </tr>
-      <tr v-if="!paymentHistory.length && !loading">
-        <td class="text-center" colspan="5">No records found</td>
-      </tr>
-    </tbody>
-  </table>
-  <div v-if="searchedId" class="mt-4">
+
+  <div class="table-responsive">
+    <table class="table mt-4" v-if="paymentHistory.length">
+      <thead class="">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Payment Date</th>
+          <th scope="col">Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(record, index) in paymentHistory" :key="record.id">
+          <th scope="row">{{ index + 1 }}</th>
+          <td>{{ record.child.firstName }} {{ record.child.lastName }}</td>
+          <td>{{ record.amount }}</td>
+          <td>{{ record.paymentDate }}</td>
+          <td>{{ record.notes }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div v-if="studentId" class="mt-4">
     <button type="button" class="btn btn-info" @click="showAddPaymentModal = true">
       Add Payment for {{ selectedName }}
     </button>
@@ -185,6 +188,11 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
+.table-responsive {
+  table {
+    min-width: 450px;
+  }
+}
 .report-search {
   width: 100%;
   max-width: 400px;

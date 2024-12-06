@@ -13,8 +13,21 @@ const isKioskApp = APP_TYPE === 'app-kiosk';
 const results = computed(() => {
   return searchStore.results;
 });
+const emit = defineEmits(['onSelect']);
 
-defineEmits(['onSelect']);
+const handleItemSelect = (item: any) => {
+  // Emit the onSelect event (preserving existing behavior)
+  emit('onSelect', item);
+
+  // Scroll to the About section
+  const aboutSection = document.getElementById('student-row');
+  if (aboutSection) {
+    aboutSection.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start' // Adjust this based on your layout
+    });
+  }
+};
 </script>
 
 <template>
@@ -30,18 +43,24 @@ defineEmits(['onSelect']);
     <p class="small text-muted" v-if="!searchStore.loading && !searchStore.results.length">
       No results found.
     </p>
+
     <UserListItem
       v-for="(item, index) in results"
       :key="index"
       :item="item"
-      @click="$emit('onSelect', item)"
+      @click="handleItemSelect(item)"
     />
   </Card>
 </template>
 
 <style scoped lang="scss">
 .signed-in-list {
-  max-height: 73vh;
+  max-height: 40vh;
   overflow-y: auto;
+}
+@media (min-width: 760px) {
+  .signed-in-list {
+    max-height: 70vh;
+  }
 }
 </style>

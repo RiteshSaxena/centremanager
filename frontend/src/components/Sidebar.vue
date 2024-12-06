@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed } from 'vue';
+
+import { useRouter, useRoute } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import moment from 'moment';
 
 import { useUserStore } from '@/stores';
+const centre = ref<any>(null);
 
 const sidebarExpanded = ref(false);
 
 const router = useRouter();
 const userStore = useUserStore();
-
+const route = useRoute();
+const isHomePage = computed(() => route.path === '/');
 const isMainApp = APP_TYPE === 'app-main';
 
 const logout = async () => {
@@ -17,6 +22,12 @@ const logout = async () => {
   userStore.logout();
   await router.push({ name: 'Login' });
 };
+const date = moment().format('DD MMMM, YYYY');
+
+onMounted(async () => {
+  const data = await userStore.getCentre();
+  centre.value = data;
+});
 </script>
 
 <template>
@@ -25,6 +36,11 @@ const logout = async () => {
     :class="{ 'sidebar-expanded': sidebarExpanded }"
   >
     <div class="d-flex justify-content-between">
+      <div :class="['p-3 p-md-0 d-md-none']">
+        <h2 v-if="isHomePage" class="text-white mb-0 fs-6 fw-bold">
+          {{ centre?.displayName || centre?.name }}<br /><small>{{ date }}</small>
+        </h2>
+      </div>
       <div class="d-flex d-md-none burger-menu justify-content-end">
         <div @click="sidebarExpanded = !sidebarExpanded">
           <svg
