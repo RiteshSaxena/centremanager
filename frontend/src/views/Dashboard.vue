@@ -14,11 +14,11 @@
       </div>
       <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
     </div>
-    <div class="col-md-4 order-1 order-md-2" id="student-row">
-      <button type="button" class="btn btn-info me-1" @click="qrSignIn">
+    <div class="col-md-4 order-1 px-md-0 order-md-2" id="student-row">
+      <button type="button" class="btn btn-info me-1 mb-1" @click="qrSignIn">
         Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
       </button>
-      <button type="button" class="btn btn-info me-1" @click="guestSignInModal = true">
+      <button type="button" class="btn btn-info me-1 mb-1" @click="guestSignInModal = true">
         Guest Sign In
       </button>
       <button
