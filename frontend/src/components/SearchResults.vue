@@ -15,7 +15,7 @@ const results = computed(() => {
 });
 const emit = defineEmits(['onSelect']);
 
-const handleItemSelect = (item) => {
+const handleItemSelect = (item: any) => {
   // Emit the onSelect event (preserving existing behavior)
   emit('onSelect', item);
 
