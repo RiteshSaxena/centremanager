@@ -99,6 +99,9 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
       dueStudents = await strapi.entityService.findMany('api::child.child', {
         filters: {
           center: ctx.state.center.id,
+          status: {
+            $ne: 'New',
+          },
           isDue: true,
         },
       });
