@@ -23,7 +23,12 @@ body {
     zoom: 125%;
   }
 }
-
+@media (max-width: 1024px){
+  .btn{
+    min-height: 38px;
+    --bs-btn-font-size: 14px;
+  }
+}
 @media print {
   .sidebar,
   .pagination,
