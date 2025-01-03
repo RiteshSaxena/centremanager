@@ -71,47 +71,30 @@ export default factories.createCoreController('api::payment.payment', ({ strapi 
       },
     });
 
-    const monthFirstDay = moment().startOf('month').format('YYYY-MM-DD');
-    const today = moment().format('YYYY-MM-DD');
+    const c = child[0];
 
-    const payments = await strapi.entityService.findMany('api::payment.payment', {
-      filters: {
-        center: ctx.state.center.id,
-        child: payload.child,
-        paymentDate: {
-          $gte: monthFirstDay,
-          $lte: today,
+    if (c.isDue && !c.dueAmount) {
+      await strapi.entityService.update('api::child.child', c.id, {
+        data: {
+          isDue: false,
+          dueAmount: null,
         },
-      },
-    });
-
-    if (payments.length) {
-      const totalAmountPaid = payments.reduce((acc, payment) => acc + payment.amount, 0);
-
-      if (child[0].isDue) {
-        if (child[0].paymentAmount) {
-          if (totalAmountPaid >= child[0].paymentAmount) {
-            await strapi.entityService.update('api::child.child', child[0].id, {
-              data: {
-                isDue: false,
-                dueAmount: null,
-              },
-            });
-          } else {
-            await strapi.entityService.update('api::child.child', child[0].id, {
-              data: {
-                dueAmount: child[0].paymentAmount - totalAmountPaid,
-              },
-            });
-          }
-        } else {
-          await strapi.entityService.update('api::child.child', child[0].id, {
-            data: {
-              isDue: false,
-              dueAmount: null,
-            },
-          });
-        }
+      });
+    } else if (c.dueAmount && c.dueAmount > 0) {
+      if (payload.amount >= c.dueAmount) {
+        await strapi.entityService.update('api::child.child', c.id, {
+          data: {
+            isDue: false,
+            dueAmount: null,
+          },
+        });
+      } else {
+        await strapi.entityService.update('api::child.child', c.id, {
+          data: {
+            isDue: true,
+            dueAmount: c.dueAmount - payload.amount,
+          },
+        });
       }
     }
 

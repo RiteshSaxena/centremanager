@@ -114,13 +114,15 @@ export default {
             },
           });
 
+          const currentDueAmount = child.dueAmount || 0;
+
           // if no payments are made
           if (!payments.length) {
             console.log(`Child ${child.firstName} ${child.lastName} has not paid for the month`);
             await strapi.entityService.update('api::child.child', child.id, {
               data: {
                 isDue: true,
-                dueAmount: child.paymentAmount ?? null,
+                dueAmount: currentDueAmount + child.paymentAmount ?? null,
               },
             });
             continue;
@@ -148,9 +150,13 @@ export default {
             await strapi.entityService.update('api::child.child', child.id, {
               data: {
                 isDue: true,
-                dueAmount: child.paymentAmount - totalAmountPaid,
+                dueAmount: currentDueAmount + (child.paymentAmount - totalAmountPaid),
               },
             });
+            continue;
+          }
+
+          if (currentDueAmount > 0) {
             continue;
           }
 
