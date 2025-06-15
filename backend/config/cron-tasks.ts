@@ -122,7 +122,7 @@ export default {
             await strapi.entityService.update('api::child.child', child.id, {
               data: {
                 isDue: true,
-                dueAmount: currentDueAmount + child.paymentAmount ?? null,
+                dueAmount: currentDueAmount ? currentDueAmount + child.paymentAmount : null,
               },
             });
             continue;
