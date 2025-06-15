@@ -210,7 +210,7 @@ onMounted(async () => {
 <style scoped lang="scss">
 .table-responsive {
   table {
-    min-width: 450px;
+    min-width: 322px;
   }
 }
 .report-search {
