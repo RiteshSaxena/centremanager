@@ -104,6 +104,7 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
           },
           isDue: true,
         },
+        sort: 'firstName:asc',
       });
       dueStudents = dueStudents.map((student) => ({
         ...sanitizeChild(student),

@@ -142,7 +142,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       populate: ['parents'],
     });
 
-    return await Promise.all(
+    const studentArr = await Promise.all(
       students.map(async (student) => {
         const parents = await Promise.all(
           student.parents.map(async (parent) => {
@@ -181,6 +181,25 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
         };
       })
     );
+
+    const staff = await strapi.entityService.findMany('plugin::users-permissions.user', {
+      fields: ['firstName', 'lastName', 'email'] as any[],
+      filters: {
+        center: ctx.state.center.id,
+        lastName: {
+          $eqi: lastName,
+        },
+      },
+    });
+
+    const staffArr = staff.map((s) => {
+      return {
+        type: 'staff',
+        ...s,
+      };
+    });
+
+    return [...studentArr, ...staffArr];
   },
   async guestSignIn(ctx) {
     const payload = await schema.guestSignIn(ctx.request.body);

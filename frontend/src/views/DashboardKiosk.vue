@@ -121,6 +121,7 @@ const clearSearch = () => {
   selectedSignInItem.value = null;
   selectedSignOutItem.value = null;
   searchStore.clearResults();
+  logBookStore.fetchList();
 };
 
 const searchStudents = async () => {
@@ -153,8 +154,16 @@ const onSelectFromSearch = (item: SearchResult) => {
       };
     });
   } else if (item.type === 'staff') {
-    selectedSignInItem.value = item;
-    signInModal.value = true;
+    const isSignedInRecord = logBookStore.list.find(
+      (log) => log.type === 'Staff' && log.staff?.id === item.id && !log.signOutTime
+    );
+    if (isSignedInRecord) {
+      selectedSignOutItem.value = isSignedInRecord;
+      signOutModal.value = true;
+    } else {
+      selectedSignInItem.value = item;
+      signInModal.value = true;
+    }
   }
 };
 

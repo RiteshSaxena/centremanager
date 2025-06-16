@@ -73,3 +73,17 @@ body {
 .flex-1 {
   flex: 1;
 }
+
+.p-datatable-table-container {
+  border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+.p-datatable-paginator-bottom {
+  border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.payment-table thead tr th {
+  background-color: #ff6961;
+  color: white !important;
+}

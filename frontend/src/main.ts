@@ -2,10 +2,13 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import VueToast, { POSITION } from 'vue-toastification';
 import * as Sentry from '@sentry/vue';
+import PrimeVue from 'primevue/config';
 
 import App from './App.vue';
 import router from './router';
 import errorHandler from '@/utils/error-handler';
+
+import Material from '@primevue/themes/material';
 
 import './assets/main.scss';
 
@@ -16,6 +19,15 @@ app.use(router);
 app.use(VueToast, {
   position: POSITION.BOTTOM_CENTER,
   icon: false
+});
+
+app.use(PrimeVue, {
+  theme: {
+    preset: Material,
+    options: {
+      darkModeSelector: '.app-dark',
+    }
+  },
 });
 
 app.config.errorHandler = (err: any) => {
