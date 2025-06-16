@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { debounce } from 'lodash';
-import DataTable from 'datatables.net-bs5';
-
 import type { SearchResult } from '@/types';
 
 import InputField from '@/components/base/InputField.vue';
 import SearchResults from '@/components/SearchResults.vue';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 
 import { useSearchStore, useStudentStore } from '@/stores';
 import AddPaymentModal from '@/components/AddPaymentModal.vue';
@@ -81,6 +81,12 @@ const openPaymentModal = (child: any) => {
   selectedAmount.value = child.dueAmount || '';
 };
 
+watch(showAddPaymentModal, () => {
+  if (!showAddPaymentModal.value) {
+    studentId.value = null;
+  }
+});
+
 const addPayment = async () => {
   if (studentId.value) {
     await fetchPayments(studentId.value);
@@ -90,55 +96,59 @@ const addPayment = async () => {
 
 onMounted(async () => {
   await fetchPayments();
-  new DataTable('#due-students-table', {
-    paging: true,
-    pageLength: 25,
-    searching: false,
-    ordering: false,
-    info: false,
-    lengthChange: false,
-    autoWidth: false
-  });
-  new DataTable('#pay-history-table', {
-    paging: true,
-    pageLength: 25,
-    searching: false,
-    ordering: false,
-    info: false,
-    lengthChange: false,
-    autoWidth: false
-  });
+  // new DataTable('#due-students-table', {
+  //   paging: true,
+  //   pageLength: 25,
+  //   searching: false,
+  //   ordering: false,
+  //   info: false,
+  //   lengthChange: false,
+  //   autoWidth: false
+  // });
+  // new DataTable('#pay-history-table', {
+  //   paging: true,
+  //   pageLength: 25,
+  //   searching: false,
+  //   ordering: false,
+  //   info: false,
+  //   lengthChange: false,
+  //   autoWidth: false
+  // });
 });
 </script>
 
 <template>
   <div class="mt-5">
     <h4 class="fw-bold">Payments Overdue</h4>
-    <table class="table mt-3" id="due-students-table">
-      <thead class="table-danger">
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Name</th>
-          <th scope="col" class="text-center">Due amount</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="align-middle" v-for="(record, index) in dueStudents" :key="record.id">
-          <th scope="row">{{ index + 1 }}</th>
-          <td>{{ record.firstName }} {{ record.lastName }}</td>
-          <td class="text-center">{{ record.dueAmount > 1 ? record.dueAmount : '-' }}</td>
-          <td class="text-center">
-            <button type="button" class="btn btn-info btn-sm" @click="openPaymentModal(record)">
-              Add Payment
-            </button>
-          </td>
-        </tr>
-        <tr v-if="!dueStudents.length">
-          <td class="text-center" colspan="4">No records found</td>
-        </tr>
-      </tbody>
-    </table>
+    <DataTable
+      table-class="payment-table"
+      :value="dueStudents"
+      paginator
+      :rows="50"
+      class="mt-3"
+    >
+      <Column field="id" header="#">
+        <template #body="{ index }">
+          {{ index + 1 }}
+        </template>
+      </Column>
+      <Column field="firstName" header="Name">
+        <template #body="{ data }"> {{ data.firstName }} {{ data.lastName }} </template>
+      </Column>
+      <Column field="dueAmount" header="Due Amount">
+        <template #body="{ data }">
+          {{ data.dueAmount > 1 ? data.dueAmount : '-' }}
+        </template>
+      </Column>
+      <Column field="payment" header="Payment">
+        <template #body="{ data }">
+          <button type="button" class="btn btn-info btn-sm" @click="openPaymentModal(data)">
+            Add Payment
+          </button>
+        </template>
+      </Column>
+      <template #empty>No records found</template>
+    </DataTable>
   </div>
   <h4 class="fw-bold mt-5">Payment History</h4>
   <div class="position-relative">
@@ -156,7 +166,7 @@ onMounted(async () => {
       </div>
     </form>
     <SearchResults
-      class="mt-3 report-search position-absolute shadow"
+      class="mt-3 report-search z-3 position-absolute shadow"
       v-if="search.trim().length"
       @onSelect="onSelectFromSearch"
     />
@@ -164,31 +174,21 @@ onMounted(async () => {
   <p class="mt-4 mb-0" v-if="searchedId">
     Showing payment history for: <strong>{{ selectedName }}</strong>
   </p>
-  <p class="mt-4 mb-0" v-if="loading">Loading...</p>
 
-  <table class="table mt-4" id="pay-history-table">
-    <thead class="">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Name</th>
-        <th scope="col">Amount</th>
-        <th scope="col">Payment Date</th>
-        <th scope="col">Notes</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(record, index) in paymentHistory" :key="record.id">
-        <th scope="row">{{ index + 1 }}</th>
-        <td>{{ record.child.firstName }} {{ record.child.lastName }}</td>
-        <td>{{ record.amount }}</td>
-        <td>{{ record.paymentDate }}</td>
-        <td>{{ record.notes }}</td>
-      </tr>
-      <tr v-if="!paymentHistory.length">
-        <td class="text-center" colspan="5">No records found</td>
-      </tr>
-    </tbody>
-  </table>
+  <DataTable :value="paymentHistory" paginator :rows="50" class="rounded mt-4" :loading="loading">
+    <Column field="id" header="#">
+      <template #body="{ index }">
+        {{ index + 1 }}
+      </template>
+    </Column>
+    <Column field="firstName" header="Name">
+      <template #body="{ data }"> {{ data.child.firstName }} {{ data.child.lastName }} </template>
+    </Column>
+    <Column field="amount" header="Amount"></Column>
+    <Column field="paymentDate" header="Payment Date"></Column>
+    <Column field="notes" header="Notes"></Column>
+    <template #empty>No records found</template>
+  </DataTable>
 
   <div v-if="studentId" class="mt-4">
     <button type="button" class="btn btn-info" @click="showAddPaymentModal = true">

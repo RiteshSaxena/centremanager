@@ -1,0 +1,36 @@
+name: Deploy to VM - Stage
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to VM via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/app/centre-manager-stage/frontend
+            git pull origin develop
+            npm install
+            npm run build:app
+            rm -rf /var/www/app-stage/*
+            cp dist/* /var/www/app-stage/ -r
+            npm run build:kiosk
+            rm -rf /var/www/kiosk-stage/*
+            cp dist/* /var/www/kiosk-stage/ -r
+            cd /home/app/centre-manager-stage/backend
+            git pull origin develop
+            npm install
+            npm run build
+            pm2 restart 2
