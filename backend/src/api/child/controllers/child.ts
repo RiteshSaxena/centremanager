@@ -100,7 +100,7 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
         filters: {
           center: ctx.state.center.id,
           status: {
-            $ne: 'New',
+            $notIn: ['New', 'Exited'],
           },
           isDue: true,
         },
