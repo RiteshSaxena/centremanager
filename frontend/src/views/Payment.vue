@@ -121,11 +121,7 @@ onMounted(async () => {
 <template>
   <div class="mt-5">
     <h4 class="fw-bold">Payments Overdue</h4>
-    <DataTable
-      table-class="payment-table"
-      :value="dueStudents"
-      class="mt-3"
-    >
+    <DataTable table-class="payment-table" :value="dueStudents" class="mt-3">
       <Column field="id" header="#">
         <template #body="{ index }">
           {{ index + 1 }}
