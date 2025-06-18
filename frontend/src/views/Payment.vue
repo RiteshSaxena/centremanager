@@ -89,7 +89,8 @@ watch(showAddPaymentModal, () => {
 
 const addPayment = async () => {
   if (studentId.value) {
-    await fetchPayments(studentId.value);
+    studentId.value = null;
+    await fetchPayments();
     await studentStore.dueStudents();
   }
 };
@@ -123,8 +124,6 @@ onMounted(async () => {
     <DataTable
       table-class="payment-table"
       :value="dueStudents"
-      paginator
-      :rows="50"
       class="mt-3"
     >
       <Column field="id" header="#">
