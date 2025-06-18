@@ -24,9 +24,7 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": [
-        "images"
-      ]
+      "allowedTypes": ["images"]
     },
     "lastImportDate": {
       "type": "datetime"
@@ -46,11 +44,7 @@
     },
     "paymentHandler": {
       "type": "enumeration",
-      "enum": [
-        "none",
-        "inbuilt",
-        "zohobooks"
-      ]
+      "enum": ["none", "inbuilt", "zohobooks"]
     },
     "defaultDueAmount": {
       "type": "decimal"

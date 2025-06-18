@@ -25,9 +25,9 @@ app.use(PrimeVue, {
   theme: {
     preset: Material,
     options: {
-      darkModeSelector: '.app-dark',
+      darkModeSelector: '.app-dark'
     }
-  },
+  }
 });
 
 app.config.errorHandler = (err: any) => {

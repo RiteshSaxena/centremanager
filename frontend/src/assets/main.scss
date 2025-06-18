@@ -23,8 +23,8 @@ body {
     zoom: 125%;
   }
 }
-@media (max-width: 1024px){
-  .btn{
+@media (max-width: 1024px) {
+  .btn {
     min-height: 38px;
     --bs-btn-font-size: 14px;
   }
@@ -76,11 +76,11 @@ body {
 
 .p-datatable-table-container {
   border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+  border-top-right-radius: 20px;
 }
 .p-datatable-paginator-bottom {
   border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 
 .payment-table thead tr th {
