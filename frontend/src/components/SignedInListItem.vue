@@ -7,7 +7,7 @@ const props = defineProps<{
   item: LogRecord;
 }>();
 
-defineEmits(['onSelect']);
+defineEmits(['onSelect','onFeedback']);
 
 const name = ref('');
 const type = ref('');
@@ -106,7 +106,7 @@ const iconColorClass = computed(() => {
 
 <template>
   <div class="child-list-item">
-    <div class="d-flex align-items-center gap-3 w-100" @click.prevent="$emit('onSelect')">
+    <div class="d-flex align-items-center gap-3 w-100" @click.stop="$emit('onSelect')">
       <i class="fa-solid fa-user" :class="iconColorClass"></i>
       <div>
         <span class="name">{{ name }} ({{ type }})</span>
@@ -115,13 +115,22 @@ const iconColorClass = computed(() => {
         </span>
       </div>
     </div>
-    <a
-      :href="`tel:${phoneNumber}`"
-      v-if="phoneNumber"
-      class="btn btn-secondary btn-sm m-0 rounded-3"
-    >
-      <i class="fa-solid fa-phone"></i>
-    </a>
+    <div class="d-flex gap-1">
+      <a
+        :href="`tel:${phoneNumber}`"
+        v-if="phoneNumber"
+        class="btn btn-secondary btn-sm m-0 align-items-center d-flex rounded-3 mr-2"
+      >
+        <i class="fa-solid fa-phone"></i>
+      </a>
+      <a
+        href="#"
+        @click.stop.prevent="$emit('onFeedback', props.item)"
+        class="btn btn-secondary btn-sm align-items-center d-flex m-0 rounded-3"
+      >
+        <i class="fa-comments fa-regular"></i>
+      </a>
+    </div>
   </div>
 </template>
 

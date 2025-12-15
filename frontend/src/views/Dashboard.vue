@@ -70,6 +70,7 @@
           :filter="signedInFilter"
           :filter-id="signedInFilterId"
           @onSelect="onSelectSignOut"
+          @onFeedback="onFeedbackModal"
         />
       </div>
     </div>
@@ -89,6 +90,11 @@
     :item="selectedSignOutItem"
     @onSuccess="clearSearch"
   />
+  <FeedbackModal
+    v-model:show="feedbackModal"
+    :item="selectedSignOutItem"
+    @onSuccess="clearSearch"
+  />
 </template>
 
 <script setup lang="ts">
@@ -105,6 +111,7 @@ import ScanQRModal from '@/components/ScanQRModal.vue';
 import GuestSignInModal from '@/components/GuestSignInModal.vue';
 import SignInModal from '@/components/SignInModal.vue';
 import SignOutModal from '@/components/SignOutModal.vue';
+import FeedbackModal from '@/components/FeedbackModal.vue';
 
 import { useSearchStore, useLogBookStore, useStudentStore } from '@/stores';
 
@@ -115,6 +122,7 @@ const studentStore = useStudentStore();
 const qrMode = ref('');
 const scanQRModal = ref(false);
 const signOutModal = ref(false);
+const feedbackModal = ref(false);
 const guestSignInModal = ref(false);
 const signInModal = ref(false);
 
@@ -185,6 +193,10 @@ const onSelectSignOut = (item: LogRecord) => {
 
   selectedSignOutItem.value = item;
   signOutModal.value = true;
+};
+const onFeedbackModal = (item: LogRecord) => {
+  selectedSignOutItem.value = item;
+  feedbackModal.value = true;
 };
 
 const handleQrStudent = async (id: number) => {
