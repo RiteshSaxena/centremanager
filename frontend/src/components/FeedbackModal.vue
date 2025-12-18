@@ -48,7 +48,7 @@ function onScoreInput(e: Event) {
     return;
   }
 
-  v = v.replace(/[^0-9\-\.\%]/g, '');
+  v = v.replace(/[^0-9\-.%]/g, '');
 
   v = v.replace(/(?!^)-/g, '');
 
