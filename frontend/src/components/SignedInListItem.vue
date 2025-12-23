@@ -117,18 +117,19 @@ const iconColorClass = computed(() => {
     </div>
     <div class="d-flex gap-1">
       <a
-        :href="`tel:${phoneNumber}`"
-        v-if="phoneNumber"
-        class="btn btn-secondary btn-sm m-0 align-items-center d-flex rounded-3 mr-2"
-      >
-        <i class="fa-solid fa-phone"></i>
-      </a>
-      <a
+       v-if="props.item?.type === 'Student'"
         href="#"
         @click.stop.prevent="$emit('onFeedback', props.item)"
         class="btn btn-secondary btn-sm align-items-center d-flex m-0 rounded-3"
       >
         <i class="fa-comments fa-regular"></i>
+      </a>
+      <a
+        :href="`tel:${phoneNumber}`"
+        v-if="phoneNumber"
+        class="btn btn-secondary btn-sm m-0 align-items-center d-flex rounded-3 mr-2"
+      >
+        <i class="fa-solid fa-phone"></i>
       </a>
     </div>
   </div>
@@ -138,7 +139,7 @@ const iconColorClass = computed(() => {
 .child-list-item {
   background: #f5f5f5;
   border-radius: 10px;
-  padding: 10px 25px;
+  padding: 10px 10px;
   margin-bottom: 10px;
   cursor: pointer;
   display: flex;

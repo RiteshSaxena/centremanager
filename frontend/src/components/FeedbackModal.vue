@@ -235,15 +235,19 @@ watch(
 </script>
 
 <template>
-  <Modal :large="false" v-if="show" :show-footer-close-button="!qrMode" :title="`Feedback  - ${selectedName}`"
-    @close="emit('update:show', false)">
-    <!--  LOADER -->
-    <div class="text-center mb-3" v-if="loading">
+  <Modal
+    :large="false"
+    v-if="show"
+    :show-footer-close-button="!qrMode"
+    :title="`Feedback  - ${selectedName}`"
+    @close="emit('update:show', false)"
+  >
+  <div class="text-center mb-3" v-if="loading">
       <div class="spinner-border text-dark text-center" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    <div v-if="!loading" class="w-100 text-center d-flex flex-column gap-2">
+    <div v-if="!loading" class="w-100 fs-5 text-center d-flex flex-column gap-2">
       <div class="row">
         <div class="col-4"></div>
         <div class="col-4"><strong>Score</strong></div>
@@ -251,7 +255,7 @@ watch(
       </div>
       <div class="row">
         <div class="col-4">
-          <span>Maths</span>
+          <span><b>Maths</b></span>
         </div>
         <div class="col-4">
           <input type="text" name="score" v-model="feedbackForm.mathScore" inputmode="numeric" pattern="[0-9]*"
@@ -264,7 +268,7 @@ watch(
       </div>
       <div class="row">
         <div class="col-4">
-          <span>Eng</span>
+          <span><b>Eng</b></span>
         </div>
         <div class="col-4">
           <input type="text" name="score" v-model="feedbackForm.englishScore" inputmode="numeric" pattern="[0-9]*"
@@ -277,11 +281,15 @@ watch(
       </div>
       <div class="row">
         <div class="col-12 align-items-start justify-content-start d-flex">
-          <label>Feedback</label>
+          <label><b>Feedback</b></label>
         </div>
         <div class="col-12">
-          <textarea name="" v-model="feedbackForm.feedback" class="form-control" rows="5" id=""></textarea>
+          <textarea name="" v-model="feedbackForm.feedback" class="form-control" rows="7" id=""></textarea>
         </div>
+        <label for="inperson" class="text-start mt-2">
+          <input type="checkbox" name="inperson" id="inperson">
+          In person feedback required.
+        </label>
       </div>
     </div>
 
