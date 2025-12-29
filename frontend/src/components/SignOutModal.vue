@@ -8,7 +8,9 @@ import { useLogBookStore } from '@/stores';
 
 import Modal from '@/components/base/Modal.vue';
 import SignaturePad from '@/components/SignaturePad.vue';
+import { useFeedbackStore } from '@/stores/feedback';
 
+const feedbackStore = useFeedbackStore();
 const props = withDefaults(
   defineProps<{
     show: boolean;
@@ -23,25 +25,52 @@ const props = withDefaults(
 );
 
 const emit = defineEmits(['update:show', 'onSuccess']);
-
 const toast = useToast();
 const logBookStore = useLogBookStore();
-
 const qrMode = ref(false);
 const loading = ref(false);
 const signaturePad = ref<typeof SignaturePad | null>(null);
+const feedbackData = ref<{
+  mathScore: number | null;
+  englishScore: number | null;
+  mathTime: number | null;
+  englishTime: number | null;
+  feedback: string;
+} | null>(null);
 
 watch(
   () => props.show,
-  (val) => {
-    if (val) {
-      qrMode.value = props.isQrMode && !!props.item?.signatureId;
-      if (qrMode.value) {
-        setTimeout(() => {
-          onSubmit();
-        }, 500);
+  async (val) => {
+    if (!val) return;
+    qrMode.value = props.isQrMode && !!props.item?.signatureId;
+    if (qrMode.value) {
+      setTimeout(() => {
+        onSubmit();
+      }, 500);
+    }
+    signaturePad.value?.reset();
+    feedbackData.value = null;
+    // FETCH FEEDBACK DATA
+    if (props.item?.student?.id) {
+      try {
+        loading.value = true;
+        const feedback =
+          await feedbackStore.fetchTodayFeedbackByChild(
+            props.item.student.id
+          );
+
+        if (feedback) {
+          feedbackData.value = {
+            mathScore: feedback.mathScore,
+            englishScore: feedback.englishScore,
+            mathTime:  feedback.mathTime !== null ? Number(feedback.mathTime) : null,
+            englishTime: feedback.englishTime !== null ? Number(feedback.englishTime) : null,
+            feedback: feedback.feedback || '',
+          };
+        }
+      } finally {
+        loading.value = false;
       }
-      signaturePad.value?.reset();
     }
   }
 );
@@ -107,13 +136,18 @@ const selectedName = computed(() => {
 </script>
 
 <template>
-  <Modal
-    :large="true"
-    v-if="show"
-    :show-footer-close-button="!qrMode"
-    :title="`Sign Out - ${selectedName}`"
-    @close="emit('update:show', false)"
+  <Modal :large="true" v-if="show" :show-footer-close-button="!qrMode" :title="`Sign Out - ${selectedName}`"
+    @close="emit('update:show', false)">
+    <!--LOADER -->
+  <div
+    v-if="loading"
+    class="w-100 d-flex justify-content-center align-items-center py-5"
   >
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+<template v-else>
     <div class="w-100 fs-5 text-start d-flex flex-column gap-2">
       <div class="row">
         <div class="col-4"></div>
@@ -124,22 +158,26 @@ const selectedName = computed(() => {
         <div class="col-4">
           <span><b>Maths</b></span>
         </div>
-        <div class="col-4">
-          <span class="text-success">100%</span>
+        <div class="col-4" v-if="feedbackData?.mathScore">
+          <span class="text-success">{{ feedbackData?.mathScore !== null ? feedbackData.mathScore + '%' : '--' }}</span>
         </div>
         <div class="col-4">
-          <span>29</span>
+          <span>{{ feedbackData?.mathTime ?? '--' }}</span>
         </div>
       </div>
       <div class="row">
         <div class="col-4">
           <span><b>Eng</b></span>
         </div>
-        <div class="col-4">
-          <span class="text-warning"><b>-2</b></span>
+        <div class="col-4" v-if="feedbackData?.englishScore">
+          <span :class="feedbackData?.englishScore && feedbackData.englishScore < 0
+            ? 'text-danger'
+            : 'text-warning'"><b>{{ feedbackData?.englishScore !== null ? feedbackData.englishScore + '%' : '--'
+            }}</b></span>
         </div>
         <div class="col-4">
-          <span>32</span>
+          <span> {{ feedbackData?.englishTime ?? '--' }}
+          </span>
         </div>
       </div>
       <div class="row">
@@ -147,27 +185,27 @@ const selectedName = computed(() => {
           <label><b>Feedback</b></label>
         </div>
         <div class="col-12">
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore vel magnam magni similique minima sed, numquam autem consequatur sint perferendis dicta laborum hic aut voluptates quos iusto dolorem veritatis officiis?</p>
+          <p v-if="feedbackData?.feedback">
+            {{ feedbackData.feedback }}
+          </p>
+          <p v-else class="text-muted">
+            No feedback available
+          </p>
         </div>
       </div>
     </div>
-    <div v-if="qrMode" class="w-100 text-center my-5">
+     <div v-if="!qrMode">
+      <signature-pad ref="signaturePad" />
+    </div>
+    <div v-else class="w-100 text-center my-5">
       <div class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    <div v-else>
-      <signature-pad ref="signaturePad" />
-    </div>
-
+   
+</template>
     <template #footer>
-      <button
-        v-if="!qrMode"
-        type="button"
-        class="btn btn-info"
-        @click.prevent="onSubmit"
-        :disabled="loading"
-      >
+      <button v-if="!qrMode" type="button" class="btn btn-info" @click.prevent="onSubmit" :disabled="loading">
         {{ loading ? '...' : 'Submit' }}
       </button>
     </template>
