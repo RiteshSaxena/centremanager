@@ -87,3 +87,14 @@ body {
   background-color: #ff6961;
   color: white !important;
 }
+.p-datatable-header-cell{
+  padding: 5px 10px !important;
+  font-size: 12px;
+}
+.p-datatable-tbody > tr > td {
+    padding: 5px 10px !important;
+    font-size: 12px;
+}
+.p-datatable-tbody > tr > td  .btn{
+    font-size: 12px;
+}

@@ -19,7 +19,7 @@ onMounted(async () => {
   <div class="d-flex flex-column flex-md-row">
     <Sidebar v-if="!isKioskApp" />
     <div class="main-container overflow-auto vh-100 w-100">
-      <div class="p-4">
+      <div class="p-2 p-sm-4">
         <centre-header />
         <slot />
       </div>
