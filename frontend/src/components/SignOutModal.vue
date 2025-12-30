@@ -158,8 +158,8 @@ const selectedName = computed(() => {
         <div class="col-4">
           <span><b>Maths</b></span>
         </div>
-        <div class="col-4" v-if="feedbackData?.mathScore">
-          <span class="text-success">{{ feedbackData?.mathScore !== null ? feedbackData.mathScore + '%' : '--' }}</span>
+        <div class="col-4" >
+          <span class="text-success">{{ feedbackData?.mathScore !== null && feedbackData?.mathScore !== undefined ? feedbackData?.mathScore + '%' : '--' }}</span>
         </div>
         <div class="col-4">
           <span>{{ feedbackData?.mathTime ?? '--' }}</span>
@@ -169,10 +169,10 @@ const selectedName = computed(() => {
         <div class="col-4">
           <span><b>Eng</b></span>
         </div>
-        <div class="col-4" v-if="feedbackData?.englishScore">
-          <span :class="feedbackData?.englishScore && feedbackData.englishScore < 0
+        <div class="col-4" >
+          <span :class="feedbackData?.englishScore  && feedbackData.englishScore < 0
             ? 'text-danger'
-            : 'text-warning'"><b>{{ feedbackData?.englishScore !== null ? feedbackData.englishScore + '%' : '--'
+            : 'text-warning'"><b>{{ feedbackData?.englishScore !== null && feedbackData?.englishScore !=undefined ? feedbackData?.englishScore + '%' : '--'
             }}</b></span>
         </div>
         <div class="col-4">
