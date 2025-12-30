@@ -1,0 +1,57 @@
+{
+  "kind": "collectionType",
+  "collectionName": "feedbacks",
+  "info": {
+    "singularName": "feedback",
+    "pluralName": "feedbacks",
+    "displayName": "Feedback",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "mathScore": {
+      "type": "decimal",
+      "required": true
+    },
+    "englishScore": {
+      "type": "decimal",
+      "required": true
+    },
+    "mathTime": {
+      "type": "biginteger",
+      "required": true
+    },
+    "englishTime": {
+      "type": "biginteger",
+      "required": true
+    },
+    "isPercentFeedbackRequired": {
+      "type": "boolean",
+      "required": false
+    },
+    "createdDate": {
+      "type": "date"
+    },
+    "child": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::child.child"
+    },
+    "createdByUser": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "updatedByUser": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "feedback": {
+      "type": "text"
+    }
+  }
+}
