@@ -37,28 +37,65 @@ const feedbackForm = ref({
   isPercentFeedbackRequired: false
 });
 
-function onScoreInput(e: Event) {
-  const input = e.target as HTMLInputElement;
-  let v = input.value;
-  if (v === "-") {
+// function onScoreInput(e: Event) {
+//   const input = e.target as HTMLInputElement;
+//   let v = input.value;
+//   if (v === "-") {
+//     return;
+//   }
+//   v = v.replace(/[^0-9\-.%]/g, '');
+//   v = v.replace(/(?!^)-/g, '');
+//   const hasPercent = v.endsWith('%');
+//   v = v.replace('%', '');
+//   let num = Number(v);
+//   if (isNaN(num)) {
+//     input.value = "";
+//     return;
+//   }
+//   if (num > 100) num = 100;
+//   if (num < 0) {
+//     input.value = num.toString();
+//     return;
+//   }
+//   input.value = num.toString() + "%";
+// }
+
+function onScoreInput(value: string, field: 'mathScore' | 'englishScore') {
+  // Remove %
+  let v = value.replace('%', '');
+
+  // Allow digits and optional leading -
+  v = v.replace(/[^0-9-]/g, '');
+
+  // Keep - only at start
+  if (v.includes('-')) {
+    v = v.startsWith('-')
+      ? '-' + v.slice(1).replace(/-/g, '')
+      : v.replace(/-/g, '');
+  }
+
+  // Allow empty or "-"
+  if (v === '' || v === '-') {
+    feedbackForm.value[field] = v;
     return;
   }
-  v = v.replace(/[^0-9\-.%]/g, '');
-  v = v.replace(/(?!^)-/g, '');
-  const hasPercent = v.endsWith('%');
-  v = v.replace('%', '');
-  let num = Number(v);
+
+  const num = Number(v);
   if (isNaN(num)) {
-    input.value = "";
+    feedbackForm.value[field] = '';
     return;
   }
-  if (num > 100) num = 100;
-  if (num < 0) {
-    input.value = num.toString();
+
+  // Clamp (optional)
+  if (num > 100) {
+    feedbackForm.value[field] = '100%';
     return;
   }
-  input.value = num.toString() + "%";
+
+  feedbackForm.value[field] = `${num}%`;
 }
+
+
 
 const resetForm = () => {
   feedbackForm.value.mathScore = '';
@@ -202,8 +239,8 @@ watch(
               props.item.student.id
             );
           if (feedback) {
-            feedbackForm.value.mathScore = feedback.mathScore?.toString() || '';
-            feedbackForm.value.englishScore = feedback.englishScore?.toString() || '';
+            feedbackForm.value.mathScore = feedback.mathScore !== null && feedback.mathScore !== undefined ? `${feedback.mathScore}%`: '';
+            feedbackForm.value.englishScore = feedback.englishScore !== null && feedback.englishScore !== undefined ? `${feedback.englishScore}%` : '';
             feedbackForm.value.mathTime = feedback.mathTime || '';
             feedbackForm.value.englishTime = feedback.englishTime || '';
             feedbackForm.value.feedback = feedback.feedback || '';
@@ -249,8 +286,9 @@ watch(
         </div>
         <div class="col-4">
           <input type="text" name="score" v-model="feedbackForm.mathScore" inputmode="numeric" pattern="[0-9]*"
-            maxlength="4" @input="onScoreInput($event); clearError('mathScore')" class="form-control"
-            :class="{ 'is-invalid': errors.mathScore }">
+            maxlength="4"
+            @input="onScoreInput(($event.target as HTMLInputElement).value, 'mathScore'); clearError('mathScore')"
+            class="form-control" :class="{ 'is-invalid': errors.mathScore }">
           <div v-if="errors.mathScore" class="invalid-feedback">
             {{ errors.mathScore }}
           </div>
@@ -270,8 +308,9 @@ watch(
         </div>
         <div class="col-4">
           <input type="text" name="score" v-model="feedbackForm.englishScore" inputmode="numeric" pattern="[0-9]*"
-            maxlength="4" @input="onScoreInput($event), clearError('englishScore')" class="form-control"
-            :class="{ 'is-invalid': errors.englishScore }">
+            maxlength="4"
+            @input="onScoreInput(($event.target as HTMLInputElement).value, 'englishScore'), clearError('englishScore')"
+            class="form-control" :class="{ 'is-invalid': errors.englishScore }">
           <div v-if="errors.englishScore" class="invalid-feedback">
             {{ errors.englishScore }}
           </div>
