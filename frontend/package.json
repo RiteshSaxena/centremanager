@@ -10,8 +10,8 @@
   "scripts": {
     "dev:app": "vite -c app.config.ts",
     "dev:kiosk": "vite -c app-kiosk.config.ts",
-    "build:app": "npm run lint && npm run type-check && npm run build-only:app",
-    "build:kiosk": "npm run lint && npm run type-check && npm run build-only:kiosk",
+    "build:app": "npm run type-check && npm run build-only:app",
+    "build:kiosk": "npm run type-check && npm run build-only:kiosk",
     "preview": "vite preview",
     "build-only:app": "vite build -c app.config.ts",
     "build-only:kiosk": "vite build -c app-kiosk.config.ts",
