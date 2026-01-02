@@ -2,23 +2,25 @@
 import type { LogRecord } from '@/types';
 import { computed, onMounted, ref, watch } from 'vue';
 import moment from 'moment';
+import { userStore as useUserStore } from '@/stores/user';
 
+const userStore = useUserStore();
 const props = defineProps<{
   item: LogRecord;
 }>();
 
-defineEmits(['onSelect','onFeedback']);
+defineEmits(['onSelect', 'onFeedback']);
 
 const name = ref('');
 const type = ref('');
 const desc = ref('');
-const phoneNumber = ref('');
+const loggedInId = Number(userStore.user?.id);
 
 const updateVars = () => {
   name.value = '';
   type.value = '';
   desc.value = '';
-  phoneNumber.value = '';
+  // phoneNumber.value = '';
   const signInTime = moment(props.item?.signInTime).format('hh:mmA');
   if (props.item?.type === 'Student') {
     name.value = `${props.item?.student?.firstName} ${props.item?.student?.lastName}`;
@@ -30,7 +32,7 @@ const updateVars = () => {
     }
     if (props.item?.parent?.contactNumber) {
       descArr.push(`${props.item?.parent?.contactNumber}`);
-      phoneNumber.value = props.item?.parent?.contactNumber;
+      // phoneNumber.value = props.item?.parent?.contactNumber;
     }
     descArr.push(signInTime);
     desc.value = descArr.join(' - ');
@@ -44,7 +46,7 @@ const updateVars = () => {
     }
     if (props.item?.parent?.contactNumber) {
       descArr.push(`${props.item?.parent?.contactNumber}`);
-      phoneNumber.value = props.item?.parent?.contactNumber;
+      // phoneNumber.value = props.item?.parent?.contactNumber;
     }
     descArr.push(signInTime);
     desc.value = descArr.join(' - ');
@@ -54,7 +56,7 @@ const updateVars = () => {
     desc.value = '';
     if (props.item?.staff?.phoneNumber) {
       desc.value += `${props.item?.staff?.phoneNumber}`;
-      phoneNumber.value = props.item?.staff?.phoneNumber;
+      // phoneNumber.value = props.item?.staff?.phoneNumber;
     } else if (props.item?.staff?.email) {
       desc.value += `${props.item?.staff?.email}`;
     }
@@ -65,7 +67,7 @@ const updateVars = () => {
     desc.value = '';
     if (props.item?.parent?.contactNumber) {
       desc.value += `${props.item?.parent?.contactNumber}`;
-      phoneNumber.value = props.item?.parent?.contactNumber;
+      // phoneNumber.value = props.item?.parent?.contactNumber;
     } else if (props.item?.parent?.email) {
       desc.value += `${props.item?.parent?.email}`;
     }
@@ -76,7 +78,7 @@ const updateVars = () => {
     desc.value = '';
     if (props.item?.guest?.phoneNumber) {
       desc.value += `${props.item?.guest?.phoneNumber}`;
-      phoneNumber.value = props.item?.guest?.phoneNumber;
+      // phoneNumber.value = props.item?.guest?.phoneNumber;
     } else if (props.item?.guest?.email) {
       desc.value += `${props.item?.guest?.email}`;
     }
@@ -91,6 +93,44 @@ watch(props.item, () => {
 onMounted(() => {
   updateVars();
 });
+
+const rowPhoneNumber = computed(() => {
+  if (
+    props.item?.type === 'Student'
+  ) {
+    return props.item.parent?.contactNumber || '';
+  }
+  if (props.item?.type === 'Staff') {
+    return props.item.staff?.phoneNumber || '';
+  }
+  if (props.item?.type === 'Parent') {
+    return props.item.parent?.contactNumber || '';
+  }
+
+  if (props.item?.type === 'Guest') {
+    return props.item.guest?.phoneNumber || '';
+  }
+
+  return '';
+});
+
+const canShowCallIcon = computed(() => {
+  if (!userStore.user) return false;
+  if (props.item.type === 'Staff' && props.item.staff?.id === loggedInId) {
+    return true;
+  }
+  if (props.item.type === 'Student' && props.item.student?.id === loggedInId) {
+    return true;
+  }
+  if (props.item.type === 'Parent' && props.item.parent?.id === loggedInId) {
+    return true;
+  }
+  if (props.item.type === 'Guest' && props.item.guest?.id === loggedInId) {
+    return true;
+  }
+  return false;
+});
+
 
 const iconColorClass = computed(() => {
   if (props.item?.student) {
@@ -116,19 +156,12 @@ const iconColorClass = computed(() => {
       </div>
     </div>
     <div class="d-flex gap-1">
-      <a
-       v-if="props.item?.type === 'Student'"
-        href="#"
-        @click.stop.prevent="$emit('onFeedback', props.item)"
-        class="btn btn-secondary btn-sm align-items-center d-flex m-0 rounded-3"
-      >
+      <a v-if="props.item?.type === 'Student'" href="#" @click.stop.prevent="$emit('onFeedback', props.item)"
+        class="btn btn-secondary btn-sm align-items-center d-flex m-0 rounded-3">
         <i class="fa-comments fa-regular"></i>
       </a>
-      <a
-        :href="`tel:${phoneNumber}`"
-        v-if="phoneNumber"
-        class="btn btn-secondary btn-sm m-0 align-items-center d-flex rounded-3 mr-2"
-      >
+      <a :href="`tel:${rowPhoneNumber}`" v-if="canShowCallIcon && rowPhoneNumber"
+        class="btn btn-secondary btn-sm m-0 align-items-center d-flex rounded-3 mr-2">
         <i class="fa-solid fa-phone"></i>
       </a>
     </div>
@@ -157,16 +190,20 @@ const iconColorClass = computed(() => {
     color: #193b4d;
     display: block;
   }
+
   .name {
     font-weight: 700;
   }
 }
+
 .icon-male {
   color: #3488ce;
 }
+
 .icon-female {
   color: #eb72ff;
 }
+
 .icon-general {
   color: #b5b5b5;
 }
