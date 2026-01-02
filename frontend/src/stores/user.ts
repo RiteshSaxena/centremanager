@@ -23,6 +23,9 @@ export const userStore = defineStore('user', {
   getters: {
     isLoggedIn(state) {
       return !!state.token;
+    },
+    isAdmin(state) {
+      return state.user?.type === 'admin';
     }
   },
   actions: {
@@ -44,6 +47,16 @@ export const userStore = defineStore('user', {
     async register(payload: RegisterPayload) {
       const res = await axios.post('/center/register', payload);
       return res.data;
+    },
+    async fetchMe() {
+      if (!this.token) return;
+
+      try {
+        const res = await axios.get('/users/me');
+        this.user = res.data;
+      } catch (err) {
+        this.logout();
+      }
     },
     logout() {
       this.token = null;

@@ -28,74 +28,19 @@ const errors = ref({
 const qrMode = ref(false);
 const loading = ref(false);
 const originalFeedback = ref<any>(null);
+const previousMathScore = ref<string>('');
+const previousEnglishScore = ref<string>('');
+
 const feedbackForm = ref({
   mathScore: '',
   englishScore: '',
   mathTime: '',
   englishTime: '',
   feedback: '',
-  isPercentFeedbackRequired: false
+  isPercentFeedbackRequired: false,
+  isEnglishChecked: false,
+  isMathChecked: false
 });
-
-// function onScoreInput(e: Event) {
-//   const input = e.target as HTMLInputElement;
-//   let v = input.value;
-//   if (v === "-") {
-//     return;
-//   }
-//   v = v.replace(/[^0-9\-.%]/g, '');
-//   v = v.replace(/(?!^)-/g, '');
-//   const hasPercent = v.endsWith('%');
-//   v = v.replace('%', '');
-//   let num = Number(v);
-//   if (isNaN(num)) {
-//     input.value = "";
-//     return;
-//   }
-//   if (num > 100) num = 100;
-//   if (num < 0) {
-//     input.value = num.toString();
-//     return;
-//   }
-//   input.value = num.toString() + "%";
-// }
-
-function onScoreInput(value: string, field: 'mathScore' | 'englishScore') {
-  // Remove %
-  let v = value.replace('%', '');
-
-  // Allow digits and optional leading -
-  v = v.replace(/[^0-9-]/g, '');
-
-  // Keep - only at start
-  if (v.includes('-')) {
-    v = v.startsWith('-')
-      ? '-' + v.slice(1).replace(/-/g, '')
-      : v.replace(/-/g, '');
-  }
-
-  // Allow empty or "-"
-  if (v === '' || v === '-') {
-    feedbackForm.value[field] = v;
-    return;
-  }
-
-  const num = Number(v);
-  if (isNaN(num)) {
-    feedbackForm.value[field] = '';
-    return;
-  }
-
-  // Clamp (optional)
-  if (num > 100) {
-    feedbackForm.value[field] = '100%';
-    return;
-  }
-
-  feedbackForm.value[field] = `${num}%`;
-}
-
-
 
 const resetForm = () => {
   feedbackForm.value.mathScore = '';
@@ -105,6 +50,8 @@ const resetForm = () => {
   feedbackForm.value.feedback = '';
   feedbackForm.value.isPercentFeedbackRequired = false;
   originalFeedback.value = null;
+  feedbackForm.value.isMathChecked = false;
+  feedbackForm.value.isEnglishChecked = false;
 };
 
 const clearError = (field: keyof typeof errors.value) => {
@@ -154,12 +101,25 @@ const hasChanges = () => {
   );
 };
 
+function onScoreInput(value: string, field: 'mathScore' | 'englishScore') {
+  let v = value.replace(/\D/g, '');
+  if (v === '') {
+    feedbackForm.value[field] = '';
+    return;
+  }
+  let num = parseInt(v, 10);
+  // Allow only 0–99
+  if (num > 99) num = 99;
+  feedbackForm.value[field] = String(num);
+}
+
+
 const submitFeedback = async () => {
   if (!props.item?.student?.id) return;
   // VALIDATION: no values entered
-  if (!validateForm()) {
-    return;
-  }
+  // if (!validateForm()) {
+  //   return;
+  // }
   if (!hasChanges()) {
     toast.info('No changes detected');
     return;
@@ -167,28 +127,18 @@ const submitFeedback = async () => {
   try {
     loading.value = true;
     const payload = {
-      mathScore: feedbackForm.value.mathScore
-        ? Number(feedbackForm.value.mathScore.replace('%', ''))
-        : null,
-      englishScore: feedbackForm.value.englishScore
-        ? Number(feedbackForm.value.englishScore.replace('%', ''))
-        : null,
-      mathTime: feedbackForm.value.mathTime
-        ? Number(feedbackForm.value.mathTime)
-        : null,
-      englishTime: feedbackForm.value.englishTime
-        ? Number(feedbackForm.value.englishTime)
-        : null,
+      mathScore: feedbackForm.value.isMathChecked ? 100 : feedbackForm.value.mathScore ? Number(feedbackForm.value.mathScore) : null,
+      englishScore: feedbackForm.value.isEnglishChecked ? 100 : feedbackForm.value.englishScore ? Number(feedbackForm.value.englishScore) : null,
+      mathTime: feedbackForm.value.mathTime ? Number(feedbackForm.value.mathTime) : null,
+      englishTime: feedbackForm.value.englishTime ? Number(feedbackForm.value.englishTime) : null,
       isPercentFeedbackRequired: feedbackForm.value.isPercentFeedbackRequired,
       createdDate: new Date().toISOString().split('T')[0],
       child: props.item.student.id,
       feedback: feedbackForm.value.feedback
     };
+
     if (feedbackStore.todayFeedback) {
-      await feedbackStore.updateFeedback(
-        props.item.student.id,
-        payload
-      );
+      await feedbackStore.updateFeedback(props.item.student.id, payload);
       toast.success('Feedback updated successfully');
     } else {
       await feedbackStore.createFeedback(payload);
@@ -239,8 +189,13 @@ watch(
               props.item.student.id
             );
           if (feedback) {
-            feedbackForm.value.mathScore = feedback.mathScore !== null && feedback.mathScore !== undefined ? `${feedback.mathScore}%`: '';
-            feedbackForm.value.englishScore = feedback.englishScore !== null && feedback.englishScore !== undefined ? `${feedback.englishScore}%` : '';
+            feedbackForm.value.isMathChecked = feedback.mathScore === 100;
+            feedbackForm.value.isEnglishChecked = feedback.englishScore === 100;
+            // only bind input if NOT 100
+            feedbackForm.value.mathScore = feedback.mathScore !== null && feedback.mathScore !== undefined && feedback.mathScore !== 100 ? String(feedback.mathScore) : '';
+            feedbackForm.value.englishScore = feedback.englishScore !== null && feedback.englishScore !== undefined && feedback.englishScore !== 100 ? String(feedback.englishScore) : '';
+            previousMathScore.value = feedback.mathScore !== 100 ? String(feedback.mathScore ?? '') : '';
+            previousEnglishScore.value = feedback.englishScore !== 100 ? String(feedback.englishScore ?? '') : '';
             feedbackForm.value.mathTime = feedback.mathTime || '';
             feedbackForm.value.englishTime = feedback.englishTime || '';
             feedbackForm.value.feedback = feedback.feedback || '';
@@ -264,11 +219,50 @@ watch(
     }
   }
 );
+
+watch(
+  () => feedbackForm.value.isMathChecked,
+  (checked) => {
+    if (checked) {
+      // save current value before clearing
+      previousMathScore.value = feedbackForm.value.mathScore;
+      feedbackForm.value.mathScore = '';
+      errors.value.mathScore = '';
+    } else {
+      // restore previous value when unchecked
+      feedbackForm.value.mathScore = previousMathScore.value;
+    }
+  }
+);
+
+watch(
+  () => feedbackForm.value.isEnglishChecked,
+  (checked) => {
+    if (checked) {
+      // save current value before clearing
+      previousEnglishScore.value = feedbackForm.value.englishScore;
+      feedbackForm.value.englishScore = '';
+      errors.value.englishScore = '';
+    } else {
+      // restore previous value when unchecked
+      feedbackForm.value.englishScore = previousEnglishScore.value;
+    }
+  }
+);
+
+
 </script>
 
 <template>
-  <Modal :large="false" v-if="show" :show-footer-close-button="!qrMode" :title="`Feedback  - ${selectedName}`"
-    @close="emit('update:show', false)">
+  <!-- <Modal :large="false" v-if="show" :show-footer-close-button="!qrMode" :title="Feedback - ${selectedName}"
+    @close="emit('update:show', false)"> -->
+  <Modal :large="false" v-if="show" :show-footer-close-button="!qrMode" @close="emit('update:show', false)">
+    <template #title>
+      <div class="d-flex flex-column">
+        <span>Feedback</span>
+        <small>{{ selectedName }}</small>
+      </div>
+    </template>
     <div class="text-center mb-3" v-if="loading">
       <div class="spinner-border text-dark text-center" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -277,22 +271,30 @@ watch(
     <div v-if="!loading" class="w-100 fs-5 text-center d-flex flex-column gap-2">
       <div class="row">
         <div class="col-4"></div>
-        <div class="col-4"><strong>Score</strong></div>
+        <div class="col-4"><strong>Wrong</strong></div>
         <div class="col-4"><strong>Time <small>(M)</small></strong></div>
       </div>
       <div class="row">
         <div class="col-4">
           <span><b>Maths</b></span>
         </div>
+        <!-- ✅ Math Checkbox -->
+        <div class="col-2 text-start">
+          <label class="form-check">
+            <input type="checkbox" class="form-check-input" v-model="feedbackForm.isMathChecked" />
+            <span class="form-check-label">100%</span>
+          </label>
+        </div>
         <div class="col-4">
           <input type="text" name="score" v-model="feedbackForm.mathScore" inputmode="numeric" pattern="[0-9]*"
-            maxlength="4"
+            maxlength="2" :disabled="feedbackForm.isMathChecked"
             @input="onScoreInput(($event.target as HTMLInputElement).value, 'mathScore'); clearError('mathScore')"
             class="form-control" :class="{ 'is-invalid': errors.mathScore }">
           <div v-if="errors.mathScore" class="invalid-feedback">
             {{ errors.mathScore }}
           </div>
         </div>
+
         <div class="col-4">
           <input type="text" name="time" v-model="feedbackForm.mathTime" inputmode="numeric" pattern="[0-9]*"
             maxlength="2" class="form-control" @input="clearError('mathTime')"
@@ -306,15 +308,23 @@ watch(
         <div class="col-4">
           <span><b>Eng</b></span>
         </div>
+        <!-- ✅ English Checkbox -->
+        <div class="col-2 text-start">
+          <label class="form-check">
+            <input type="checkbox" class="form-check-input" v-model="feedbackForm.isEnglishChecked" />
+            <span class="form-check-label">100%</span>
+          </label>
+        </div>
         <div class="col-4">
           <input type="text" name="score" v-model="feedbackForm.englishScore" inputmode="numeric" pattern="[0-9]*"
-            maxlength="4"
-            @input="onScoreInput(($event.target as HTMLInputElement).value, 'englishScore'), clearError('englishScore')"
+            maxlength="2" :disabled="feedbackForm.isEnglishChecked"
+            @input="onScoreInput(($event.target as HTMLInputElement).value, 'englishScore'); clearError('englishScore')"
             class="form-control" :class="{ 'is-invalid': errors.englishScore }">
           <div v-if="errors.englishScore" class="invalid-feedback">
             {{ errors.englishScore }}
           </div>
         </div>
+
         <div class="col-4">
           <input type="text" name="time" v-model="feedbackForm.englishTime" inputmode="numeric" pattern="[0-9]*"
             maxlength="2" class="form-control" @input="clearError('englishTime')"

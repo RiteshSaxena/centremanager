@@ -39,33 +39,24 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="#modals">
-    <div
-      class="modal fade"
-      ref="modalRef"
-      :data-bs-backdrop="closeOnOutside ? 'true' : 'static'"
-      :data-bs-keyboard="closeOnKeyboard ? 'true' : 'false'"
-    >
+    <div class="modal fade" ref="modalRef" :data-bs-backdrop="closeOnOutside ? 'true' : 'static'"
+      :data-bs-keyboard="closeOnKeyboard ? 'true' : 'false'">
       <div class="modal-dialog modal-dialog-centered" :class="{ 'modal-lg': large }">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">{{ title }}</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <!-- <h5 class="modal-title">{{ title }}</h5> -->
+            <h5 class="modal-title">
+              <slot name="title">
+                {{ title }}
+              </slot>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <slot></slot>
           </div>
           <div class="modal-footer">
-            <button
-              v-if="showFooterCloseButton"
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
+            <button v-if="showFooterCloseButton" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
               Close
             </button>
             <slot name="footer"></slot>
@@ -80,6 +71,7 @@ onBeforeUnmount(() => {
 .modal {
   border-radius: 10px;
 }
+
 .modal-header,
 .modal-footer {
   border: none;
