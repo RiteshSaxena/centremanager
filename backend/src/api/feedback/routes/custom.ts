@@ -1,0 +1,28 @@
+export default {
+  routes: [
+    {
+      method: 'GET',
+      path: '/feedback/by-child/:childId/today',
+      handler: 'feedback.getTodayFeedbackByChild',
+      config: {
+        auth: {},
+      },
+    },
+    {
+      method: 'POST',
+      path: '/feedback/custom-create',
+      handler: 'feedback.createFeedback',
+      config: {
+        auth: {}, // set false if public API
+      },
+    },
+     {
+      method: 'PUT',
+      path: '/feedback/by-child/:childId/today',
+      handler: 'feedback.updateTodayFeedbackByChild',
+      config: {
+        auth: {},
+      },
+    },
+  ],
+};

@@ -379,6 +379,36 @@ export interface ApiChildChild extends Schema.CollectionType {
   };
 }
 
+export interface ApiFeedbackFeedback extends Schema.CollectionType {
+  collectionName: 'feedbacks';
+  info: {
+    description: '';
+    displayName: 'Feedback';
+    pluralName: 'feedbacks';
+    singularName: 'feedback';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    child: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'api::child.child'>;
+    createdAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'admin::user'> & Attribute.Private;
+    createdByUser: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'plugin::users-permissions.user'>;
+    createdDate: Attribute.Date;
+    englishScore: Attribute.Decimal & Attribute.Required;
+    englishTime: Attribute.BigInteger & Attribute.Required;
+    feedback: Attribute.Text;
+    isPercentFeedbackRequired: Attribute.Boolean;
+    mathScore: Attribute.Decimal & Attribute.Required;
+    mathTime: Attribute.BigInteger & Attribute.Required;
+    publishedAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    updatedBy: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'admin::user'> & Attribute.Private;
+    updatedByUser: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'plugin::users-permissions.user'>;
+  };
+}
+
 export interface ApiInviteCodeInviteCode extends Schema.CollectionType {
   collectionName: 'invite_codes';
   info: {
@@ -886,6 +916,7 @@ declare module '@strapi/types' {
       'admin::user': AdminUser;
       'api::center.center': ApiCenterCenter;
       'api::child.child': ApiChildChild;
+      'api::feedback.feedback': ApiFeedbackFeedback;
       'api::invite-code.invite-code': ApiInviteCodeInviteCode;
       'api::log-book.log-book': ApiLogBookLogBook;
       'api::parent.parent': ApiParentParent;

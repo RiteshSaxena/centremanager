@@ -57,8 +57,8 @@ defineExpose({
       }"
     />
     <div class="text-end">
-      <button type="button" class="btn btn-sm btn-secondary mt-3" @click.prevent="reset">
-        Reset
+      <button type="button" class="btn btn-outline-dark" @click.prevent="reset">
+        <span aria-hidden="true">&times;</span> Clear
       </button>
     </div>
   </div>

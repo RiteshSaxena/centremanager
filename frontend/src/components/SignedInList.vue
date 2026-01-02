@@ -11,7 +11,7 @@ const props = defineProps<{
   filterId: number | null;
 }>();
 
-const emit = defineEmits(['onSelect']);
+const emit = defineEmits(['onSelect','onFeedback']);
 
 const logBookStore = useLogBookStore();
 
@@ -92,6 +92,7 @@ const signedIn = computed(() => {
       :key="item.id"
       :item="item"
       @onSelect="emit('onSelect', item)"
+      @onFeedback="emit('onFeedback', item)"
     />
   </Card>
 </template>
