@@ -268,31 +268,32 @@ watch(
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    <div v-if="!loading" class="w-100 fs-5 text-center d-flex flex-column gap-2">
-      <div class="row">
-        <div class="col-4"></div>
-        <div class="col-4"><strong>Wrong</strong></div>
+    <div v-if="!loading" class="w-100 fs-5 d-flex flex-column gap-2">
+      <div class="row gx-2">
+        <div class="col-5"></div>
+        <div class="col-3 text-left"><strong>Wrong</strong></div>
         <div class="col-4"><strong>Time <small>(M)</small></strong></div>
       </div>
-      <div class="row">
-        <div class="col-4">
-          <span><b>Maths</b></span>
-        </div>
-        <!-- ✅ Math Checkbox -->
-        <div class="col-2 text-start">
-          <label class="form-check">
-            <input type="checkbox" class="form-check-input" v-model="feedbackForm.isMathChecked" />
-            <span class="form-check-label">100%</span>
-          </label>
-        </div>
-        <div class="col-4">
-          <input type="text" name="score" v-model="feedbackForm.mathScore" inputmode="numeric" pattern="[0-9]*"
-            maxlength="2" :disabled="feedbackForm.isMathChecked"
-            @input="onScoreInput(($event.target as HTMLInputElement).value, 'mathScore'); clearError('mathScore')"
-            class="form-control" :class="{ 'is-invalid': errors.mathScore }">
-          <div v-if="errors.mathScore" class="invalid-feedback">
-            {{ errors.mathScore }}
+      <div class="row gx-2">
+        <div class="col-5">
+          <div class="d-flex gap-3 align-items-center w-100 justify-content-between">
+            <span class="fs-6"><b>Maths</b></span>
+            <label class="form-check">
+              <input type="checkbox" class="form-check-input" v-model="feedbackForm.isMathChecked" />
+              <span class="form-check-label fs-6">100%</span>
+            </label>
           </div>
+        </div>
+        <div class="col-3 text-start">
+          
+            <input type="text" name="score" v-model="feedbackForm.mathScore" inputmode="numeric" pattern="[0-9]*"
+              maxlength="2" :disabled="feedbackForm.isMathChecked"
+              @input="onScoreInput(($event.target as HTMLInputElement).value, 'mathScore'); clearError('mathScore')"
+              class="form-control max-width-50" :class="{ 'is-invalid': errors.mathScore }">
+            <div v-if="errors.mathScore" class="invalid-feedback">
+              {{ errors.mathScore }}
+            </div>
+
         </div>
 
         <div class="col-4">
@@ -304,25 +305,24 @@ watch(
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-4">
-          <span><b>Eng</b></span>
-        </div>
-        <!-- ✅ English Checkbox -->
-        <div class="col-2 text-start">
-          <label class="form-check">
-            <input type="checkbox" class="form-check-input" v-model="feedbackForm.isEnglishChecked" />
-            <span class="form-check-label">100%</span>
-          </label>
-        </div>
-        <div class="col-4">
-          <input type="text" name="score" v-model="feedbackForm.englishScore" inputmode="numeric" pattern="[0-9]*"
-            maxlength="2" :disabled="feedbackForm.isEnglishChecked"
-            @input="onScoreInput(($event.target as HTMLInputElement).value, 'englishScore'); clearError('englishScore')"
-            class="form-control" :class="{ 'is-invalid': errors.englishScore }">
-          <div v-if="errors.englishScore" class="invalid-feedback">
-            {{ errors.englishScore }}
+      <div class="row gx-2">
+        <div class="col-5">
+          <div class="d-flex gap-3 align-items-center w-100 justify-content-between">
+            <span class="fs-6"><b>Eng</b></span>
+            <label class="form-check">
+              <input type="checkbox" class="form-check-input" v-model="feedbackForm.isEnglishChecked" />
+              <span class="form-check-label fs-6">100%</span>
+            </label>
           </div>
+        </div>
+        <div class="col-3 text-start">
+            <input type="text" name="score" v-model="feedbackForm.englishScore" inputmode="numeric" pattern="[0-9]*"
+              maxlength="2" :disabled="feedbackForm.isEnglishChecked"
+              @input="onScoreInput(($event.target as HTMLInputElement).value, 'englishScore'); clearError('englishScore')"
+              class="form-control" :class="{ 'is-invalid': errors.englishScore }">
+            <div v-if="errors.englishScore" class="invalid-feedback">
+              {{ errors.englishScore }}
+            </div>
         </div>
 
         <div class="col-4">
