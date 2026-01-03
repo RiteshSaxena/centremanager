@@ -14,19 +14,19 @@
   "attributes": {
     "mathScore": {
       "type": "decimal",
-      "required": true
+      "required": false
     },
     "englishScore": {
       "type": "decimal",
-      "required": true
+      "required": false
     },
     "mathTime": {
       "type": "biginteger",
-      "required": true
+      "required": false
     },
     "englishTime": {
       "type": "biginteger",
-      "required": true
+      "required": false
     },
     "isPercentFeedbackRequired": {
       "type": "boolean",
