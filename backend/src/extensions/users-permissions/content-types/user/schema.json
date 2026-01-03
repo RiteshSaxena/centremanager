@@ -84,7 +84,7 @@
       "type": "enumeration",
       "enum": ["admin", "staff"],
       "default": "admin",
-      "required": false
+      "required": true
     }
   }
 }
