@@ -20,13 +20,15 @@ const handleItemSelect = (item: any) => {
   emit('onSelect', item);
 
   // Scroll to the About section
-  const aboutSection = document.getElementById('student-row');
-  if (aboutSection) {
-    aboutSection.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start' // Adjust this based on your layout
-    });
-  }
+  setTimeout(() => {
+    const aboutSection = document.getElementById('student-row');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start' // Adjust this based on your layout
+      });
+    }
+  }, 100);
 };
 </script>
 

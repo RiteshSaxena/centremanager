@@ -13,7 +13,7 @@
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
-        <div class="col-12 col-lg-6" id="student-row">
+        <div class="col-12 col-lg-6">
           <button type="button" class="btn btn-info me-1 mb-1" @click="qrSignIn">
             Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
           </button>
@@ -31,7 +31,7 @@
         </div>
       </div>
       <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
-      <div class="mb-3">
+      <div class="mb-3" id="student-row">
         <GuardianList
           v-if="selectedStudent"
           :student="selectedStudent"
