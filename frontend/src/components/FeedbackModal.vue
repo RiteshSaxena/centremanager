@@ -130,14 +130,14 @@ const submitFeedback = async () => {
         ? 100
         : feedbackForm.value.mathScore
         ? Number(feedbackForm.value.mathScore)
-        : 0,
+        : null,
       englishScore: feedbackForm.value.isEnglishChecked
         ? 100
         : feedbackForm.value.englishScore
         ? Number(feedbackForm.value.englishScore)
-        : 0,
-      mathTime: feedbackForm.value.mathTime ? Number(feedbackForm.value.mathTime) : 0,
-      englishTime: feedbackForm.value.englishTime ? Number(feedbackForm.value.englishTime) : 0,
+        : null,
+      mathTime: feedbackForm.value.mathTime ? Number(feedbackForm.value.mathTime) : null,
+      englishTime: feedbackForm.value.englishTime ? Number(feedbackForm.value.englishTime) : null,
       isPercentFeedbackRequired: feedbackForm.value.isPercentFeedbackRequired,
       createdDate: new Date().toISOString().split('T')[0],
       child: props.item.student.id,

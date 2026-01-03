@@ -69,17 +69,18 @@ export default factories.createCoreController(
                     'api::feedback.feedback',
                     {
                         data: {
-                            mathScore,
-                            englishScore,
-                            mathTime,
-                            englishTime,
-                            isPercentFeedbackRequired,
+                            mathScore: mathScore ?? null,
+                            englishScore: englishScore ?? null,
+                            mathTime: mathTime ?? null,
+                            englishTime: englishTime ?? null,
+                            isPercentFeedbackRequired: isPercentFeedbackRequired ?? false,
                             createdDate,
                             child,
-                            feedback,
+                            feedback: feedback ?? '',
                             createdByUser: user?.id,
                             updatedByUser: user?.id,
                         },
+
                     }
                 );
                 return ctx.created(createdFeedback);
@@ -131,14 +132,12 @@ export default factories.createCoreController(
                     feedbackId,
                     {
                         data: {
-                            ...(mathScore !== undefined && { mathScore }),
-                            ...(englishScore !== undefined && { englishScore }),
-                            ...(mathTime !== undefined && { mathTime }),
-                            ...(englishTime !== undefined && { englishTime }),
-                            ...(isPercentFeedbackRequired !== undefined && {
-                                isPercentFeedbackRequired,
-                            }),
-                            ...(feedback !== undefined && { feedback }),
+                            mathScore: mathScore ?? null,
+                            englishScore: englishScore ?? null,
+                            mathTime: mathTime ?? null,
+                            englishTime: englishTime ?? null,
+                            isPercentFeedbackRequired: isPercentFeedbackRequired ?? false,
+                            feedback: feedback ?? '',
                             updatedByUser: ctx.state.user?.id,
                         },
                     }

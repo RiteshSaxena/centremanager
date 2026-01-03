@@ -396,12 +396,12 @@ export interface ApiFeedbackFeedback extends Schema.CollectionType {
     createdBy: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'admin::user'> & Attribute.Private;
     createdByUser: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'plugin::users-permissions.user'>;
     createdDate: Attribute.Date;
-    englishScore: Attribute.Decimal & Attribute.Required;
-    englishTime: Attribute.BigInteger & Attribute.Required;
+    englishScore: Attribute.Decimal;
+    englishTime: Attribute.BigInteger;
     feedback: Attribute.Text;
     isPercentFeedbackRequired: Attribute.Boolean;
-    mathScore: Attribute.Decimal & Attribute.Required;
-    mathTime: Attribute.BigInteger & Attribute.Required;
+    mathScore: Attribute.Decimal;
+    mathTime: Attribute.BigInteger;
     publishedAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     updatedBy: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'admin::user'> & Attribute.Private;
@@ -892,7 +892,7 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
     provider: Attribute.String;
     resetPasswordToken: Attribute.String & Attribute.Private;
     role: Attribute.Relation<'plugin::users-permissions.user', 'manyToOne', 'plugin::users-permissions.role'>;
-    type: Attribute.Enumeration<['admin', 'staff']> & Attribute.DefaultTo<'admin'>;
+    type: Attribute.Enumeration<['admin', 'staff']> & Attribute.Required & Attribute.DefaultTo<'admin'>;
     updatedAt: Attribute.DateTime;
     updatedBy: Attribute.Relation<'plugin::users-permissions.user', 'oneToOne', 'admin::user'> & Attribute.Private;
     username: Attribute.String &
