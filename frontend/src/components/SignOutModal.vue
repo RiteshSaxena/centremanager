@@ -54,10 +54,7 @@ watch(
     if (props.item?.student?.id) {
       try {
         loading.value = true;
-        const feedback =
-          await feedbackStore.fetchTodayFeedbackByChild(
-            props.item.student.id
-          );
+        const feedback = await feedbackStore.fetchTodayFeedbackByChild(props.item.student.id);
 
         if (feedback) {
           feedbackData.value = {
@@ -65,7 +62,7 @@ watch(
             englishScore: feedback.englishScore,
             mathTime: feedback.mathTime !== null ? Number(feedback.mathTime) : null,
             englishTime: feedback.englishTime !== null ? Number(feedback.englishTime) : null,
-            feedback: feedback.feedback || '',
+            feedback: feedback.feedback || ''
           };
         }
       } finally {
@@ -154,8 +151,13 @@ const selectedName = computed(() => {
 </script>
 
 <template>
-  <Modal :large="true" v-if="show" :show-footer-close-button="!qrMode" :title="`Sign Out - ${selectedName}`"
-    @close="emit('update:show', false)">
+  <Modal
+    :large="true"
+    v-if="show"
+    :show-footer-close-button="!qrMode"
+    :title="`Sign Out - ${selectedName}`"
+    @close="emit('update:show', false)"
+  >
     <!--LOADER -->
     <div v-if="loading" class="w-100 d-flex justify-content-center align-items-center py-5">
       <div class="spinner-border text-primary" role="status">
@@ -167,7 +169,9 @@ const selectedName = computed(() => {
         <div class="row">
           <div class="col-4"></div>
           <div class="col-4"><strong>Score</strong></div>
-          <div class="col-4"><strong>Time <small>(M)</small></strong></div>
+          <div class="col-4">
+            <strong>Time <small>(M)</small></strong>
+          </div>
         </div>
         <div class="row">
           <div class="col-4">
@@ -197,7 +201,6 @@ const selectedName = computed(() => {
             <span :class="getTimeClass(feedbackData?.englishTime)">
               {{ feedbackData?.englishTime ?? '--' }}
             </span>
-
           </div>
         </div>
         <div class="row">
@@ -208,9 +211,7 @@ const selectedName = computed(() => {
             <p v-if="feedbackData?.feedback">
               {{ feedbackData.feedback }}
             </p>
-            <p v-else class="text-muted">
-              No feedback available
-            </p>
+            <p v-else class="text-muted">No feedback available</p>
           </div>
         </div>
       </div>
@@ -223,10 +224,15 @@ const selectedName = computed(() => {
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
-
     </template>
     <template #footer>
-      <button v-if="!qrMode" type="button" class="btn btn-info" @click.prevent="onSubmit" :disabled="loading">
+      <button
+        v-if="!qrMode"
+        type="button"
+        class="btn btn-info"
+        @click.prevent="onSubmit"
+        :disabled="loading"
+      >
         {{ loading ? '...' : 'Submit' }}
       </button>
     </template>

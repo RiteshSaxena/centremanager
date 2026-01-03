@@ -126,19 +126,39 @@ onMounted(async () => {
         <i class="fa-solid fa-house"></i>
         <span>Home</span>
       </router-link>
-      <router-link v-if="isMainApp" to="/attendance" class="sidebar-item" @click="handleSidebarLinkClick">
+      <router-link
+        v-if="isMainApp"
+        to="/attendance"
+        class="sidebar-item"
+        @click="handleSidebarLinkClick"
+      >
         <i class="fa-solid fa-calendar"></i>
         <span>Today</span>
       </router-link>
-      <router-link v-if="isMainApp" to="/calendar" class="sidebar-item" @click="handleSidebarLinkClick">
+      <router-link
+        v-if="isMainApp"
+        to="/calendar"
+        class="sidebar-item"
+        @click="handleSidebarLinkClick"
+      >
         <i class="fa-solid fa-calendar-week"></i>
         <span>Calendar</span>
       </router-link>
-      <router-link v-if="isMainApp" to="/attendance-report" class="sidebar-item" @click="handleSidebarLinkClick">
+      <router-link
+        v-if="isMainApp"
+        to="/attendance-report"
+        class="sidebar-item"
+        @click="handleSidebarLinkClick"
+      >
         <i class="fa-solid fa-clipboard-user"></i>
         <span>Attendance</span>
       </router-link>
-      <router-link v-if="isMainApp" to="/payments" class="sidebar-item" @click="handleSidebarLinkClick">
+      <router-link
+        v-if="isMainApp"
+        to="/payments"
+        class="sidebar-item"
+        @click="handleSidebarLinkClick"
+      >
         <i class="fa-solid fa-money-check-dollar"></i>
         <span>Payments</span>
       </router-link>
@@ -146,7 +166,12 @@ onMounted(async () => {
         <i class="fa-solid fa-qrcode"></i>
         <span>QR Codes</span>
       </router-link>
-      <router-link v-if="isMainApp" to="/upload" class="sidebar-item" @click="handleSidebarLinkClick">
+      <router-link
+        v-if="isMainApp"
+        to="/upload"
+        class="sidebar-item"
+        @click="handleSidebarLinkClick"
+      >
         <i class="fa-solid fa-upload"></i>
         <span>Upload</span>
       </router-link>

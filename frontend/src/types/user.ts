@@ -1,5 +1,3 @@
-import { time } from "console";
-
 export interface User {
   id: string;
   firstname: string;
@@ -11,6 +9,3 @@ export interface User {
   confirmed: boolean;
   type: 'admin' | 'staff';
 }
-
-
-// 2 limit on digits

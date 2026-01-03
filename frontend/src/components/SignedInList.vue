@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 
 import Card from '@/components/base/Card.vue';
 import SignedInListItem from '@/components/SignedInListItem.vue';
 
-import { useLogBookStore } from '@/stores';
+import { useLogBookStore, useUserStore } from '@/stores';
 
 const props = defineProps<{
   filter?: string;
   filterId: number | null;
 }>();
 
-const emit = defineEmits(['onSelect','onFeedback']);
+const emit = defineEmits(['onSelect', 'onFeedback']);
 
+const userStore = useUserStore();
 const logBookStore = useLogBookStore();
 
 const loading = computed(() => logBookStore.fetching);
@@ -75,6 +76,12 @@ const signedIn = computed(() => {
     });
   }
   return list;
+});
+
+onMounted(async () => {
+  if (!userStore.user) {
+    await userStore.fetchMe();
+  }
 });
 </script>
 

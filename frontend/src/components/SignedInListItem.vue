@@ -95,9 +95,7 @@ onMounted(() => {
 });
 
 const rowPhoneNumber = computed(() => {
-  if (
-    props.item?.type === 'Student'
-  ) {
+  if (props.item?.type === 'Student') {
     return props.item.parent?.contactNumber || '';
   }
   if (props.item?.type === 'Staff') {
@@ -116,21 +114,9 @@ const rowPhoneNumber = computed(() => {
 
 const canShowCallIcon = computed(() => {
   if (!userStore.user) return false;
-  if (props.item.type === 'Staff' && props.item.staff?.id === loggedInId) {
-    return true;
-  }
-  if (props.item.type === 'Student' && props.item.student?.id === loggedInId) {
-    return true;
-  }
-  if (props.item.type === 'Parent' && props.item.parent?.id === loggedInId) {
-    return true;
-  }
-  if (props.item.type === 'Guest' && props.item.guest?.id === loggedInId) {
-    return true;
-  }
-  return false;
-});
 
+  return userStore.isAdmin;
+});
 
 const iconColorClass = computed(() => {
   if (props.item?.student) {
@@ -155,13 +141,20 @@ const iconColorClass = computed(() => {
         </span>
       </div>
     </div>
-    <div class="d-flex gap-1">
-      <a v-if="props.item?.type === 'Student'" href="#" @click.stop.prevent="$emit('onFeedback', props.item)"
-        class="btn btn-secondary btn-sm align-items-center d-flex m-0 rounded-3">
+    <div class="d-flex gap-1 mr-2">
+      <a
+        v-if="props.item?.type === 'Student'"
+        href="#"
+        @click.stop.prevent="$emit('onFeedback', props.item)"
+        class="btn btn-secondary align-items-center d-flex rounded-3"
+      >
         <i class="fa-comments fa-regular"></i>
       </a>
-      <a :href="`tel:${rowPhoneNumber}`" v-if="canShowCallIcon && rowPhoneNumber"
-        class="btn btn-secondary btn-sm m-0 align-items-center d-flex rounded-3 mr-2">
+      <a
+        :href="`tel:${rowPhoneNumber}`"
+        v-if="canShowCallIcon && rowPhoneNumber"
+        class="btn btn-secondary align-items-center d-flex rounded-3"
+      >
         <i class="fa-solid fa-phone"></i>
       </a>
     </div>
