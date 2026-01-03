@@ -12,7 +12,7 @@ export interface Feedback {
   createdDate: string;
   createdAt: string;
   updatedAt: string;
-  feedback:string;
+  feedback: string;
 }
 
 export interface FeedbackPayload {
@@ -23,18 +23,17 @@ export interface FeedbackPayload {
   isPercentFeedbackRequired: boolean;
   createdDate: string;
   child: number;
-  feedback:string;
+  feedback: string;
 }
 
 export const useFeedbackStore = defineStore('feedback', {
   state: () => ({
     loading: false,
-        todayFeedback: null as Feedback | null
-
+    todayFeedback: null as Feedback | null
   }),
 
   actions: {
-     resetTodayFeedback() {
+    resetTodayFeedback() {
       this.todayFeedback = null;
     },
     async createFeedback(payload: FeedbackPayload) {
@@ -47,12 +46,10 @@ export const useFeedbackStore = defineStore('feedback', {
       }
     },
     // ✅ NEW: fetch today's feedback by childId
-     async fetchTodayFeedbackByChild(childId: number) {
+    async fetchTodayFeedbackByChild(childId: number) {
       try {
         this.loading = true;
-        const res = await axios.get(
-          `/feedback/by-child/${childId}/today`
-        );
+        const res = await axios.get(`/feedback/by-child/${childId}/today`);
         this.todayFeedback = res.data?.[0] || null;
         return this.todayFeedback;
       } finally {
@@ -60,12 +57,9 @@ export const useFeedbackStore = defineStore('feedback', {
       }
     },
     async updateFeedback(childId: number, payload: Partial<FeedbackPayload>) {
-     try {
+      try {
         this.loading = true;
-        const res = await axios.put(
-          `/feedback/by-child/${childId}/today`,
-          payload
-        );
+        const res = await axios.put(`/feedback/by-child/${childId}/today`, payload);
 
         this.todayFeedback = res.data;
         return res.data;
