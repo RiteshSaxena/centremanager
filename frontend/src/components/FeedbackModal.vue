@@ -116,9 +116,9 @@ function onScoreInput(value: string, field: 'mathScore' | 'englishScore') {
 const submitFeedback = async () => {
   if (!props.item?.student?.id) return;
   // VALIDATION: no values entered
-  if (!validateForm()) {
-    return;
-  }
+  // if (!validateForm()) {
+  //   return;
+  // }
   if (!hasChanges()) {
     toast.info('No changes detected');
     return;
@@ -130,14 +130,14 @@ const submitFeedback = async () => {
         ? 100
         : feedbackForm.value.mathScore
         ? Number(feedbackForm.value.mathScore)
-        : null,
+        : 0,
       englishScore: feedbackForm.value.isEnglishChecked
         ? 100
         : feedbackForm.value.englishScore
         ? Number(feedbackForm.value.englishScore)
-        : null,
-      mathTime: feedbackForm.value.mathTime ? Number(feedbackForm.value.mathTime) : null,
-      englishTime: feedbackForm.value.englishTime ? Number(feedbackForm.value.englishTime) : null,
+        : 0,
+      mathTime: feedbackForm.value.mathTime ? Number(feedbackForm.value.mathTime) : 0,
+      englishTime: feedbackForm.value.englishTime ? Number(feedbackForm.value.englishTime) : 0,
       isPercentFeedbackRequired: feedbackForm.value.isPercentFeedbackRequired,
       createdDate: new Date().toISOString().split('T')[0],
       child: props.item.student.id,
