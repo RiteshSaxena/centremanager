@@ -116,9 +116,9 @@ function onScoreInput(value: string, field: 'mathScore' | 'englishScore') {
 const submitFeedback = async () => {
   if (!props.item?.student?.id) return;
   // VALIDATION: no values entered
-  if (!validateForm()) {
-    return;
-  }
+  // if (!validateForm()) {
+  //   return;
+  // }
   if (!hasChanges()) {
     toast.info('No changes detected');
     return;
