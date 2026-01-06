@@ -185,6 +185,7 @@ const iconColorClass = computed(() => {
   }
 
   .name {
+    font-size: 14px;
     font-weight: 700;
   }
 }

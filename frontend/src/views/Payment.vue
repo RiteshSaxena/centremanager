@@ -138,7 +138,7 @@ onMounted(async () => {
       <Column field="payment" header="Payment">
         <template #body="{ data }">
           <button type="button" class="btn btn-info btn-sm" @click="openPaymentModal(data)">
-            Add Payment
+            Add
           </button>
         </template>
       </Column>

@@ -165,7 +165,7 @@ const selectedName = computed(() => {
       </div>
     </div>
     <template v-else>
-      <div class="w-100 fs-5 text-start d-flex flex-column gap-2">
+      <div class="w-100 fs-4 text-start d-flex flex-column gap-2">
         <div class="row">
           <div class="col-4"></div>
           <div class="col-4"><strong>Score</strong></div>
