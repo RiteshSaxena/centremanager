@@ -21,4 +21,10 @@ export interface Student {
   qrCode: string;
   isEarlyLearner: boolean;
   dueAmount?: number;
+  subjects?: Subject[];
+}
+
+export interface Subject {
+  id: number;
+  name: string;
 }
