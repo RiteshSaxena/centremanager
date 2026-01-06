@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from '@/axios';
 import type { SearchResult } from '@/types';
+import { useUserStore } from '.';
 
 interface AddParentPayload {
   firstName: string;
@@ -19,8 +20,13 @@ export const searchStore = defineStore('search', {
     async search(text: string, isStudentOnly: boolean = false) {
       try {
         this.loading = true;
+        const userStore = useUserStore();
         let query = '';
-        if (isStudentOnly) {
+        // if (isStudentOnly) {
+        //   query = '?childOnly=true';
+        // }
+        // If user is NOT admin → always childOnly=true
+        if (!userStore.isAdmin || isStudentOnly) {
           query = '?childOnly=true';
         }
         const res = await axios.post<SearchResult[]>(`/log-book/search${query}`, { text });

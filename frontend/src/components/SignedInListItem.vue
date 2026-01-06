@@ -3,24 +3,36 @@ import type { LogRecord } from '@/types';
 import { computed, onMounted, ref, watch } from 'vue';
 import moment from 'moment';
 import { userStore as useUserStore } from '@/stores/user';
+import { useFeedbackStore } from '@/stores/feedback';
 
+const feedbackStore = useFeedbackStore();
+const feedbackData = ref<any | null>(null);
+const feedbackBtnClass = ref('btn-secondary');
 const userStore = useUserStore();
 const props = defineProps<{
   item: LogRecord;
 }>();
-
 defineEmits(['onSelect', 'onFeedback']);
-
 const name = ref('');
 const type = ref('');
 const desc = ref('');
-const loggedInId = Number(userStore.user?.id);
+const fetchFeedbackStatus = async () => {
+  if (props.item.type !== 'Student' || !props.item.student?.id) return;
+  const feedback = await feedbackStore.fetchTodayFeedbackByChild(
+    props.item.student.id
+  );
+  feedbackData.value = feedback; // already single object or null
+  updateFeedbackIcon();
+};
 
+watch(
+  () => props.item.student?.id,
+  () => fetchFeedbackStatus()
+);
 const updateVars = () => {
   name.value = '';
   type.value = '';
   desc.value = '';
-  // phoneNumber.value = '';
   const signInTime = moment(props.item?.signInTime).format('hh:mmA');
   if (props.item?.type === 'Student') {
     name.value = `${props.item?.student?.firstName} ${props.item?.student?.lastName}`;
@@ -32,7 +44,6 @@ const updateVars = () => {
     }
     if (props.item?.parent?.contactNumber) {
       descArr.push(`${props.item?.parent?.contactNumber}`);
-      // phoneNumber.value = props.item?.parent?.contactNumber;
     }
     descArr.push(signInTime);
     desc.value = descArr.join(' - ');
@@ -46,7 +57,6 @@ const updateVars = () => {
     }
     if (props.item?.parent?.contactNumber) {
       descArr.push(`${props.item?.parent?.contactNumber}`);
-      // phoneNumber.value = props.item?.parent?.contactNumber;
     }
     descArr.push(signInTime);
     desc.value = descArr.join(' - ');
@@ -56,7 +66,6 @@ const updateVars = () => {
     desc.value = '';
     if (props.item?.staff?.phoneNumber) {
       desc.value += `${props.item?.staff?.phoneNumber}`;
-      // phoneNumber.value = props.item?.staff?.phoneNumber;
     } else if (props.item?.staff?.email) {
       desc.value += `${props.item?.staff?.email}`;
     }
@@ -67,7 +76,6 @@ const updateVars = () => {
     desc.value = '';
     if (props.item?.parent?.contactNumber) {
       desc.value += `${props.item?.parent?.contactNumber}`;
-      // phoneNumber.value = props.item?.parent?.contactNumber;
     } else if (props.item?.parent?.email) {
       desc.value += `${props.item?.parent?.email}`;
     }
@@ -78,7 +86,6 @@ const updateVars = () => {
     desc.value = '';
     if (props.item?.guest?.phoneNumber) {
       desc.value += `${props.item?.guest?.phoneNumber}`;
-      // phoneNumber.value = props.item?.guest?.phoneNumber;
     } else if (props.item?.guest?.email) {
       desc.value += `${props.item?.guest?.email}`;
     }
@@ -92,7 +99,47 @@ watch(props.item, () => {
 
 onMounted(() => {
   updateVars();
+  fetchFeedbackStatus();
 });
+
+const updateFeedbackIcon = () => {
+  const f = feedbackData.value;
+  // Default (grey)
+  feedbackBtnClass.value = 'btn-secondary';
+  if (!f) return;
+  // Percent feedback required
+  if (f.isPercentFeedbackRequired) {
+    feedbackBtnClass.value = 'btn-danger';
+    return;
+  }
+  const hasFeedbackText = !!f.feedback?.trim();
+  const hasMath =
+    f.mathScore !== null &&
+    f.mathScore !== undefined &&
+    f.mathTime;
+
+  const hasEnglish =
+    f.englishScore !== null &&
+    f.englishScore !== undefined &&
+    f.englishTime;
+
+  let isComplete = false;
+  // both subjects
+  if (hasMath && hasEnglish) {
+    isComplete = hasFeedbackText;
+  }
+  // only maths
+  else if (hasMath && !hasEnglish) {
+    isComplete = hasFeedbackText;
+  }
+  // only english
+  else if (!hasMath && hasEnglish) {
+    isComplete = hasFeedbackText;
+  }
+  if (isComplete) {
+    feedbackBtnClass.value = 'btn-success';
+  }
+};
 
 const rowPhoneNumber = computed(() => {
   if (props.item?.type === 'Student') {
@@ -104,17 +151,14 @@ const rowPhoneNumber = computed(() => {
   if (props.item?.type === 'Parent') {
     return props.item.parent?.contactNumber || '';
   }
-
   if (props.item?.type === 'Guest') {
     return props.item.guest?.phoneNumber || '';
   }
-
   return '';
 });
 
 const canShowCallIcon = computed(() => {
   if (!userStore.user) return false;
-
   return userStore.isAdmin;
 });
 
@@ -128,6 +172,8 @@ const iconColorClass = computed(() => {
   }
   return 'icon-general';
 });
+
+
 </script>
 
 <template>
@@ -142,19 +188,14 @@ const iconColorClass = computed(() => {
       </div>
     </div>
     <div class="d-flex gap-1 mr-2">
-      <a
-        v-if="props.item?.type === 'Student'"
-        href="#"
-        @click.stop.prevent="$emit('onFeedback', props.item)"
-        class="btn btn-secondary align-items-center d-flex rounded-3"
-      >
+      <a v-if="props.item?.type === 'Student'" href="#" @click.stop.prevent="$emit('onFeedback', props.item)" :class="[
+        'btn align-items-center d-flex rounded-3',
+        feedbackBtnClass
+      ]">
         <i class="fa-comments fa-regular"></i>
       </a>
-      <a
-        :href="`tel:${rowPhoneNumber}`"
-        v-if="canShowCallIcon && rowPhoneNumber"
-        class="btn btn-secondary align-items-center d-flex rounded-3"
-      >
+      <a :href="`tel:${rowPhoneNumber}`" v-if="canShowCallIcon && rowPhoneNumber"
+        class="btn btn-secondary align-items-center d-flex rounded-3">
         <i class="fa-solid fa-phone"></i>
       </a>
     </div>

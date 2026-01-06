@@ -36,6 +36,7 @@ const feedbackData = ref<{
   mathTime: number | null;
   englishTime: number | null;
   feedback: string;
+  createdByName?: string;
 } | null>(null);
 
 watch(
@@ -62,7 +63,10 @@ watch(
             englishScore: feedback.englishScore,
             mathTime: feedback.mathTime !== null ? Number(feedback.mathTime) : null,
             englishTime: feedback.englishTime !== null ? Number(feedback.englishTime) : null,
-            feedback: feedback.feedback || ''
+            feedback: feedback.feedback || '',
+            createdByName: feedback?.createdByUser
+      ? `${feedback?.createdByUser?.firstName} ${feedback.createdByUser?.lastName}`
+      : ''
           };
         }
       } finally {
@@ -205,13 +209,16 @@ const selectedName = computed(() => {
         </div>
         <div class="row">
           <div class="col-12 mt-4 align-items-start justify-content-start d-flex">
-            <label><b>Feedback</b></label>
+            <label><b>Feedback 
+              <span v-if="feedbackData?.createdByName">({{ feedbackData?.createdByName }})</span>
+            </b></label>
           </div>
           <div class="col-12">
             <p v-if="feedbackData?.feedback">
               {{ feedbackData.feedback }}
             </p>
             <p v-else class="text-muted">No feedback available</p>
+            
           </div>
         </div>
       </div>

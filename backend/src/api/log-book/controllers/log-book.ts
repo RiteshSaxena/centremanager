@@ -302,7 +302,15 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     return true;
   },
   async list(ctx) {
-    const populate = ['student', 'parent', 'staff', 'guest'];
+    // const populate = ['student', 'parent', 'staff', 'guest'];
+      const populate: any = {
+    student: {
+      populate: ['subjects'],
+    },
+    parent: true,
+    staff: true,
+    guest: true,
+  };
     const andFilters: any[] = [
       {
         center: ctx.state.center.id as any,
@@ -345,7 +353,8 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
           $null: true,
         },
       });
-      populate.push('signatureIn');
+      // populate.push('signatureIn');
+          populate.signatureIn = true;
     }
 
     const entries = await strapi.entityService.findMany('api::log-book.log-book', {
