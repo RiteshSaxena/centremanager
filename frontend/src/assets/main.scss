@@ -89,12 +89,20 @@ body {
 }
 .p-datatable-header-cell{
   padding: 5px 10px !important;
-  font-size: 12px;
+  // font-size: 12px;
 }
 .p-datatable-tbody > tr > td {
     padding: 5px 10px !important;
-    font-size: 12px;
+    // font-size: 12px;
 }
 .p-datatable-tbody > tr > td  .btn{
-    font-size: 12px;
+    // font-size: 12px;
+}
+@media (min-width: 700px){
+  .modal{
+    padding-inline: 20px;
+    .modal-lg, .modal-xl {
+      --bs-modal-width: 800px;
+    }
+  }
 }
