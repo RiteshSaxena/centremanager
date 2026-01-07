@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import Card from '@/components/base/Card.vue';
 import SignedInListItem from '@/components/SignedInListItem.vue';
@@ -10,8 +10,12 @@ const props = defineProps<{
   filter?: string;
   filterId: number | null;
 }>();
+const feedbackRefreshKey = ref(0);
 
-const emit = defineEmits(['onSelect', 'onFeedback']);
+const handleFeedbackUpdated = () => {
+  feedbackRefreshKey.value++;
+};
+const emit = defineEmits(['onSelect', 'onFeedback','onFeedbackUpdated']);
 
 const userStore = useUserStore();
 const logBookStore = useLogBookStore();

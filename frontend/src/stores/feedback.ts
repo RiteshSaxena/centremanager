@@ -13,6 +13,10 @@ export interface Feedback {
   createdAt: string;
   updatedAt: string;
   feedback: string;
+  createdByUser?: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 export interface FeedbackPayload {

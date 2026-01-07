@@ -97,7 +97,7 @@ const hasChanges = () => {
     feedbackForm.value.englishTime !== originalFeedback.value.englishTime ||
     feedbackForm.value.feedback !== originalFeedback.value.feedback ||
     feedbackForm.value.isPercentFeedbackRequired !==
-      originalFeedback.value.isPercentFeedbackRequired
+    originalFeedback.value.isPercentFeedbackRequired
   );
 };
 
@@ -113,6 +113,22 @@ function onScoreInput(value: string, field: 'mathScore' | 'englishScore') {
   feedbackForm.value[field] = String(num);
 }
 
+const studentSubjects = computed(() => {
+  return props.item?.student?.subjects ?? [];
+});
+
+const hasMaths = computed(() =>
+  studentSubjects.value.some(
+    (s: any) => s.name.toLowerCase() === 'maths'
+  )
+);
+
+const hasEnglish = computed(() =>
+  studentSubjects.value.some(
+    (s: any) => s.name.toLowerCase() === 'english'
+  )
+);
+
 const submitFeedback = async () => {
   if (!props.item?.student?.id) return;
   // VALIDATION: no values entered
@@ -126,18 +142,29 @@ const submitFeedback = async () => {
   try {
     loading.value = true;
     const payload = {
-      mathScore: feedbackForm.value.isMathChecked
-        ? 100
-        : feedbackForm.value.mathScore
-        ? Number(feedbackForm.value.mathScore)
-        : null,
-      englishScore: feedbackForm.value.isEnglishChecked
-        ? 100
-        : feedbackForm.value.englishScore
-        ? Number(feedbackForm.value.englishScore)
-        : null,
-      mathTime: feedbackForm.value.mathTime ? Number(feedbackForm.value.mathTime) : null,
-      englishTime: feedbackForm.value.englishTime ? Number(feedbackForm.value.englishTime) : null,
+       mathScore:hasMaths.value ?  feedbackForm.value.isMathChecked
+      ? 100
+      : feedbackForm.value.mathScore
+      ? Number(feedbackForm.value.mathScore)
+      : null
+    : null,
+      englishScore: hasEnglish.value
+    ? feedbackForm.value.isEnglishChecked
+      ? 100
+      : feedbackForm.value.englishScore
+      ? Number(feedbackForm.value.englishScore)
+      : null
+    : null,
+      mathTime: hasMaths.value
+    ? feedbackForm.value.mathTime
+      ? Number(feedbackForm.value.mathTime)
+      : null
+    : null,
+      englishTime: hasEnglish.value
+    ? feedbackForm.value.englishTime
+      ? Number(feedbackForm.value.englishTime)
+      : null
+    : null,
       isPercentFeedbackRequired: feedbackForm.value.isPercentFeedbackRequired,
       createdDate: new Date().toISOString().split('T')[0],
       child: props.item.student.id,
@@ -180,11 +207,26 @@ const selectedName = computed(() => {
 
   return '';
 });
+
+
+
 watch(
   () => props.show,
   async (val) => {
     if (val) {
       resetForm();
+      if (!hasMaths.value) {
+        feedbackForm.value.mathScore = '';
+        feedbackForm.value.mathTime = '';
+        feedbackForm.value.isMathChecked = false;
+      }
+
+      if (!hasEnglish.value) {
+        feedbackForm.value.englishScore = '';
+        feedbackForm.value.englishTime = '';
+        feedbackForm.value.isEnglishChecked = false;
+      }
+
       resetErrors();
       feedbackStore.resetTodayFeedback();
       // THEN fetch fresh data
@@ -198,14 +240,14 @@ watch(
             // only bind input if NOT 100
             feedbackForm.value.mathScore =
               feedback.mathScore !== null &&
-              feedback.mathScore !== undefined &&
-              feedback.mathScore !== 100
+                feedback.mathScore !== undefined &&
+                feedback.mathScore !== 100
                 ? String(feedback.mathScore)
                 : '';
             feedbackForm.value.englishScore =
               feedback.englishScore !== null &&
-              feedback.englishScore !== undefined &&
-              feedback.englishScore !== 100
+                feedback.englishScore !== undefined &&
+                feedback.englishScore !== 100
                 ? String(feedback.englishScore)
                 : '';
             previousMathScore.value =
@@ -270,12 +312,7 @@ watch(
 <template>
   <!-- <Modal :large="false" v-if="show" :show-footer-close-button="!qrMode" :title="Feedback - ${selectedName}"
     @close="emit('update:show', false)"> -->
-  <Modal
-    :large="false"
-    v-if="show"
-    :show-footer-close-button="!qrMode"
-    @close="emit('update:show', false)"
-  >
+  <Modal :large="false" v-if="show" :show-footer-close-button="!qrMode" @close="emit('update:show', false)">
     <template #title>
       <div class="d-flex flex-column">
         <span>Feedback</span>
@@ -295,105 +332,61 @@ watch(
           <strong>Time <small>(M)</small></strong>
         </div>
       </div>
-      <div class="row gx-2">
+      <div class="row gx-2" v-if="hasMaths">
         <div class="col-5">
           <div class="d-flex gap-3 align-items-center w-100 justify-content-between">
             <span class="fs-6"><b>Maths</b></span>
             <label class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                v-model="feedbackForm.isMathChecked"
-              />
+              <input type="checkbox" class="form-check-input" v-model="feedbackForm.isMathChecked" />
               <span class="form-check-label fs-6">100%</span>
             </label>
           </div>
         </div>
         <div class="col-3 text-start">
-          <input
-            type="text"
-            name="score"
-            v-model="feedbackForm.mathScore"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="2"
-            :disabled="feedbackForm.isMathChecked"
-            @input="
+          <input type="text" name="score" v-model="feedbackForm.mathScore" inputmode="numeric" pattern="[0-9]*"
+            maxlength="2" :disabled="feedbackForm.isMathChecked" @input="
               onScoreInput(($event.target as HTMLInputElement).value, 'mathScore');
-              clearError('mathScore');
-            "
-            class="form-control max-width-50"
-            :class="{ 'is-invalid': errors.mathScore }"
-          />
+            clearError('mathScore');
+            " class="form-control max-width-50" :class="{ 'is-invalid': errors.mathScore }" />
           <div v-if="errors.mathScore" class="invalid-feedback">
             {{ errors.mathScore }}
           </div>
         </div>
 
         <div class="col-4">
-          <input
-            type="text"
-            name="time"
-            v-model="feedbackForm.mathTime"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="2"
-            class="form-control"
-            @input="clearError('mathTime')"
-            :class="{ 'is-invalid': errors.mathTime }"
-          />
+          <input type="text" name="time" v-model="feedbackForm.mathTime" inputmode="numeric" pattern="[0-9]*"
+            maxlength="2" class="form-control" @input="clearError('mathTime')"
+            :class="{ 'is-invalid': errors.mathTime }" />
           <div v-if="errors.mathTime" class="invalid-feedback">
             {{ errors.mathTime }}
           </div>
         </div>
       </div>
-      <div class="row gx-2">
+      <div class="row gx-2" v-if="hasEnglish">
         <div class="col-5">
           <div class="d-flex gap-3 align-items-center w-100 justify-content-between">
             <span class="fs-6"><b>Eng</b></span>
             <label class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                v-model="feedbackForm.isEnglishChecked"
-              />
+              <input type="checkbox" class="form-check-input" v-model="feedbackForm.isEnglishChecked" />
               <span class="form-check-label fs-6">100%</span>
             </label>
           </div>
         </div>
         <div class="col-3 text-start">
-          <input
-            type="text"
-            name="score"
-            v-model="feedbackForm.englishScore"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="2"
-            :disabled="feedbackForm.isEnglishChecked"
-            @input="
+          <input type="text" name="score" v-model="feedbackForm.englishScore" inputmode="numeric" pattern="[0-9]*"
+            maxlength="2" :disabled="feedbackForm.isEnglishChecked" @input="
               onScoreInput(($event.target as HTMLInputElement).value, 'englishScore');
-              clearError('englishScore');
-            "
-            class="form-control"
-            :class="{ 'is-invalid': errors.englishScore }"
-          />
+            clearError('englishScore');
+            " class="form-control" :class="{ 'is-invalid': errors.englishScore }" />
           <div v-if="errors.englishScore" class="invalid-feedback">
             {{ errors.englishScore }}
           </div>
         </div>
 
         <div class="col-4">
-          <input
-            type="text"
-            name="time"
-            v-model="feedbackForm.englishTime"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="2"
-            class="form-control"
-            @input="clearError('englishTime')"
-            :class="{ 'is-invalid': errors.englishTime }"
-          />
+          <input type="text" name="time" v-model="feedbackForm.englishTime" inputmode="numeric" pattern="[0-9]*"
+            maxlength="2" class="form-control" @input="clearError('englishTime')"
+            :class="{ 'is-invalid': errors.englishTime }" />
           <div v-if="errors.englishTime" class="invalid-feedback">
             {{ errors.englishTime }}
           </div>
@@ -404,34 +397,17 @@ watch(
           <label><b>Feedback</b></label>
         </div>
         <div class="col-12">
-          <textarea
-            name=""
-            v-model="feedbackForm.feedback"
-            class="form-control"
-            rows="7"
-            id=""
-          ></textarea>
+          <textarea name="" v-model="feedbackForm.feedback" class="form-control" rows="7" id=""></textarea>
         </div>
         <label for="inperson" class="text-start mt-2">
-          <input
-            type="checkbox"
-            v-model="feedbackForm.isPercentFeedbackRequired"
-            name="inperson"
-            id="inperson"
-          />
+          <input type="checkbox" v-model="feedbackForm.isPercentFeedbackRequired" name="inperson" id="inperson" />
           In person feedback required.
         </label>
       </div>
     </div>
 
     <template #footer>
-      <button
-        v-if="!qrMode"
-        type="button"
-        class="btn btn-info"
-        :disabled="loading"
-        @click="submitFeedback"
-      >
+      <button v-if="!qrMode" type="button" class="btn btn-info" :disabled="loading" @click="submitFeedback">
         <!-- {{ loading ? '...' : 'Submit' }} -->
         {{ feedbackStore.todayFeedback ? 'Update' : 'Submit' }}
       </button>
