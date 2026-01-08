@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
-import InputField from '@/components/base/InputField.vue';
+import { Input } from '@/components/ui';
+import { Button, Spinner, Pagination } from '@/components/ui';
 
 import { useStudentStore } from '@/stores';
 
@@ -79,75 +80,40 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="text-center my-4" v-if="loading">
-    <div class="spinner-border text-dark text-center" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
+  <div class="text-center py-8" v-if="loading">
+    <Spinner size="lg" />
   </div>
   <div class="py-4" v-else>
-    <div class="row mb-4">
-      <div class="col-md-4 d-flex">
-        <InputField v-model="search" placeholder="Enter Student name to search" />
-        <button
-          v-if="search.trim().length"
-          type="button"
-          class="btn btn-secondary rounded-3 ms-1"
-          @click="search = ''"
-        >
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+    <div class="flex gap-1 max-w-md mb-4">
+      <Input v-model="search" placeholder="Enter Student name to search" />
+      <Button
+        v-if="search.trim().length"
+        type="button"
+        variant="secondary"
+        @click="search = ''"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </Button>
+    </div>
+
+    <div class="grid grid-cols-3 gap-2.5">
+      <div
+        class="bg-white rounded-xl flex flex-col items-center gap-0.5"
+        v-for="(student, index) in students"
+        :key="index"
+      >
+        <img class="w-28 h-28" :src="student.qrCode" alt="QR Code" />
+        <p class="text-sm text-secondary-500 m-0 px-3 pb-3 text-center">{{ studentText(student) }}</p>
       </div>
     </div>
 
-    <div class="qr-grid">
-      <div class="qr-item" v-for="(student, index) in students" :key="index">
-        <img class="qr-code" :src="student.qrCode" alt="QR Code" />
-        <p class="small text-muted m-0">{{ studentText(student) }}</p>
-      </div>
+    <div class="mt-4" v-if="totalPages > 1">
+      <Pagination
+        v-model:currentPage="currentPage"
+        :totalPages="totalPages"
+        :totalItems="enrolledStudents.length"
+        :pageSize="itemsPerPage"
+      />
     </div>
-    <nav class="mt-3">
-      <ul class="pagination">
-        <li class="page-item" :class="{ disabled: currentPage === 1 }" @click="previousPage">
-          <a class="page-link" href="#">Previous</a>
-        </li>
-        <li
-          class="page-item"
-          v-for="page in totalPages"
-          :key="page"
-          :class="{ active: page === currentPage }"
-          @click="changePage(page)"
-        >
-          <a class="page-link" href="#">{{ page }}</a>
-        </li>
-        <li class="page-item" :class="{ disabled: currentPage === totalPages }" @click="nextPage">
-          <a class="page-link" href="#">Next</a>
-        </li>
-      </ul>
-    </nav>
   </div>
 </template>
-
-<style scoped lang="scss">
-.qr-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 10px;
-  justify-items: center;
-}
-.qr-item {
-  width: 100%;
-  align-items: center;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  border-radius: 10px;
-  p {
-    padding: 12px;
-  }
-}
-.qr-code {
-  width: 110px;
-  height: 110px;
-}
-</style>

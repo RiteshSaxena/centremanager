@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 
-import Modal from '@/components/base/Modal.vue';
-import InputField from '@/components/base/InputField.vue';
+import { Modal, Input, Button } from '@/components/ui';
 
 import { useStudentStore } from '@/stores';
 
@@ -61,43 +60,39 @@ const emit = defineEmits(['update:show', 'onSuccess']);
 
 <template>
   <Modal
-    v-if="show"
-    :show-footer-close-button="true"
+    :open="show"
+    :closable="true"
     :title="`Add Payment - ${name}`"
     @close="emit('update:show', false)"
   >
     <form id="add-guardian-form" @submit.prevent="onSubmit">
-      <InputField
-        :is-floating="true"
-        :is-white="true"
-        v-model="guestData.amount"
-        type="number"
-        :required="true"
-        class="mb-2"
-        placeholder="Amount"
-      />
-      <InputField
-        :is-floating="true"
-        :is-white="true"
-        v-model="guestData.paymentDate"
-        type="date"
-        :required="true"
-        class="mb-2"
-        placeholder="Payment Date"
-      />
-      <InputField
-        :is-floating="true"
-        :is-white="true"
-        v-model="guestData.notes"
-        type="text"
-        class="mb-2"
-        placeholder="Notes (Optional)"
-      />
+      <div class="space-y-3">
+        <Input
+          v-model="guestData.amount"
+          type="number"
+          placeholder="Amount"
+          label="Amount"
+          required
+        />
+        <Input
+          v-model="guestData.paymentDate"
+          type="date"
+          placeholder="Payment Date"
+          label="Payment Date"
+          required
+        />
+        <Input
+          v-model="guestData.notes"
+          type="text"
+          placeholder="Notes (Optional)"
+          label="Notes"
+        />
+      </div>
     </form>
     <template #footer>
-      <button type="submit" class="btn btn-info" form="add-guardian-form" :disabled="loading">
+      <Button type="submit" form="add-guardian-form" :disabled="loading">
         {{ loading ? '...' : 'Save' }}
-      </button>
+      </Button>
     </template>
   </Modal>
 </template>

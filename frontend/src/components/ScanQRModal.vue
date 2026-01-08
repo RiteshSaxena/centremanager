@@ -2,7 +2,7 @@
 import QrScanner from 'qr-scanner';
 import { ref, watch } from 'vue';
 
-import Modal from '@/components/base/Modal.vue';
+import { Modal, Button } from '@/components/ui';
 
 const props = withDefaults(
   defineProps<{
@@ -100,29 +100,18 @@ watch(
 </script>
 
 <template>
-  <Modal v-if="show" :close-on-outside="false" title="Scan QR" @close="emit('update:show', false)">
+  <Modal :open="show" :closable="false" title="Scan QR" @close="emit('update:show', false)">
     <div v-if="!permissionError && !isScanning">
-      <p>Initializing camera...</p>
+      <p class="text-secondary-600">Initializing camera...</p>
     </div>
     <div v-if="permissionError">
-      <p>Unable to access camera. Please allow camera access in your settings.</p>
-      <button class="btn btn-info" @click="startScan">Retry</button>
+      <p class="text-secondary-600 mb-3">Unable to access camera. Please allow camera access in your settings.</p>
+      <Button @click="startScan">Retry</Button>
     </div>
     <video
       id="qr-scanner"
       autoplay
-      :class="{ 'qr-scanner': true, 'qr-scanner-hide': !isScanning }"
+      :class="['w-full h-full', !isScanning ? 'w-0 h-0' : '']"
     />
   </Modal>
 </template>
-
-<style scoped>
-.qr-scanner {
-  height: 100%;
-  width: 100%;
-}
-.qr-scanner.qr-scanner-hide {
-  height: 0;
-  width: 0;
-}
-</style>

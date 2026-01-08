@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
 import { useLogBookStore } from '@/stores';
-import InputField from '@/components/base/InputField.vue';
+import { Button } from '@/components/ui';
 
 const toast = useToast();
 const logBookStore = useLogBookStore();
@@ -35,15 +35,19 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <form class="mt-4 d-flex flex-column align-items-start" @submit.prevent="onSubmit">
-    <div class="mb-3">
-      <label for="formFile" class="form-label">Select file to import data:</label>
-      <InputField type="file" id="formFile" @change="onSelect" accept=".csv" required />
+  <form class="mt-4 flex flex-col items-start gap-4" @submit.prevent="onSubmit">
+    <div>
+      <label class="block text-sm font-medium text-secondary-700 mb-2">Select file to import data:</label>
+      <input
+        type="file"
+        @change="onSelect"
+        accept=".csv"
+        required
+        class="w-full px-4 py-3 text-sm bg-secondary-50 border border-secondary-300 rounded-xl text-secondary-900 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-500 file:text-white hover:file:bg-primary-600 file:cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 focus:bg-white"
+      />
     </div>
-    <button type="submit" class="btn btn-info" :disabled="loading">
+    <Button type="submit" :disabled="loading">
       {{ loading ? 'Uploading...' : 'Upload' }}
-    </button>
+    </Button>
   </form>
 </template>
-
-<style scoped lang="scss"></style>

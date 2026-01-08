@@ -7,7 +7,7 @@ import { useFeedbackStore } from '@/stores/feedback';
 
 const feedbackStore = useFeedbackStore();
 const feedbackData = ref<any | null>(null);
-const feedbackBtnClass = ref('btn-secondary');
+const feedbackBtnClass = ref('bg-secondary-400');
 const userStore = useUserStore();
 const props = defineProps<{
   item: LogRecord;
@@ -20,7 +20,7 @@ const desc = ref('');
 const fetchFeedbackStatus = async () => {
   if (props.item.type !== 'Student' || !props.item.student?.id) return;
   const feedback = await feedbackStore.fetchTodayFeedbackByChild(props.item.student.id);
-  feedbackData.value = feedback; // already single object or null
+  feedbackData.value = feedback;
   updateFeedbackIcon();
 };
 
@@ -116,11 +116,11 @@ onMounted(() => {
 const updateFeedbackIcon = () => {
   const f = feedbackData.value;
   // Default (grey)
-  feedbackBtnClass.value = 'btn-secondary';
+  feedbackBtnClass.value = 'bg-secondary-400';
   if (!f) return;
   // Percent feedback required
   if (f.isPercentFeedbackRequired) {
-    feedbackBtnClass.value = 'btn-danger';
+    feedbackBtnClass.value = 'bg-danger-500';
     return;
   }
   const hasFeedbackText = !!f.feedback?.trim();
@@ -142,7 +142,7 @@ const updateFeedbackIcon = () => {
     isComplete = hasFeedbackText;
   }
   if (isComplete) {
-    feedbackBtnClass.value = 'btn-success';
+    feedbackBtnClass.value = 'bg-success-500';
   }
 };
 
@@ -170,84 +170,40 @@ const canShowCallIcon = computed(() => {
 const iconColorClass = computed(() => {
   if (props.item?.student) {
     if (props.item.student.gender === 'Male') {
-      return 'icon-male';
+      return 'text-blue-500';
     } else if (props.item.student.gender === 'Female') {
-      return 'icon-female';
+      return 'text-pink-400';
     }
   }
-  return 'icon-general';
+  return 'text-secondary-400';
 });
 </script>
 
 <template>
-  <div class="child-list-item">
-    <div class="d-flex align-items-center gap-3 w-100" @click.stop="$emit('onSelect')">
+  <div class="bg-secondary-100 rounded-xl px-3 py-2.5 mb-2.5 cursor-pointer flex justify-between items-center hover:bg-accent-300 transition-colors">
+    <div class="flex items-center gap-3 flex-1" @click.stop="$emit('onSelect')">
       <i class="fa-solid fa-user" :class="iconColorClass"></i>
       <div>
-        <span class="name">{{ name }} ({{ type }})</span>
-        <span class="desc">
-          {{ desc }}
-        </span>
+        <span class="block text-sm font-bold text-primary-800">{{ name }} ({{ type }})</span>
+        <span class="block text-xs text-primary-800">{{ desc }}</span>
       </div>
     </div>
-    <div class="d-flex gap-1 mr-2">
+    <div class="flex gap-1 mr-2">
       <a
         v-if="props.item?.type === 'Student'"
         href="#"
         @click.stop.prevent="$emit('onFeedback', props.item)"
-        :class="['btn align-items-center d-flex rounded-3', feedbackBtnClass]"
+        :class="['flex items-center justify-center w-8 h-8 rounded-lg text-white', feedbackBtnClass]"
       >
-        <i class="fa-comments fa-regular"></i>
+        <i class="fa-comments fa-regular text-sm"></i>
       </a>
       <a
         :href="`tel:${rowPhoneNumber}`"
         v-if="canShowCallIcon && rowPhoneNumber"
-        class="btn btn-secondary align-items-center d-flex rounded-3"
+        class="flex items-center justify-center w-8 h-8 rounded-lg bg-secondary-400 text-white"
       >
-        <i class="fa-solid fa-phone"></i>
+        <i class="fa-solid fa-phone text-sm"></i>
       </a>
     </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-.child-list-item {
-  background: #f5f5f5;
-  border-radius: 10px;
-  padding: 10px 10px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  &:hover {
-    background: #ffe08a;
-  }
-
-  .name,
-  .desc {
-    font-size: 12px;
-    line-height: 18px;
-    color: #193b4d;
-    display: block;
-  }
-
-  .name {
-    font-size: 14px;
-    font-weight: 700;
-  }
-}
-
-.icon-male {
-  color: #3488ce;
-}
-
-.icon-female {
-  color: #eb72ff;
-}
-
-.icon-general {
-  color: #b5b5b5;
-}
-</style>

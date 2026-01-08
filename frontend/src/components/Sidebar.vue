@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-
+import { computed, onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { onMounted, ref } from 'vue';
 import moment from 'moment';
-
 import { useUserStore } from '@/stores';
-const centre = ref<any>(null);
 
+const centre = ref<any>(null);
 const sidebarExpanded = ref(false);
 
 const router = useRouter();
@@ -22,11 +19,25 @@ const logout = async () => {
   userStore.logout();
   await router.push({ name: 'Login' });
 };
+
 const date = moment().format('DD MMMM, YYYY');
 
 const handleSidebarLinkClick = () => {
   sidebarExpanded.value = false;
 };
+
+const navItems = computed(() => {
+  const items = [
+    { to: '/', icon: 'fa-house', label: 'Home', show: true },
+    { to: '/attendance', icon: 'fa-calendar', label: 'Today', show: isMainApp },
+    { to: '/calendar', icon: 'fa-calendar-week', label: 'Calendar', show: isMainApp },
+    { to: '/attendance-report', icon: 'fa-clipboard-user', label: 'Attendance', show: isMainApp },
+    { to: '/payments', icon: 'fa-money-check-dollar', label: 'Payments', show: isMainApp },
+    { to: '/qr', icon: 'fa-qrcode', label: 'QR Codes', show: isMainApp },
+    { to: '/upload', icon: 'fa-upload', label: 'Upload', show: isMainApp }
+  ];
+  return items.filter((item) => item.show);
+});
 
 onMounted(async () => {
   const data = await userStore.getCentre();
@@ -35,224 +46,120 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div
-    class="sidebar d-flex flex-column justify-content-between"
-    :class="{ 'sidebar-expanded': sidebarExpanded }"
+  <aside
+    class="sidebar bg-primary-800 flex flex-col justify-between transition-all duration-300 ease-in-out no-print"
+    :class="[
+      sidebarExpanded ? 'w-full md:w-56' : 'max-h-16 md:max-h-none overflow-hidden md:overflow-visible md:w-16',
+    ]"
   >
-    <div class="d-flex justify-content-between">
-      <div :class="['p-3 p-md-0 d-md-none']">
-        <h2 v-if="isHomePage" class="text-white mb-0 fs-6 fw-bold">
-          {{ centre?.displayName || centre?.name }}<br /><small>{{ date }}</small>
+    <!-- Mobile Header -->
+    <div class="flex justify-between items-center md:hidden">
+      <div class="p-4">
+        <h2 v-if="isHomePage" class="text-white text-sm font-bold leading-tight">
+          {{ centre?.displayName || centre?.name }}
+          <br />
+          <small class="text-primary-300 font-normal text-xs">{{ date }}</small>
         </h2>
       </div>
-      <div class="d-flex d-md-none burger-menu justify-content-end">
-        <div @click="sidebarExpanded = !sidebarExpanded">
-          <svg
-            v-if="!sidebarExpanded"
-            xmlns="http://www.w3.org/2000/svg"
-            width="31"
-            height="22"
-            viewBox="0 0 31 22"
-          >
-            <g id="Group_661" data-name="Group 661" transform="translate(-336.265 -50)">
-              <path
-                id="Path_990"
-                data-name="Path 990"
-                d="M31,0H0"
-                transform="translate(336.265 61)"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-              />
-              <line
-                id="Line_94"
-                data-name="Line 94"
-                x1="31"
-                transform="translate(336.265 71)"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-              />
-              <path
-                id="Path_991"
-                data-name="Path 991"
-                d="M31,0H0"
-                transform="translate(336.265 51)"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-              />
-            </g>
-          </svg>
-
-          <svg
-            v-else
-            xmlns="http://www.w3.org/2000/svg"
-            width="24.042"
-            height="24.042"
-            viewBox="0 0 24.042 24.042"
-          >
-            <g
-              id="Group_196"
-              data-name="Group 196"
-              transform="translate(-275.959 221.512) rotate(-45)"
-            >
-              <line
-                id="Line_93"
-                data-name="Line 93"
-                x1="31"
-                transform="translate(336.265 55.5)"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-              />
-              <line
-                id="Line_94"
-                data-name="Line 94"
-                y2="32"
-                transform="translate(351.765 39.5)"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-              />
-            </g>
-          </svg>
-        </div>
-      </div>
+      <button
+        class="p-5 text-white hover:bg-primary-700 transition-colors"
+        @click="sidebarExpanded = !sidebarExpanded"
+      >
+        <!-- Hamburger icon -->
+        <svg
+          v-if="!sidebarExpanded"
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+        <!-- Close icon -->
+        <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
     </div>
 
-    <div class="d-flex flex-column">
-      <router-link to="/" class="sidebar-item" @click="handleSidebarLinkClick">
-        <i class="fa-solid fa-house"></i>
-        <span>Home</span>
-      </router-link>
+    <!-- Navigation -->
+    <nav class="flex flex-col flex-1">
       <router-link
-        v-if="isMainApp"
-        to="/attendance"
-        class="sidebar-item"
+        v-for="item in navItems"
+        :key="item.to"
+        :to="item.to"
+        class="sidebar-item flex items-center gap-4 px-5 py-4 text-white hover:bg-primary-600 transition-colors"
+        :class="{ 'bg-primary-600': route.path === item.to }"
         @click="handleSidebarLinkClick"
       >
-        <i class="fa-solid fa-calendar"></i>
-        <span>Today</span>
+        <i :class="['fa-solid', item.icon, 'text-lg w-5 text-center']"></i>
+        <span
+          class="whitespace-nowrap text-sm font-medium"
+          :class="[sidebarExpanded ? 'opacity-100' : 'opacity-0 md:opacity-0 hidden md:inline']"
+        >
+          {{ item.label }}
+        </span>
       </router-link>
-      <router-link
-        v-if="isMainApp"
-        to="/calendar"
-        class="sidebar-item"
-        @click="handleSidebarLinkClick"
+    </nav>
+
+    <!-- Bottom actions -->
+    <div class="flex flex-col border-t border-primary-700">
+      <!-- Collapse button (desktop only) -->
+      <button
+        class="hidden md:flex items-center gap-4 px-5 py-4 text-white hover:bg-primary-600 transition-colors w-full"
+        @click="sidebarExpanded = !sidebarExpanded"
       >
-        <i class="fa-solid fa-calendar-week"></i>
-        <span>Calendar</span>
-      </router-link>
-      <router-link
-        v-if="isMainApp"
-        to="/attendance-report"
-        class="sidebar-item"
-        @click="handleSidebarLinkClick"
+        <i
+          :class="[
+            'fa-solid text-lg w-5 text-center',
+            sidebarExpanded ? 'fa-angles-left' : 'fa-angles-right'
+          ]"
+        ></i>
+        <span
+          class="whitespace-nowrap text-sm font-medium"
+          :class="[sidebarExpanded ? 'opacity-100' : 'opacity-0']"
+        >
+          Collapse
+        </span>
+      </button>
+      <!-- Logout -->
+      <button
+        class="flex items-center gap-4 px-5 py-4 text-white hover:bg-danger-500 transition-colors w-full"
+        @click="logout"
       >
-        <i class="fa-solid fa-clipboard-user"></i>
-        <span>Attendance</span>
-      </router-link>
-      <router-link
-        v-if="isMainApp"
-        to="/payments"
-        class="sidebar-item"
-        @click="handleSidebarLinkClick"
-      >
-        <i class="fa-solid fa-money-check-dollar"></i>
-        <span>Payments</span>
-      </router-link>
-      <router-link v-if="isMainApp" to="/qr" class="sidebar-item" @click="handleSidebarLinkClick">
-        <i class="fa-solid fa-qrcode"></i>
-        <span>QR Codes</span>
-      </router-link>
-      <router-link
-        v-if="isMainApp"
-        to="/upload"
-        class="sidebar-item"
-        @click="handleSidebarLinkClick"
-      >
-        <i class="fa-solid fa-upload"></i>
-        <span>Upload</span>
-      </router-link>
+        <i class="fa-solid fa-right-from-bracket text-lg w-5 text-center"></i>
+        <span
+          class="whitespace-nowrap text-sm font-medium"
+          :class="[sidebarExpanded ? 'opacity-100' : 'opacity-0 md:opacity-0 hidden md:inline']"
+        >
+          Logout
+        </span>
+      </button>
     </div>
-    <div class="d-flex flex-column">
-      <div class="sidebar-item d-none d-md-flex" @click="sidebarExpanded = !sidebarExpanded">
-        <i v-if="sidebarExpanded" class="fa-solid fa-angles-left"></i>
-        <i v-else class="fa-solid fa-angles-right"></i>
-        <span>Collapse</span>
-      </div>
-      <div class="sidebar-item" @click="logout">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        <span>Logout</span>
-      </div>
-    </div>
-  </div>
+  </aside>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .sidebar {
-  background: #193b4d;
-  width: 100%;
-  transition: all 0.2s ease;
-  a {
-    text-align: center;
-    text-decoration: none;
-  }
-  .burger-menu {
-    padding: 20px;
-  }
-  .sidebar-item {
-    color: white;
-    padding: 20px;
-    width: 100%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    &:hover {
-      background: #2d7298;
-    }
-
-    i {
-      font-size: 20px;
-    }
-  }
-
-  &.sidebar-expanded {
-    width: 220px;
-
-    .sidebar-item {
-      span {
-        visibility: visible;
-      }
-    }
-  }
-
-  @media (max-width: 767px) {
-    &.sidebar-expanded {
-      width: 100%;
-    }
-    &:not(.sidebar-expanded) {
-      max-height: 64px;
-      overflow: hidden;
-    }
-  }
+  min-height: 100vh;
 }
 
-.router-link-active {
-  background: #2d7298;
-}
-
-@media (min-width: 768px) {
+@media (max-width: 767px) {
   .sidebar {
-    width: 64px;
-    &-item {
-      span {
-        visibility: hidden;
-        white-space: nowrap;
-      }
-    }
+    min-height: auto;
+    position: sticky;
+    top: 0;
+    z-index: 40;
   }
 }
 </style>

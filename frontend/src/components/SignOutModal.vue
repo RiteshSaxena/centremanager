@@ -6,8 +6,8 @@ import { useToast } from 'vue-toastification';
 
 import { useLogBookStore } from '@/stores';
 
-import Modal from '@/components/base/Modal.vue';
 import SignaturePad from '@/components/SignaturePad.vue';
+import { Modal, Button, Spinner } from '@/components/ui';
 import { useFeedbackStore } from '@/stores/feedback';
 
 const feedbackStore = useFeedbackStore();
@@ -115,8 +115,8 @@ const onSubmit = async () => {
 };
 
 const getScoreClass = (score: number | null | undefined) => {
-  if (score === null || score === undefined) return 'text-muted';
-  return score === 100 ? 'text-success' : 'text-warning';
+  if (score === null || score === undefined) return 'text-secondary-400';
+  return score === 100 ? 'text-success-500' : 'text-warning-500';
 };
 
 const getScoreText = (score: number | null | undefined) => {
@@ -128,8 +128,8 @@ const getScoreText = (score: number | null | undefined) => {
 };
 
 const getTimeClass = (time: number | null | undefined) => {
-  if (time === null || time === undefined) return 'text-muted';
-  return time <= 20 ? 'text-success' : 'text-warning';
+  if (time === null || time === undefined) return 'text-secondary-400';
+  return time <= 20 ? 'text-success-500' : 'text-warning-500';
 };
 
 const selectedName = computed(() => {
@@ -156,92 +156,81 @@ const selectedName = computed(() => {
 
 <template>
   <Modal
-    :large="true"
-    v-if="show"
-    :show-footer-close-button="!qrMode"
+    size="xl"
+    :open="show"
+    :closable="!qrMode"
     :title="`Sign Out - ${selectedName}`"
     @close="emit('update:show', false)"
   >
     <!--LOADER -->
-    <div v-if="loading" class="w-100 d-flex justify-content-center align-items-center py-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+    <div v-if="loading" class="w-full flex justify-center items-center py-12">
+      <Spinner size="lg" />
     </div>
     <template v-else>
-      <div class="w-100 fs-4 text-start d-flex flex-column gap-2">
-        <div class="row">
-          <div class="col-4"></div>
-          <div class="col-4"><strong>Score</strong></div>
-          <div class="col-4">
+      <div class="w-full text-lg text-left flex flex-col gap-2">
+        <div class="grid grid-cols-3 gap-2">
+          <div></div>
+          <div><strong>Score</strong></div>
+          <div>
             <strong>Time <small>(M)</small></strong>
           </div>
         </div>
-        <div class="row">
-          <div class="col-4">
+        <div class="grid grid-cols-3 gap-2">
+          <div>
             <span><b>Maths</b></span>
           </div>
-          <div class="col-4">
+          <div>
             <span :class="getScoreClass(feedbackData?.mathScore)">
               <b>{{ getScoreText(feedbackData?.mathScore) }}</b>
             </span>
           </div>
-          <div class="col-4">
+          <div>
             <span :class="getTimeClass(feedbackData?.mathTime)">
               {{ feedbackData?.mathTime ?? '--' }}
             </span>
           </div>
         </div>
-        <div class="row">
-          <div class="col-4">
+        <div class="grid grid-cols-3 gap-2">
+          <div>
             <span><b>Eng</b></span>
           </div>
-          <div class="col-4">
+          <div>
             <span :class="getScoreClass(feedbackData?.englishScore)">
               <b>{{ getScoreText(feedbackData?.englishScore) }}</b>
             </span>
           </div>
-          <div class="col-4">
+          <div>
             <span :class="getTimeClass(feedbackData?.englishTime)">
               {{ feedbackData?.englishTime ?? '--' }}
             </span>
           </div>
         </div>
-        <div class="row">
-          <div class="col-12 mt-4 align-items-start justify-content-start d-flex">
-            <label><b>Feedback 
-              <span v-if="feedbackData?.createdByName">({{ feedbackData?.createdByName }})</span>
-            </b></label>
-          </div>
-          <div class="col-12">
-            <p v-if="feedbackData?.feedback">
-              {{ feedbackData.feedback }}
-            </p>
-            <p v-else class="text-muted">No feedback available</p>
-            
-          </div>
+        <div class="mt-4">
+          <label class="block text-left mb-1"><b>Feedback
+            <span v-if="feedbackData?.createdByName">({{ feedbackData?.createdByName }})</span>
+          </b></label>
+          <p v-if="feedbackData?.feedback" class="text-secondary-700">
+            {{ feedbackData.feedback }}
+          </p>
+          <p v-else class="text-secondary-400">No feedback available</p>
         </div>
       </div>
-      <div v-if="!qrMode">
-        <label class="mb-2 fs-5"><b>Sign Below</b></label>
+      <div v-if="!qrMode" class="mt-4">
+        <label class="block mb-2 text-lg"><b>Sign Below</b></label>
         <signature-pad ref="signaturePad" />
       </div>
-      <div v-else class="w-100 text-center my-5">
-        <div class="spinner-border" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
+      <div v-else class="w-full text-center py-12">
+        <Spinner size="lg" />
       </div>
     </template>
     <template #footer>
-      <button
+      <Button
         v-if="!qrMode"
-        type="button"
-        class="btn btn-info"
         @click.prevent="onSubmit"
         :disabled="loading"
       >
         {{ loading ? '...' : 'Submit' }}
-      </button>
+      </Button>
     </template>
   </Modal>
 </template>

@@ -1,33 +1,31 @@
 <template>
-  <div class="row mt-2">
-    <div class="col-md-6 order-1 px-md-0 order-md-2">
-      <div class="row w-100 mb-3">
-        <div class="col-12 col-lg-6 mb-2 d-flex align-items-start gap-1">
-          <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
-          <button
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+    <div class="order-1 md:order-2">
+      <div class="flex flex-wrap gap-2 mb-3">
+        <div class="flex-1 flex items-start gap-1">
+          <Input v-model="search" placeholder="Enter Student or Staff name to search" />
+          <Button
             v-if="search.trim().length"
-            type="button"
-            class="btn h-auto btn-secondary rounded-3"
+            variant="secondary"
             @click="clearSearch"
           >
             <i class="fa-solid fa-xmark"></i>
-          </button>
+          </Button>
         </div>
-        <div class="col-12 col-lg-6">
-          <button type="button" class="btn btn-info me-1 mb-1" @click="qrSignIn">
-            Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
-          </button>
-          <button type="button" class="btn btn-info me-1 mb-1" @click="guestSignInModal = true">
+        <div class="flex flex-wrap gap-1">
+          <Button class="mb-1" @click="qrSignIn">
+            Scan QR <i class="ml-2 fa-solid fa-qrcode"></i>
+          </Button>
+          <Button class="mb-1" @click="guestSignInModal = true">
             Guest Sign In
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
+          </Button>
+          <Button
+            variant="secondary"
             @click="clearSearch"
             v-if="selectedStudent && !search"
           >
             Clear
-          </button>
+          </Button>
         </div>
       </div>
       <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
@@ -42,31 +40,29 @@
       </div>
     </div>
 
-    <div class="col-md-6 order-3">
-      <div class="d-flex gap-1">
-        <InputField v-model="signedInFilter" placeholder="Filter" />
-        <button
+    <div class="order-3">
+      <div class="flex gap-1">
+        <Input v-model="signedInFilter" placeholder="Filter" />
+        <Button
           v-if="signedInFilter.length || signedInFilterId"
-          type="button"
-          class="btn btn-secondary rounded-3"
+          variant="secondary"
           @click="
             signedInFilter = '';
             signedInFilterId = null;
           "
         >
           <i class="fa-solid fa-xmark"></i>
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary rounded-3"
+        </Button>
+        <Button
+          variant="secondary"
           @click="logBookStore.fetchList"
           :disabled="logBookStore.fetching"
         >
           <i class="fa-solid fa-arrows-rotate"></i>
-        </button>
-        <button type="button" class="btn btn-info rounded-3" @click="qrSignOut">
+        </Button>
+        <Button @click="qrSignOut">
           <i class="fa-solid fa-qrcode"></i>
-        </button>
+        </Button>
       </div>
       <div class="mt-3">
         <SignedInList
@@ -106,7 +102,7 @@ import type { LogRecord, SearchResult, Student } from '@/types';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { debounce } from 'lodash';
 
-import InputField from '@/components/base/InputField.vue';
+import { Input } from '@/components/ui';
 import SearchResults from '@/components/SearchResults.vue';
 import GuardianList from '@/components/GuardianList.vue';
 import SignedInList from '@/components/SignedInList.vue';
@@ -115,6 +111,7 @@ import GuestSignInModal from '@/components/GuestSignInModal.vue';
 import SignInModal from '@/components/SignInModal.vue';
 import SignOutModal from '@/components/SignOutModal.vue';
 import FeedbackModal from '@/components/FeedbackModal.vue';
+import { Button } from '@/components/ui';
 
 import { useSearchStore, useLogBookStore, useStudentStore } from '@/stores';
 

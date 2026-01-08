@@ -2,10 +2,9 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-
 import { useUserStore } from '@/stores';
-
 import errorHandler from '@/utils/error-handler';
+import { Button, Input, Card } from '@/components/ui';
 
 const inviteCode = ref('');
 const firstName = ref('');
@@ -48,159 +47,108 @@ const register = async () => {
 </script>
 
 <template>
-  <div class="w-100 min-vh-100 d-flex justify-content-center align-items-center px-3">
-    <div class="register-card rounded shadow bg-white my-5">
-      <h3 class="mb-4 mt-2">Register</h3>
-      <form @submit.prevent="register">
-        <div class="row g-3 mb-3">
-          <div class="col-sm-6">
-            <div class="form-floating">
-              <input
-                type="text"
-                class="form-control"
-                v-model="inviteCode"
-                placeholder="Invite Code"
-                required
-              />
-              <label class="form-label">Invite Code</label>
-            </div>
+  <div
+    class="min-h-screen w-full px-4 py-8 flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-100"
+  >
+    <div class="w-full max-w-2xl">
+      <Card>
+        <template #header>
+          <h1 class="text-xl font-bold text-secondary-900">Create Account</h1>
+          <p class="text-sm text-secondary-500 mt-1">Register your centre</p>
+        </template>
+
+        <form @submit.prevent="register" class="space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              v-model="inviteCode"
+              type="text"
+              label="Invite Code"
+              placeholder="Enter invite code"
+              required
+            />
+            <Input
+              v-model="centerName"
+              type="text"
+              label="Centre Name"
+              placeholder="Enter centre name"
+              required
+            />
           </div>
-          <div class="col-sm-6">
-            <div class="form-floating">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Centre Name"
-                v-model="centerName"
-                required
-              />
-              <label class="form-label">Centre Name</label>
-            </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              v-model="firstName"
+              type="text"
+              label="First Name"
+              placeholder="Enter first name"
+              required
+            />
+            <Input
+              v-model="lastName"
+              type="text"
+              label="Last Name"
+              placeholder="Enter last name"
+              required
+            />
           </div>
-        </div>
-        <div class="row g-3 mb-3">
-          <div class="col-sm-6">
-            <div class="form-floating">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="First Name"
-                v-model="firstName"
-                required
-              />
-              <label class="form-label">First Name</label>
-            </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              v-model="email"
+              type="email"
+              label="Email Address"
+              placeholder="Enter email"
+              autocomplete="email"
+              required
+            />
+            <Input
+              v-model="phoneNumber"
+              type="tel"
+              label="Phone Number"
+              placeholder="Enter phone number"
+              inputmode="numeric"
+              required
+            />
           </div>
-          <div class="col-sm-6">
-            <div class="form-floating">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Last Name"
-                v-model="lastName"
-                required
-              />
-              <label class="form-label">Last Name</label>
-            </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              v-model="password"
+              type="password"
+              label="Password"
+              placeholder="Create password"
+              autocomplete="new-password"
+              required
+            />
+            <Input
+              v-model="confirmPassword"
+              type="password"
+              label="Confirm Password"
+              placeholder="Confirm password"
+              autocomplete="new-password"
+              required
+            />
           </div>
-        </div>
-        <div class="row g-3 mb-3">
-          <div class="col-sm-6">
-            <div class="form-floating">
-              <input
-                type="email"
-                class="form-control"
-                placeholder="Email address"
-                autocomplete="on"
-                v-model="email"
-                required
-              />
-              <label>Email address</label>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="form-floating">
-              <input
-                type="number"
-                class="form-control"
-                placeholder="Phone Number"
-                v-model="phoneNumber"
-                required
-              />
-              <label>Phone Number</label>
-            </div>
-          </div>
-        </div>
-        <div class="row g-3 mb-4">
-          <div class="col-sm-6">
-            <div class="form-floating">
-              <input
-                type="password"
-                class="form-control"
-                placeholder="Password"
-                v-model="password"
-                required
-              />
-              <label>Password</label>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="form-floating">
-              <input
-                type="password"
-                class="form-control"
-                placeholder="Confirm Password"
-                v-model="confirmPassword"
-                required
-              />
-              <label>Confirm Password</label>
-            </div>
-          </div>
-        </div>
-        <div class="row g-3 align-items-center mb-2">
-          <div class="col-sm-6">
-            <p class="text-muted m-0">
+
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+            <p class="text-sm text-secondary-500 order-2 sm:order-1">
               Already have an account?
-              <router-link to="/login" class="text-info text-decoration-none">Login</router-link>
+              <router-link to="/login" class="text-primary-600 hover:text-primary-700 font-medium">
+                Sign In
+              </router-link>
             </p>
-          </div>
-          <div class="col-sm-6 justify-content-end d-flex">
-            <button type="submit" class="btn btn-lg px-4 btn-info" :disabled="loading">
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              :loading="loading"
+              class="order-1 sm:order-2 w-full sm:w-auto"
+            >
               Register
-              <span v-if="loading" class="spinner-border spinner-border-sm ms-2"></span>
-            </button>
+            </Button>
           </div>
-        </div>
-      </form>
+        </form>
+      </Card>
     </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-.register-card {
-  width: 650px;
-  padding: 30px;
-}
-
-input.form-control {
-  color: #193b4d;
-}
-
-label {
-  color: rgba(33, 37, 41, 0.75);
-}
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type='number'] {
-  -moz-appearance: textfield;
-}
-
-.form-control:focus {
-  box-shadow: none;
-  border-color: #193b4d;
-}
-</style>

@@ -4,8 +4,9 @@ import moment from 'moment';
 
 import { useLogBookStore, useSearchStore, useSlotStore } from '@/stores';
 import type { LogRecord, SearchResult } from '@/types';
-import InputField from '@/components/base/InputField.vue';
+import { Input } from '@/components/ui';
 import SearchResults from '@/components/SearchResults.vue';
+import { Button, Spinner } from '@/components/ui';
 import { debounce } from 'lodash';
 
 const searchStore = useSearchStore();
@@ -148,8 +149,6 @@ const onSubmit = async () => {
   }
 };
 
-// const todayDay = moment().format('dddd');
-
 const absentChildren = computed(() => {
   const allChildren: any[] = [];
   const todaySlots = slotStore.slots.filter((slot) => slot.day === reportDay.value);
@@ -175,127 +174,86 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h4 class="fw-bold mt-5">Attendance Report</h4>
-  <form class="mt-4 d-flex gap-2 align-items-center" @submit.prevent="searchFromDate">
-    <div class="d-flex gap-1 report-search">
-      <InputField v-model="search" placeholder="Enter Student or Staff name to search" />
-      <button
+  <h4 class="font-bold mt-8 text-lg text-secondary-900">Attendance Report</h4>
+  <form class="mt-4 flex flex-wrap gap-2 items-center" @submit.prevent="searchFromDate">
+    <div class="flex gap-1 w-full max-w-md">
+      <Input v-model="search" placeholder="Enter Student or Staff name to search" />
+      <Button
         v-if="search.trim().length"
         type="button"
-        class="btn btn-secondary rounded-3"
+        variant="secondary"
         @click="clearSearch"
       >
         <i class="fa-solid fa-xmark"></i>
-      </button>
+      </Button>
     </div>
-    <span class="divider text-muted"> - OR - </span>
+    <span class="text-secondary-400 px-2"> - OR - </span>
     <div>
-      <InputField type="date" :max="todayDate" v-model="reportDate" required />
+      <Input type="date" :max="todayDate" v-model="reportDate" required />
     </div>
-    <button type="submit" class="btn btn-info" :disabled="loading">
+    <Button type="submit" :disabled="loading">
       {{ loading ? '...' : 'View' }}
-    </button>
+    </Button>
   </form>
-  <SearchResults
-    class="mt-3 report-search position-absolute shadow"
-    v-if="search.trim().length"
-    @onSelect="onSelectFromSearch"
-  />
-  <p class="mt-4 mb-0" v-if="studentId || staffId"><strong>Selected:</strong> {{ selectedName }}</p>
-  <p class="mt-4 mb-0" v-if="loading">Loading...</p>
-  <div class="table-responsive">
-    <table class="table mt-4">
-      <thead class="">
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Type</th>
-          <th scope="col">Name</th>
-          <th scope="col">Sign In Time</th>
-          <th scope="col">Sign Out Time</th>
+  <div class="relative">
+    <SearchResults
+      class="mt-3 absolute z-20 w-full max-w-md shadow-lg"
+      v-if="search.trim().length"
+      @onSelect="onSelectFromSearch"
+    />
+  </div>
+  <p class="mt-4 mb-0 text-secondary-700" v-if="studentId || staffId"><strong>Selected:</strong> {{ selectedName }}</p>
+  <p class="mt-4 mb-0 text-secondary-500" v-if="loading">Loading...</p>
+
+  <div class="overflow-x-auto mt-4">
+    <table class="w-full min-w-[600px]">
+      <thead>
+        <tr class="bg-primary-500 text-white">
+          <th class="px-4 py-3 text-left text-sm font-semibold rounded-tl-xl">#</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold">Type</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold">Name</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold">Sign In Time</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold rounded-tr-xl">Sign Out Time</th>
         </tr>
       </thead>
-      <tbody>
-        <tr v-for="(record, index) in reportList" :key="record.id">
-          <th scope="row">{{ index + 1 }}</th>
-          <td>{{ record.type }}</td>
-          <td>{{ record.name }}</td>
-          <td>{{ formatTime(record.signInTime) }}</td>
-          <td>{{ formatTime(record?.signOutTime) }}</td>
+      <tbody class="bg-white divide-y divide-secondary-100">
+        <tr v-for="(record, index) in reportList" :key="record.id" class="hover:bg-secondary-50">
+          <td class="px-4 py-3 text-sm text-primary-800">{{ index + 1 }}</td>
+          <td class="px-4 py-3 text-sm text-primary-800">{{ record.type }}</td>
+          <td class="px-4 py-3 text-sm text-primary-800">{{ record.name }}</td>
+          <td class="px-4 py-3 text-sm text-primary-800">{{ formatTime(record.signInTime) }}</td>
+          <td class="px-4 py-3 text-sm text-primary-800">{{ formatTime(record?.signOutTime) }}</td>
         </tr>
         <tr v-if="!records.length && !loading">
-          <td class="text-center" colspan="5">No records found</td>
+          <td class="text-center px-4 py-8 text-secondary-400" colspan="5">No records found</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="mt-5" v-if="absentChildren.length && searchMode === 'date'">
-    <h4 class="fw-bold">Absent Students</h4>
-    <div class="table-responsive">
-      <table class="table mt-3">
-        <thead class="table-danger">
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Type</th>
-            <th scope="col">Name</th>
-            <th scope="col">Sign In Time</th>
-            <th scope="col">Sign Out Time</th>
+  <div class="mt-8" v-if="absentChildren.length && searchMode === 'date'">
+    <h4 class="font-bold text-lg text-secondary-900">Absent Students</h4>
+    <div class="overflow-x-auto mt-3">
+      <table class="w-full min-w-[600px]">
+        <thead>
+          <tr class="bg-danger-500 text-white">
+            <th class="px-4 py-3 text-left text-sm font-semibold rounded-tl-xl">#</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Type</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Name</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Sign In Time</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold rounded-tr-xl">Sign Out Time</th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="(record, index) in absentChildren" :key="record.id">
-            <th scope="row">{{ index + 1 }}</th>
-            <td>Student</td>
-            <td>{{ record.firstName }} {{ record.lastName }}</td>
-            <td>-</td>
-            <td>-</td>
+        <tbody class="bg-white divide-y divide-secondary-100">
+          <tr v-for="(record, index) in absentChildren" :key="record.id" class="hover:bg-secondary-50">
+            <td class="px-4 py-3 text-sm text-primary-800">{{ index + 1 }}</td>
+            <td class="px-4 py-3 text-sm text-primary-800">Student</td>
+            <td class="px-4 py-3 text-sm text-primary-800">{{ record.firstName }} {{ record.lastName }}</td>
+            <td class="px-4 py-3 text-sm text-primary-800">-</td>
+            <td class="px-4 py-3 text-sm text-primary-800">-</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-.table-responsive {
-  table {
-    min-width: 600px;
-  }
-}
-.report-search {
-  width: 100%;
-  max-width: 400px;
-}
-th,
-td {
-  color: #193b4d !important;
-}
-thead th:first-child {
-  border-top-left-radius: 1rem;
-}
-
-thead th:last-child {
-  border-top-right-radius: 1rem;
-}
-tbody tr:last-child td:first-child,
-tbody tr:last-child th:first-child {
-  border-bottom-left-radius: 1rem;
-}
-
-tbody tr:last-child td:last-child {
-  border-bottom-right-radius: 1rem;
-}
-th:first-child,
-td:first-child {
-  padding-left: 1.5rem;
-}
-tbody tr:last-child td,
-tbody tr:last-child th {
-  border-bottom-width: 0;
-}
-
-thead.table-danger th {
-  background-color: #ff6961;
-  color: white !important;
-}
-</style>

@@ -1,41 +1,36 @@
 <template>
-  <div class="row mt-5">
-    <div class="col-md-2 col-lg-3"></div>
-    <div class="col-md-8 col-lg-6 order-2 order-md-1">
+  <div class="flex justify-center mt-12">
+    <div class="w-full max-w-md">
       <div v-if="!(isSearched || selectedStudent)">
         <form
-          class="d-flex flex-column gap-3 mb-4"
+          class="flex flex-col gap-3 mb-4"
           v-if="!(isSearched || selectedStudent)"
           @submit.prevent="searchStudents"
         >
-          <InputField
+          <Input
             :has-dark-placeholder="true"
             :is-floating="true"
             v-model="studentLastName"
             placeholder="Enter Student Last Name"
             required
           />
-          <button type="submit" class="btn btn-info btn-lg rounded-3" :disabled="isSearching">
+          <Button size="lg" class="w-full" :disabled="isSearching">
             {{ isSearching ? '...' : 'Sign In / Sign Out' }}
-          </button>
+          </Button>
         </form>
-        <hr />
-        <div class="d-flex justify-content-between gap-2 mt-4">
-          <button type="button" class="btn btn-info btn-lg flex-1" @click="qrSignIn">
-            Scan QR <i class="ms-2 fa-solid fa-qrcode"></i>
-          </button>
+        <hr class="border-secondary-200" />
+        <div class="flex justify-between gap-2 mt-4">
+          <Button size="lg" class="flex-1" @click="qrSignIn">
+            Scan QR <i class="ml-2 fa-solid fa-qrcode"></i>
+          </Button>
         </div>
-        <div class="d-flex justify-content-between gap-2 mt-4">
-          <button type="button" class="btn btn-info btn-lg flex-1" @click="guestSignInModal = true">
+        <div class="flex justify-between gap-2 mt-4">
+          <Button size="lg" class="flex-1" @click="guestSignInModal = true">
             Guest Sign In
-          </button>
-          <button
-            type="button"
-            class="btn btn-info btn-lg flex-1"
-            @click="guestSignOutModal = true"
-          >
+          </Button>
+          <Button size="lg" class="flex-1" @click="guestSignOutModal = true">
             Guest Sign Out
-          </button>
+          </Button>
         </div>
       </div>
       <SearchResults
@@ -50,10 +45,10 @@
         @onSelectSignOut="onSelectSignOut"
         @onAddGuardian="onAddGuardian"
       />
-      <div v-if="isSearched || selectedStudent" class="d-flex justify-content-center mt-3">
-        <button type="button" class="btn w-100 btn-outline-secondary" @click="clearSearch">
+      <div v-if="isSearched || selectedStudent" class="flex justify-center mt-3">
+        <Button variant="outline" class="w-full" @click="clearSearch">
           Back
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -80,7 +75,7 @@ import type { LogRecord, SearchResult, Student } from '@/types';
 
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
-import InputField from '@/components/base/InputField.vue';
+import { Input } from '@/components/ui';
 import SearchResults from '@/components/SearchResults.vue';
 import GuardianList from '@/components/GuardianList.vue';
 import ScanQRModal from '@/components/ScanQRModal.vue';
@@ -88,6 +83,7 @@ import GuestSignInModal from '@/components/GuestSignInModal.vue';
 import GuestSignOutModal from '@/components/GuestSignOutModal.vue';
 import SignInModal from '@/components/SignInModal.vue';
 import SignOutModal from '@/components/SignOutModal.vue';
+import { Button } from '@/components/ui';
 
 import { useSearchStore, useLogBookStore, useStudentStore, useSlotStore } from '@/stores';
 import errorHandler from '@/utils/error-handler';
@@ -218,13 +214,3 @@ onUnmounted(() => {
   }
 });
 </script>
-<style scoped lang="scss">
-.button-large {
-  padding: 0.8rem 1.3rem !important;
-}
-.button-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-</style>

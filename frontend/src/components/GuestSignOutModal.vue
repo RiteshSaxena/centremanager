@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 
 import { useLogBookStore } from '@/stores';
 
-import Modal from '@/components/base/Modal.vue';
+import { Modal } from '@/components/ui';
 import SignedInListItem from '@/components/SignedInListItem.vue';
 import type { LogRecord } from '@/types';
 
@@ -33,9 +33,9 @@ const emit = defineEmits(['update:show', 'onSelect']);
 </script>
 
 <template>
-  <Modal v-if="show" title="Signed In Guests" @close="emit('update:show', false)">
-    <p class="small text-muted" v-if="loading">Loading...</p>
-    <p class="small text-muted" v-if="!loading && !signedIn.length">No results found.</p>
+  <Modal :open="show" title="Signed In Guests" @close="emit('update:show', false)">
+    <p class="text-sm text-secondary-500" v-if="loading">Loading...</p>
+    <p class="text-sm text-secondary-500" v-if="!loading && !signedIn.length">No results found.</p>
     <SignedInListItem
       v-for="item in signedIn"
       :key="item.id"

@@ -3,13 +3,12 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { debounce } from 'lodash';
 import type { SearchResult } from '@/types';
 
-import InputField from '@/components/base/InputField.vue';
+import { Input, Button, Table, Pagination } from '@/components/ui';
+import type { TableColumn } from '@/components/ui/Table.vue';
 import SearchResults from '@/components/SearchResults.vue';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
+import AddPaymentModal from '@/components/AddPaymentModal.vue';
 
 import { useSearchStore, useStudentStore } from '@/stores';
-import AddPaymentModal from '@/components/AddPaymentModal.vue';
 
 const searchStore = useSearchStore();
 const studentStore = useStudentStore();
@@ -23,6 +22,27 @@ const paymentHistory = ref<any[]>([]);
 const loading = ref(false);
 const showAddPaymentModal = ref(false);
 
+// Pagination state
+const currentPage = ref(1);
+const dueCurrentPage = ref(1);
+const pageSize = 10; // Lowered from 25 to make pagination easier to test
+
+// Table column definitions
+const dueColumns: TableColumn[] = [
+  { key: 'index', header: '#', width: '60px' },
+  { key: 'name', header: 'Name' },
+  { key: 'dueAmount', header: 'Due Amount' },
+  { key: 'action', header: 'Action', hideOnMobile: true }
+];
+
+const historyColumns: TableColumn[] = [
+  { key: 'index', header: '#', width: '60px' },
+  { key: 'name', header: 'Name' },
+  { key: 'amount', header: 'Amount' },
+  { key: 'date', header: 'Date' },
+  { key: 'notes', header: 'Notes', hideOnMobile: true }
+];
+
 const debouncedSearch = debounce((value: string) => {
   searchStore.search(value, true);
 }, 500);
@@ -30,6 +50,44 @@ const debouncedSearch = debounce((value: string) => {
 const dueStudents = computed(() => {
   return studentStore.books.dueStudents as any[];
 });
+
+const paginatedDueStudents = computed(() => {
+  const start = (dueCurrentPage.value - 1) * pageSize;
+  const end = start + pageSize;
+  return dueStudents.value.slice(start, end);
+});
+
+const dueTotalPages = computed(() => Math.ceil(dueStudents.value.length / pageSize));
+
+// Transform due students for table display
+const dueTableData = computed(() => {
+  return paginatedDueStudents.value.map((student, index) => ({
+    ...student,
+    index: (dueCurrentPage.value - 1) * pageSize + index + 1,
+    name: `${student.firstName} ${student.lastName}`,
+    dueAmountFormatted: student.dueAmount > 1 ? `$${student.dueAmount}` : '-'
+  }));
+});
+
+const paginatedHistory = computed(() => {
+  const start = (currentPage.value - 1) * pageSize;
+  const end = start + pageSize;
+  return paymentHistory.value.slice(start, end);
+});
+
+// Transform payment history for table display
+const historyTableData = computed(() => {
+  return paginatedHistory.value.map((payment, index) => ({
+    ...payment,
+    index: (currentPage.value - 1) * pageSize + index + 1,
+    name: `${payment.child?.firstName || ''} ${payment.child?.lastName || ''}`,
+    amountFormatted: `$${payment.amount}`,
+    date: payment.paymentDate,
+    notesDisplay: payment.notes || '-'
+  }));
+});
+
+const totalPages = computed(() => Math.ceil(paymentHistory.value.length / pageSize));
 
 const clearSearch = () => {
   search.value = '';
@@ -40,6 +98,7 @@ const clearSelected = () => {
   studentId.value = null;
   selectedName.value = '';
   searchedId.value = null;
+  currentPage.value = 1;
   fetchPayments();
 };
 
@@ -60,6 +119,7 @@ const onSelectFromSearch = (item: SearchResult) => {
     studentId.value = item.id;
     searchedId.value = item.id;
     selectedName.value = `${item.firstName} ${item.lastName}`;
+    currentPage.value = 1;
     fetchPayments(item.id);
   }
   clearSearch();
@@ -97,150 +157,163 @@ const addPayment = async () => {
 
 onMounted(async () => {
   await fetchPayments();
-  // new DataTable('#due-students-table', {
-  //   paging: true,
-  //   pageLength: 25,
-  //   searching: false,
-  //   ordering: false,
-  //   info: false,
-  //   lengthChange: false,
-  //   autoWidth: false
-  // });
-  // new DataTable('#pay-history-table', {
-  //   paging: true,
-  //   pageLength: 25,
-  //   searching: false,
-  //   ordering: false,
-  //   info: false,
-  //   lengthChange: false,
-  //   autoWidth: false
-  // });
 });
 </script>
 
 <template>
-  <div class="mt-5">
-    <h4 class="fw-bold">Payments Overdue</h4>
-    <DataTable table-class="payment-table" :value="dueStudents" class="mt-3">
-      <Column field="id" header="#">
-        <template #body="{ index }">
-          {{ index + 1 }}
+  <div class="space-y-8">
+    <!-- Payments Overdue Section -->
+    <div>
+      <h2 class="text-lg font-bold text-secondary-900 mb-4">Payments Overdue</h2>
+      <Table
+        :columns="dueColumns"
+        :data="dueTableData"
+        header-class="bg-danger-500 text-white"
+        empty-text="No overdue payments"
+      >
+        <template #cell-index="{ value }">
+          <span class="text-secondary-500">{{ value }}</span>
         </template>
-      </Column>
-      <Column field="firstName" header="Name">
-        <template #body="{ data }"> {{ data.firstName }} {{ data.lastName }} </template>
-      </Column>
-      <Column field="dueAmount" header="Due Amount">
-        <template #body="{ data }">
-          {{ data.dueAmount > 1 ? data.dueAmount : '-' }}
+        <template #cell-name="{ row }">
+          <span class="font-medium text-secondary-900">{{ row.name }}</span>
         </template>
-      </Column>
-      <Column field="payment" header="Payment">
-        <template #body="{ data }">
-          <button type="button" class="btn btn-info btn-sm" @click="openPaymentModal(data)">
-            Add
-          </button>
+        <template #cell-dueAmount="{ row }">
+          <span class="font-semibold text-danger-600">{{ row.dueAmountFormatted }}</span>
         </template>
-      </Column>
-      <template #empty>No records found</template>
-    </DataTable>
-  </div>
-  <h4 class="fw-bold mt-5">Payment History</h4>
-  <div class="position-relative">
-    <form class="mt-4 d-flex gap-2 align-items-center" @submit.prevent="fetchPayments()">
-      <div class="d-flex gap-1 report-search align-items-center">
-        <InputField v-model="search" placeholder="Enter student name to filter payment history" />
-        <button
+        <template #cell-action="{ row }">
+          <Button size="sm" @click="openPaymentModal(row)">Add Payment</Button>
+        </template>
+
+        <!-- Mobile card view -->
+        <template #mobile-card="{ row }">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-medium text-secondary-900">{{ row.name }}</p>
+              <p class="text-sm mt-1">
+                <span class="text-secondary-500">Due:</span>
+                <span class="font-semibold text-danger-600 ml-1">{{ row.dueAmountFormatted }}</span>
+              </p>
+            </div>
+            <Button size="sm" @click="openPaymentModal(row)">Add</Button>
+          </div>
+        </template>
+
+        <!-- Pagination in footer -->
+        <template #footer>
+          <Pagination
+            v-model:currentPage="dueCurrentPage"
+            :totalPages="dueTotalPages"
+            :totalItems="dueStudents.length"
+            :pageSize="pageSize"
+          />
+        </template>
+      </Table>
+    </div>
+
+    <!-- Payment History Section -->
+    <div>
+      <h2 class="text-lg font-bold text-secondary-900 mb-4">Payment History</h2>
+
+      <!-- Search -->
+      <div class="relative mb-4">
+        <div class="flex gap-2 items-center max-w-md">
+          <Input
+            v-model="search"
+            type="search"
+            placeholder="Search by student name..."
+          />
+          <Button
+            v-if="search.trim().length"
+            variant="secondary"
+            size="sm"
+            @click="clearSearch"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </Button>
+        </div>
+
+        <!-- Search Results Dropdown -->
+        <div
           v-if="search.trim().length"
-          type="button"
-          class="btn btn-secondary rounded-3"
-          @click="clearSearch"
+          class="absolute top-full left-0 mt-2 w-full max-w-md z-20 bg-white rounded-xl shadow-lg border border-secondary-200"
         >
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+          <SearchResults @onSelect="onSelectFromSearch" />
+        </div>
       </div>
-    </form>
-    <SearchResults
-      class="mt-3 report-search z-3 position-absolute shadow"
-      v-if="search.trim().length"
-      @onSelect="onSelectFromSearch"
+
+      <!-- Selected filter indicator -->
+      <div v-if="searchedId" class="mb-4 flex items-center gap-3">
+        <p class="text-sm text-secondary-600">
+          Showing payments for: <span class="font-semibold text-secondary-900">{{ selectedName }}</span>
+        </p>
+        <Button variant="ghost" size="sm" @click="clearSelected">
+          <i class="fa-solid fa-xmark mr-1"></i> Clear
+        </Button>
+      </div>
+
+      <Table
+        :columns="historyColumns"
+        :data="historyTableData"
+        :loading="loading"
+        empty-text="No payment records found"
+      >
+        <template #cell-index="{ value }">
+          <span class="text-secondary-500">{{ value }}</span>
+        </template>
+        <template #cell-name="{ row }">
+          <span class="font-medium text-secondary-900">{{ row.name }}</span>
+        </template>
+        <template #cell-amount="{ row }">
+          <span class="font-semibold text-success-600">{{ row.amountFormatted }}</span>
+        </template>
+        <template #cell-date="{ row }">
+          <span class="text-secondary-700">{{ row.date }}</span>
+        </template>
+        <template #cell-notes="{ row }">
+          <span class="text-secondary-500">{{ row.notesDisplay }}</span>
+        </template>
+
+        <!-- Mobile card view -->
+        <template #mobile-card="{ row }">
+          <div class="flex justify-between items-start mb-2">
+            <p class="font-medium text-secondary-900">{{ row.name }}</p>
+            <span class="font-semibold text-success-600">{{ row.amountFormatted }}</span>
+          </div>
+          <div class="text-sm text-secondary-500 space-y-1">
+            <p>{{ row.date }}</p>
+            <p v-if="row.notes">{{ row.notes }}</p>
+          </div>
+        </template>
+
+        <!-- Pagination in footer -->
+        <template #footer>
+          <Pagination
+            v-model:currentPage="currentPage"
+            :totalPages="totalPages"
+            :totalItems="paymentHistory.length"
+            :pageSize="pageSize"
+          />
+        </template>
+      </Table>
+    </div>
+
+    <!-- Add Payment Actions -->
+    <div v-if="studentId && !showAddPaymentModal" class="flex flex-wrap gap-3">
+      <Button @click="showAddPaymentModal = true">
+        Add Payment for {{ selectedName }}
+      </Button>
+      <Button variant="secondary" @click="clearSelected">
+        Clear selection
+      </Button>
+    </div>
+
+    <!-- Add Payment Modal -->
+    <AddPaymentModal
+      v-model:show="showAddPaymentModal"
+      :child-id="studentId"
+      :name="selectedName"
+      :amount="selectedAmount"
+      @onSuccess="addPayment"
     />
   </div>
-  <p class="mt-4 mb-0" v-if="searchedId">
-    Showing payment history for: <strong>{{ selectedName }}</strong>
-  </p>
-
-  <DataTable :value="paymentHistory" paginator :rows="50" class="rounded mt-4" :loading="loading">
-    <Column field="id" header="#">
-      <template #body="{ index }">
-        {{ index + 1 }}
-      </template>
-    </Column>
-    <Column field="firstName" header="Name">
-      <template #body="{ data }"> {{ data.child.firstName }} {{ data.child.lastName }} </template>
-    </Column>
-    <Column field="amount" header="Amount"></Column>
-    <Column field="paymentDate" header="Payment Date"></Column>
-    <Column field="notes" header="Notes"></Column>
-    <template #empty>No records found</template>
-  </DataTable>
-
-  <div v-if="studentId" class="mt-4">
-    <button type="button" class="btn btn-info" @click="showAddPaymentModal = true">
-      Add Payment for {{ selectedName }}
-    </button>
-    <button type="button" class="btn btn-secondary rounded-3 ms-2" @click="clearSelected">
-      Clear selection
-    </button>
-  </div>
-  <AddPaymentModal
-    v-model:show="showAddPaymentModal"
-    :child-id="studentId"
-    :name="selectedName"
-    :amount="selectedAmount"
-    @onSuccess="addPayment"
-  />
 </template>
-
-<style scoped lang="scss">
-.table-responsive {
-  table {
-    min-width: 322px;
-  }
-}
-.report-search {
-  width: 100%;
-  max-width: 400px;
-}
-th,
-td {
-  color: #193b4d !important;
-}
-thead th:first-child {
-  border-top-left-radius: 1rem;
-}
-
-thead th:last-child {
-  border-top-right-radius: 1rem;
-}
-tbody tr:last-child th:first-child,
-tbody tr:last-child td:first-child {
-  border-bottom-left-radius: 1rem;
-}
-
-tbody tr:last-child td:last-child {
-  border-bottom-right-radius: 1rem;
-}
-th:first-child {
-  padding-left: 1.5rem;
-}
-tbody tr:last-child td,
-tbody tr:last-child th {
-  border-bottom-width: 0;
-}
-
-thead.table-danger th {
-  background-color: #ff6961;
-  color: white !important;
-}
-</style>

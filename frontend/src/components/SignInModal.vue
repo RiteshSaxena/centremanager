@@ -6,8 +6,8 @@ import { useToast } from 'vue-toastification';
 
 import { useLogBookStore } from '@/stores';
 
-import Modal from '@/components/base/Modal.vue';
 import SignaturePad from '@/components/SignaturePad.vue';
+import { Modal, Button, Spinner, Checkbox } from '@/components/ui';
 
 const props = withDefaults(
   defineProps<{
@@ -61,17 +61,6 @@ const onSubmit = async () => {
     }
   }
 
-  // if (props.item.type === 'parent') {
-  //   emit('onSubmit', {
-  //     signature: signaturePad.value.getImage(),
-  //     isParentWithStudent: isParentWithStudent.value
-  //   });
-  //   return;
-  // }
-  // emit('onSubmit', {
-  //   signature: signaturePad.value.getImage()
-  // });
-
   try {
     loading.value = true;
     const payload: any = {};
@@ -111,47 +100,32 @@ const onSubmit = async () => {
 
 <template>
   <Modal
-    v-if="show"
-    :large="true"
-    :show-footer-close-button="!qrMode"
+    :open="show"
+    size="xl"
+    :closable="!qrMode"
     :title="`Sign In - ${item?.firstName} ${item?.lastName}`"
     @close="emit('update:show', false)"
   >
-    <div v-if="qrMode" class="w-100 text-center my-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+    <div v-if="qrMode" class="w-full text-center py-12">
+      <Spinner size="lg" />
     </div>
     <div v-else>
       <signature-pad ref="signaturePad" />
-      <div class="form-check" v-if="item?.type === 'parent'">
-        <input
-          class="form-check-input"
-          type="checkbox"
+      <div class="-mt-8" v-if="item?.type === 'parent'">
+        <Checkbox
           v-model="isParentWithStudent"
-          id="isParentComing"
+          label="Is Parent coming with student?"
         />
-        <label class="form-check-label" for="isParentComing">
-          Is Parent coming with student?
-        </label>
       </div>
     </div>
     <template #footer>
-      <button
+      <Button
         v-if="!qrMode"
-        type="button"
-        class="btn btn-info"
         @click.prevent="onSubmit"
         :disabled="loading"
       >
         {{ loading ? '...' : 'Submit' }}
-      </button>
+      </Button>
     </template>
   </Modal>
 </template>
-
-<style scoped lang="scss">
-.form-check {
-  margin-top: -2rem;
-}
-</style>

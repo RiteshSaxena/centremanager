@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-
 import Sidebar from '@/components/Sidebar.vue';
-
-import { useStudentStore } from '@/stores';
 import CentreHeader from '@/components/CentreHeader.vue';
+import { useStudentStore } from '@/stores';
 
 const studentStore = useStudentStore();
-
 const isKioskApp = APP_TYPE === 'app-kiosk';
 
 onMounted(async () => {
@@ -16,13 +13,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="d-flex flex-column flex-md-row">
+  <div class="flex flex-col md:flex-row min-h-screen bg-secondary-100">
     <Sidebar v-if="!isKioskApp" />
-    <div class="main-container overflow-auto vh-100 w-100">
-      <div class="p-2 p-sm-4">
-        <centre-header />
+    <main class="flex-1 overflow-auto">
+      <div class="p-4 sm:p-6 max-w-7xl mx-auto">
+        <CentreHeader />
         <slot />
       </div>
-    </div>
+    </main>
   </div>
 </template>

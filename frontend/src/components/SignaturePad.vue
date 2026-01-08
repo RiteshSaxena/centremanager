@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import VueDrawingCanvas from 'vue-drawing-canvas';
 import { onMounted, ref } from 'vue';
+import { Button } from '@/components/ui';
 
 const image = ref('');
 const canvas: any = ref(null);
@@ -37,7 +38,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="signature-container" ref="signatureContainer">
+  <div class="block w-full" ref="signatureContainer">
     <vue-drawing-canvas
       ref="canvas"
       v-model:image="image"
@@ -53,20 +54,13 @@ defineExpose({
       saveAs="png"
       :styles="{
         border: 'solid 1px rgb(207 207 207)',
-        'border-radius': '5px'
+        'border-radius': '8px'
       }"
     />
-    <div class="text-end">
-      <button type="button" class="btn btn-outline-dark" @click.prevent="reset">
+    <div class="text-right mt-2">
+      <Button variant="outline" size="sm" @click.prevent="reset">
         <span aria-hidden="true">&times;</span> Clear
-      </button>
+      </Button>
     </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-.signature-container {
-  display: block;
-  width: 100%;
-}
-</style>

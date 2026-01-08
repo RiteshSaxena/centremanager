@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
-import Card from '@/components/base/Card.vue';
+import { Card } from '@/components/ui';
 import UserListItem from '@/components/UserListItem.vue';
 import AddGuardianModal from '@/components/AddGuardianModal.vue';
+import { Button } from '@/components/ui';
 
 import { useLogBookStore, useSearchStore, useStudentStore, useSlotStore } from '@/stores';
 
@@ -118,50 +119,42 @@ onMounted(() => {
 <template>
   <Card>
     <template #header> Student</template>
-    <p class="text-display">
-      Name: <span class="fw-bold">{{ student.firstName }} {{ student.lastName }}</span>
+    <p class="text-base text-secondary-600 mb-2">
+      Name: <span class="font-bold">{{ student.firstName }} {{ student.lastName }}</span>
     </p>
-    <p class="text-display" v-if="student.schoolYear">
-      School Year: <span class="fw-bold">{{ student.schoolYear }}</span>
+    <p class="text-base text-secondary-600 mb-2" v-if="student.schoolYear">
+      School Year: <span class="font-bold">{{ student.schoolYear }}</span>
     </p>
-    <p class="text-display text-danger" v-if="studentDueAmount > 0">
-      Due Amount: <span class="fw-bold">{{ getDueAmount(studentDueAmount) }}</span>
+    <p class="text-base text-danger-500 mb-2" v-if="studentDueAmount > 0">
+      Due Amount: <span class="font-bold">{{ getDueAmount(studentDueAmount) }}</span>
     </p>
-    <p class="text-display text-danger mt-3" v-if="isStudentLate && isStudentLate.late > 5">
+    <p class="text-base text-danger-500 mt-3" v-if="isStudentLate && isStudentLate.late > 5">
       You are {{ isStudentLate.late }} minutes late. Your time of arrival is
       {{ isStudentLate.startTime }}.
     </p>
     <div v-if="isSignedInRecord">
-      <button
-        type="button"
-        class="btn btn-secondary mt-3"
+      <Button
+        variant="secondary"
+        class="mt-3"
         @click="$emit('onSelectSignOut', isSignedInRecord)"
       >
         Sign Out
-      </button>
+      </Button>
     </div>
     <div v-else>
-      <p class="small text-muted" v-if="!student.parents.length">No guardian found.</p>
-      <p class="small mt-4" v-if="isKioskApp"><strong>Select your name below</strong></p>
-      <p class="small mt-4" v-else><strong>Guardians</strong></p>
+      <p class="text-sm text-secondary-400" v-if="!student.parents.length">No guardian found.</p>
+      <p class="text-sm mt-4" v-if="isKioskApp"><strong>Select your name below</strong></p>
+      <p class="text-sm mt-4" v-else><strong>Guardians</strong></p>
       <UserListItem
         v-for="(item, index) in student.parents"
         :key="index"
         :item="item as any"
         @click="onSelectSignIn(item)"
       />
-      <button type="button" class="btn btn-secondary mt-2" @click="showModal = true">
+      <Button variant="secondary" class="mt-2" @click="showModal = true">
         Add Guardian
-      </button>
+      </Button>
     </div>
   </Card>
   <AddGuardianModal v-model:show="showModal" :loading="loading" @onSubmit="onSubmit" />
 </template>
-
-<style lang="scss" scoped>
-.text-display {
-  font-size: 16px;
-  color: #505050;
-  margin: 0 0 0.6rem 0;
-}
-</style>

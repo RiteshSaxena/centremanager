@@ -3,7 +3,8 @@ import type { LogRecord } from '@/types';
 import { computed, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useFeedbackStore } from '@/stores/feedback';
-import Modal from '@/components/base/Modal.vue';
+import { Modal } from '@/components/ui';
+import { Button, Spinner, Checkbox, Textarea } from '@/components/ui';
 
 const feedbackStore = useFeedbackStore();
 const toast = useToast();
@@ -237,48 +238,42 @@ watch(
 
 <template>
   <Modal
-    :large="false"
-    v-if="show"
-    :show-footer-close-button="true"
+    size="md"
+    :open="show"
+    :closable="true"
     @close="emit('update:show', false)"
   >
     <template #title>
-      <div class="d-flex flex-column">
+      <div class="flex flex-col">
         <span>Feedback</span>
-        <small>{{ selectedName }}</small>
+        <small class="text-sm text-secondary-500">{{ selectedName }}</small>
       </div>
     </template>
 
     <div class="text-center mb-3" v-if="loading">
-      <div class="spinner-border text-dark text-center" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+      <Spinner size="md" />
     </div>
 
-    <div v-if="!loading" class="w-100 fs-5 d-flex flex-column gap-2">
-      <div class="row gx-2">
-        <div class="col-5"></div>
-        <div class="col-3 text-left"><strong>Wrong</strong></div>
-        <div class="col-4">
+    <div v-if="!loading" class="w-full text-base flex flex-col gap-2">
+      <div class="grid grid-cols-12 gap-2">
+        <div class="col-span-5"></div>
+        <div class="col-span-3 text-left"><strong>Wrong</strong></div>
+        <div class="col-span-4">
           <strong>Time <small>(M)</small></strong>
         </div>
       </div>
 
-      <div class="row gx-2" v-if="hasMaths">
-        <div class="col-5">
-          <div class="d-flex gap-3 align-items-center w-100 justify-content-between">
-            <span class="fs-6"><b>Maths</b></span>
-            <label class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                v-model="feedbackForm.isMathChecked"
-              />
-              <span class="form-check-label fs-6">100%</span>
-            </label>
+      <div class="grid grid-cols-12 gap-2 items-center" v-if="hasMaths">
+        <div class="col-span-5">
+          <div class="flex gap-3 items-center w-full justify-between">
+            <span class="text-sm"><b>Maths</b></span>
+            <Checkbox
+              v-model="feedbackForm.isMathChecked"
+              label="100%"
+            />
           </div>
         </div>
-        <div class="col-3 text-start">
+        <div class="col-span-3 text-left">
           <input
             type="text"
             v-model="feedbackForm.mathScore"
@@ -290,41 +285,42 @@ watch(
               onScoreInput(($event.target as HTMLInputElement).value, 'mathScore');
               clearError('mathScore');
             "
-            class="form-control max-width-50"
-            :class="{ 'is-invalid': errors.mathScore }"
+            :class="[
+              'w-12 px-2 py-1.5 text-sm rounded-lg border focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+              errors.mathScore ? 'border-danger-500' : 'border-secondary-200',
+              feedbackForm.isMathChecked ? 'bg-secondary-100 text-secondary-400' : 'bg-white'
+            ]"
           />
-          <div v-if="errors.mathScore" class="invalid-feedback">{{ errors.mathScore }}</div>
+          <p v-if="errors.mathScore" class="text-xs text-danger-500 mt-1">{{ errors.mathScore }}</p>
         </div>
-        <div class="col-4">
+        <div class="col-span-4">
           <input
             type="text"
             v-model="feedbackForm.mathTime"
             inputmode="numeric"
             pattern="[0-9]*"
             maxlength="2"
-            class="form-control"
             @input="clearError('mathTime')"
-            :class="{ 'is-invalid': errors.mathTime }"
+            :class="[
+              'w-full px-2 py-1.5 text-sm rounded-lg border focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+              errors.mathTime ? 'border-danger-500' : 'border-secondary-200'
+            ]"
           />
-          <div v-if="errors.mathTime" class="invalid-feedback">{{ errors.mathTime }}</div>
+          <p v-if="errors.mathTime" class="text-xs text-danger-500 mt-1">{{ errors.mathTime }}</p>
         </div>
       </div>
 
-      <div class="row gx-2" v-if="hasEnglish">
-        <div class="col-5">
-          <div class="d-flex gap-3 align-items-center w-100 justify-content-between">
-            <span class="fs-6"><b>Eng</b></span>
-            <label class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                v-model="feedbackForm.isEnglishChecked"
-              />
-              <span class="form-check-label fs-6">100%</span>
-            </label>
+      <div class="grid grid-cols-12 gap-2 items-center" v-if="hasEnglish">
+        <div class="col-span-5">
+          <div class="flex gap-3 items-center w-full justify-between">
+            <span class="text-sm"><b>Eng</b></span>
+            <Checkbox
+              v-model="feedbackForm.isEnglishChecked"
+              label="100%"
+            />
           </div>
         </div>
-        <div class="col-3 text-start">
+        <div class="col-span-3 text-left">
           <input
             type="text"
             v-model="feedbackForm.englishScore"
@@ -336,56 +332,47 @@ watch(
               onScoreInput(($event.target as HTMLInputElement).value, 'englishScore');
               clearError('englishScore');
             "
-            class="form-control"
-            :class="{ 'is-invalid': errors.englishScore }"
+            :class="[
+              'w-full px-2 py-1.5 text-sm rounded-lg border focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+              errors.englishScore ? 'border-danger-500' : 'border-secondary-200',
+              feedbackForm.isEnglishChecked ? 'bg-secondary-100 text-secondary-400' : 'bg-white'
+            ]"
           />
-          <div v-if="errors.englishScore" class="invalid-feedback">{{ errors.englishScore }}</div>
+          <p v-if="errors.englishScore" class="text-xs text-danger-500 mt-1">{{ errors.englishScore }}</p>
         </div>
-        <div class="col-4">
+        <div class="col-span-4">
           <input
             type="text"
             v-model="feedbackForm.englishTime"
             inputmode="numeric"
             pattern="[0-9]*"
             maxlength="2"
-            class="form-control"
             @input="clearError('englishTime')"
-            :class="{ 'is-invalid': errors.englishTime }"
+            :class="[
+              'w-full px-2 py-1.5 text-sm rounded-lg border focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+              errors.englishTime ? 'border-danger-500' : 'border-secondary-200'
+            ]"
           />
-          <div v-if="errors.englishTime" class="invalid-feedback">{{ errors.englishTime }}</div>
+          <p v-if="errors.englishTime" class="text-xs text-danger-500 mt-1">{{ errors.englishTime }}</p>
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-12 align-items-start justify-content-start d-flex">
-          <label><b>Feedback</b></label>
-        </div>
-        <div class="col-12">
-          <textarea v-model="feedbackForm.feedback" class="form-control" rows="7"></textarea>
-        </div>
-        <label for="inperson" class="text-start mt-2">
-          <input
-            type="checkbox"
+      <div class="mt-4">
+        <label class="block text-left mb-2"><b>Feedback</b></label>
+        <Textarea v-model="feedbackForm.feedback" :rows="7" />
+        <div class="mt-2">
+          <Checkbox
             v-model="feedbackForm.isPercentFeedbackRequired"
-            name="inperson"
-            id="inperson"
+            label="In person feedback required."
           />
-          In person feedback required.
-        </label>
+        </div>
       </div>
     </div>
 
     <template #footer>
-      <button type="button" class="btn btn-info" :disabled="loading" @click="submitFeedback">
+      <Button :disabled="loading" @click="submitFeedback">
         {{ feedbackStore.todayFeedback ? 'Update' : 'Submit' }}
-      </button>
+      </Button>
     </template>
   </Modal>
 </template>
-
-<style scoped>
-.is-invalid {
-  border-color: #dc3545 !important;
-  background-image: none !important;
-}
-</style>

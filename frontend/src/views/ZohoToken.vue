@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import axios from '@/axios';
+import { Button, Input, Spinner } from '@/components/ui';
 
 import errorHandler from '@/utils/error-handler';
 
@@ -44,49 +45,50 @@ const generateToken = async () => {
 </script>
 
 <template>
-  <div class="w-100 vh-100 d-flex justify-content-center align-items-center">
-    <div class="login-card rounded shadow bg-white">
-      <h3 class="mb-4">Zoho Token Generate</h3>
-      <form @submit.prevent="generateToken" v-if="!accessToken">
-        <div class="mb-3">
-          <label class="form-label">Client ID</label>
-          <input type="text" class="form-control" v-model="clientId" required />
+  <div class="w-full min-h-screen flex justify-center items-center bg-secondary-100">
+    <div class="w-[450px] p-8 rounded-2xl shadow-lg bg-white">
+      <h3 class="text-xl font-bold text-secondary-900 mb-6">Zoho Token Generate</h3>
+      <form @submit.prevent="generateToken" v-if="!accessToken" class="space-y-4">
+        <Input
+          v-model="clientId"
+          label="Client ID"
+          required
+        />
+        <Input
+          v-model="clientSecret"
+          label="Client Secret"
+          required
+        />
+        <div>
+          <Input
+            v-model="grantCode"
+            label="Grant Code"
+            required
+          />
+          <p class="text-xs text-secondary-500 mt-1">OAuth Scope: ZohoBooks.contacts.READ</p>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Client Secret</label>
-          <input type="text" class="form-control" v-model="clientSecret" required />
+        <div>
+          <Input
+            v-model="domain"
+            label="Domain"
+            required
+          />
+          <p class="text-xs text-secondary-500 mt-1">Can be: com, in, eu, com.au, jp</p>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Grant Code</label>
-          <input type="text" class="form-control" v-model="grantCode" required />
-          <div class="form-text">OAuth Scope: ZohoBooks.contacts.READ</div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Domain</label>
-          <input type="text" class="form-control" v-model="domain" required />
-          <div class="form-text">Can be: com, in, eu, com.au, jp</div>
-        </div>
-        <button type="submit" class="btn px-4 btn-info" :disabled="loading">
+        <Button type="submit" :disabled="loading">
           Generate
-          <span v-if="loading" class="spinner-border spinner-border-sm ms-2"></span>
-        </button>
+          <Spinner v-if="loading" size="sm" class="ml-2" />
+        </Button>
       </form>
-      <div v-else>
-        <p class="lead">
-          Access Token: <span class="text-muted text-break">{{ accessToken }}</span>
+      <div v-else class="space-y-4">
+        <p class="text-lg">
+          Access Token: <span class="text-secondary-500 break-all">{{ accessToken }}</span>
         </p>
-        <p class="lead">
-          Refresh Token: <span class="text-muted text-break">{{ refreshToken }}</span>
+        <p class="text-lg">
+          Refresh Token: <span class="text-secondary-500 break-all">{{ refreshToken }}</span>
         </p>
-        <button type="button" class="btn px-4 btn-info" @click="reset">Done</button>
+        <Button @click="reset">Done</Button>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-.login-card {
-  width: 450px;
-  padding: 30px;
-}
-</style>

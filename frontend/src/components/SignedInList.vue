@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
-import Card from '@/components/base/Card.vue';
+import { Card } from '@/components/ui';
 import SignedInListItem from '@/components/SignedInListItem.vue';
+import { Spinner } from '@/components/ui';
 
 import { useLogBookStore, useUserStore } from '@/stores';
 
@@ -90,14 +91,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Card class="signed-in-list">
+  <Card class="max-h-[600px] overflow-y-auto">
     <template #header> People Signed In </template>
     <div class="text-center mb-3" v-if="loading">
-      <div class="spinner-border text-dark text-center" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+      <Spinner size="md" />
     </div>
-    <p class="small text-muted" v-if="!loading && !signedIn.length">No results found.</p>
+    <p class="text-sm text-secondary-400" v-if="!loading && !signedIn.length">No results found.</p>
     <SignedInListItem
       v-for="item in signedIn"
       :key="item.id"
@@ -107,10 +106,3 @@ onMounted(async () => {
     />
   </Card>
 </template>
-
-<style scoped lang="scss">
-.signed-in-list {
-  max-height: 600px;
-  overflow-y: auto;
-}
-</style>
