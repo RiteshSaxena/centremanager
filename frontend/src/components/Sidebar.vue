@@ -150,10 +150,19 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.sidebar {
-  min-height: 100vh;
+/* Desktop: Fixed sidebar */
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 30;
+  }
 }
 
+/* Mobile: Sticky header */
 @media (max-width: 767px) {
   .sidebar {
     min-height: auto;

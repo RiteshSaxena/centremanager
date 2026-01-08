@@ -100,7 +100,7 @@ watch(
 </script>
 
 <template>
-  <Modal :open="show" :closable="false" title="Scan QR" @close="emit('update:show', false)">
+  <Modal :open="show" :closable="true" title="Scan QR" @close="emit('update:show', false)">
     <div v-if="!permissionError && !isScanning">
       <p class="text-secondary-600">Initializing camera...</p>
     </div>
@@ -113,5 +113,11 @@ watch(
       autoplay
       :class="['w-full h-full', !isScanning ? 'w-0 h-0' : '']"
     />
+
+    <template #footer>
+      <Button variant="outline" size="lg" class="w-full" @click="emit('update:show', false)">
+        Cancel
+      </Button>
+    </template>
   </Modal>
 </template>

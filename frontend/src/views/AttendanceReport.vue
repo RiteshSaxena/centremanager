@@ -174,86 +174,207 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h4 class="font-bold mt-8 text-lg text-secondary-900">Attendance Report</h4>
-  <form class="mt-4 flex flex-wrap gap-2 items-center" @submit.prevent="searchFromDate">
-    <div class="flex gap-1 w-full max-w-md">
-      <Input v-model="search" placeholder="Enter Student or Staff name to search" />
-      <Button
-        v-if="search.trim().length"
-        type="button"
-        variant="secondary"
-        @click="clearSearch"
-      >
-        <i class="fa-solid fa-xmark"></i>
-      </Button>
+  <div>
+    <!-- Header -->
+    <div class="mb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm">
+          <i class="fa-solid fa-chart-line text-white text-xl"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-secondary-900">Attendance Report</h2>
+          <p class="text-sm text-secondary-500">View attendance records by date or person</p>
+        </div>
+      </div>
     </div>
-    <span class="text-secondary-400 px-2"> - OR - </span>
-    <div>
-      <Input type="date" :max="todayDate" v-model="reportDate" required />
+
+    <!-- Search Form -->
+    <div class="bg-white rounded-xl border border-secondary-200 shadow-sm p-5 mb-6">
+      <form @submit.prevent="searchFromDate">
+        <!-- Side by Side Search -->
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-4 items-start">
+          <!-- Search by Name -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-secondary-700">
+              Search by Student or Staff
+            </label>
+            <div class="flex gap-2">
+              <Input
+                v-model="search"
+                placeholder="Enter name to search..."
+                class="flex-1"
+              />
+              <Button
+                v-if="search.trim().length"
+                type="button"
+                variant="ghost"
+                @click="clearSearch"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </Button>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="hidden lg:flex items-center justify-center px-4 pt-8">
+            <span class="text-sm text-secondary-400 font-medium">OR</span>
+          </div>
+          <div class="lg:hidden relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-secondary-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-4 bg-white text-secondary-500 font-medium">OR</span>
+            </div>
+          </div>
+
+          <!-- Search by Date -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-secondary-700">
+              Search by Date
+            </label>
+            <div class="flex gap-2">
+              <Input
+                type="date"
+                :max="todayDate"
+                v-model="reportDate"
+                required
+                class="flex-1"
+              />
+              <Button type="submit" :disabled="loading">
+                <i v-if="!loading" class="fa-solid fa-magnifying-glass mr-2"></i>
+                {{ loading ? 'Loading...' : 'View' }}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Results -->
+        <div v-if="search.trim().length" class="mt-4">
+          <SearchResults @onSelect="onSelectFromSearch" />
+        </div>
+
+        <!-- Selected Person -->
+        <div v-if="studentId || staffId" class="mt-4 p-3 bg-primary-50 border border-primary-200 rounded-lg">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-user text-primary-600"></i>
+            <span class="text-sm text-primary-900">
+              <strong>Selected:</strong> {{ selectedName }}
+            </span>
+          </div>
+        </div>
+      </form>
     </div>
-    <Button type="submit" :disabled="loading">
-      {{ loading ? '...' : 'View' }}
-    </Button>
-  </form>
-  <div class="relative">
-    <SearchResults
-      class="mt-3 absolute z-20 w-full max-w-md shadow-lg"
-      v-if="search.trim().length"
-      @onSelect="onSelectFromSearch"
-    />
-  </div>
-  <p class="mt-4 mb-0 text-secondary-700" v-if="studentId || staffId"><strong>Selected:</strong> {{ selectedName }}</p>
-  <p class="mt-4 mb-0 text-secondary-500" v-if="loading">Loading...</p>
 
-  <div class="overflow-x-auto mt-4">
-    <table class="w-full min-w-[600px]">
-      <thead>
-        <tr class="bg-primary-500 text-white">
-          <th class="px-4 py-3 text-left text-sm font-semibold rounded-tl-xl">#</th>
-          <th class="px-4 py-3 text-left text-sm font-semibold">Type</th>
-          <th class="px-4 py-3 text-left text-sm font-semibold">Name</th>
-          <th class="px-4 py-3 text-left text-sm font-semibold">Sign In Time</th>
-          <th class="px-4 py-3 text-left text-sm font-semibold rounded-tr-xl">Sign Out Time</th>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-secondary-100">
-        <tr v-for="(record, index) in reportList" :key="record.id" class="hover:bg-secondary-50">
-          <td class="px-4 py-3 text-sm text-primary-800">{{ index + 1 }}</td>
-          <td class="px-4 py-3 text-sm text-primary-800">{{ record.type }}</td>
-          <td class="px-4 py-3 text-sm text-primary-800">{{ record.name }}</td>
-          <td class="px-4 py-3 text-sm text-primary-800">{{ formatTime(record.signInTime) }}</td>
-          <td class="px-4 py-3 text-sm text-primary-800">{{ formatTime(record?.signOutTime) }}</td>
-        </tr>
-        <tr v-if="!records.length && !loading">
-          <td class="text-center px-4 py-8 text-secondary-400" colspan="5">No records found</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <!-- Loading State -->
+    <div v-if="loading" class="flex items-center justify-center py-12">
+      <Spinner size="lg" />
+    </div>
 
-  <div class="mt-8" v-if="absentChildren.length && searchMode === 'date'">
-    <h4 class="font-bold text-lg text-secondary-900">Absent Students</h4>
-    <div class="overflow-x-auto mt-3">
-      <table class="w-full min-w-[600px]">
-        <thead>
-          <tr class="bg-danger-500 text-white">
-            <th class="px-4 py-3 text-left text-sm font-semibold rounded-tl-xl">#</th>
-            <th class="px-4 py-3 text-left text-sm font-semibold">Type</th>
-            <th class="px-4 py-3 text-left text-sm font-semibold">Name</th>
-            <th class="px-4 py-3 text-left text-sm font-semibold">Sign In Time</th>
-            <th class="px-4 py-3 text-left text-sm font-semibold rounded-tr-xl">Sign Out Time</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-secondary-100">
-          <tr v-for="(record, index) in absentChildren" :key="record.id" class="hover:bg-secondary-50">
-            <td class="px-4 py-3 text-sm text-primary-800">{{ index + 1 }}</td>
-            <td class="px-4 py-3 text-sm text-primary-800">Student</td>
-            <td class="px-4 py-3 text-sm text-primary-800">{{ record.firstName }} {{ record.lastName }}</td>
-            <td class="px-4 py-3 text-sm text-primary-800">-</td>
-            <td class="px-4 py-3 text-sm text-primary-800">-</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Attendance Records -->
+    <div v-else-if="isSearched" class="space-y-6">
+      <!-- Present Records -->
+      <div class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden">
+        <div class="bg-gradient-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center">
+              <i class="fa-solid fa-clipboard-check text-white text-lg"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-primary-900">Attendance Records</h3>
+              <p class="text-xs text-primary-600">
+                {{ searchMode === 'date' ? `${reportDay} - ${moment(reportDate).format('MMM D, YYYY')}` : selectedName }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[600px]">
+            <thead>
+              <tr class="bg-secondary-50 border-b border-secondary-200">
+                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">#</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Type</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Name</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Sign In Time</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Sign Out Time</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-secondary-100">
+              <tr v-for="(record, index) in reportList" :key="record.id" class="hover:bg-secondary-50 transition-colors">
+                <td class="px-4 py-3 text-sm text-secondary-600">{{ index + 1 }}</td>
+                <td class="px-4 py-3">
+                  <span
+                    :class="[
+                      'inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium',
+                      record.type === 'Student' || record.type === 'Student & Parent' ? 'bg-blue-100 text-blue-700' :
+                      record.type === 'Staff' ? 'bg-purple-100 text-purple-700' :
+                      record.type === 'Parent' ? 'bg-green-100 text-green-700' :
+                      'bg-secondary-100 text-secondary-700'
+                    ]"
+                  >
+                    {{ record.type }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-sm font-medium text-secondary-900">{{ record.name }}</td>
+                <td class="px-4 py-3 text-sm text-secondary-600">{{ formatTime(record.signInTime) }}</td>
+                <td class="px-4 py-3 text-sm text-secondary-600">{{ formatTime(record?.signOutTime) }}</td>
+              </tr>
+              <tr v-if="!records.length">
+                <td class="text-center px-4 py-12" colspan="5">
+                  <i class="fa-solid fa-inbox text-4xl text-secondary-300 mb-3"></i>
+                  <p class="text-sm text-secondary-500 font-medium">No records found</p>
+                  <p class="text-xs text-secondary-400 mt-1">Try a different date or name</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Absent Students -->
+      <div v-if="absentChildren.length && searchMode === 'date'" class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden">
+        <div class="bg-gradient-to-r from-danger-50 to-danger-100 px-5 py-4 border-b border-danger-200">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-danger-500 flex items-center justify-center">
+              <i class="fa-solid fa-user-xmark text-white text-lg"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-danger-900">Absent Students</h3>
+              <p class="text-xs text-danger-600">Students who did not attend on {{ reportDay }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[600px]">
+            <thead>
+              <tr class="bg-secondary-50 border-b border-secondary-200">
+                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">#</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Type</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Name</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Sign In Time</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Sign Out Time</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-secondary-100">
+              <tr v-for="(record, index) in absentChildren" :key="record.id" class="hover:bg-secondary-50 transition-colors">
+                <td class="px-4 py-3 text-sm text-secondary-600">{{ index + 1 }}</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
+                    Student
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-sm font-medium text-secondary-900">{{ record.firstName }} {{ record.lastName }}</td>
+                <td class="px-4 py-3 text-sm text-secondary-400">-</td>
+                <td class="px-4 py-3 text-sm text-secondary-400">-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>

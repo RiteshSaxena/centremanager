@@ -1,77 +1,123 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-    <div class="order-1 md:order-2">
-      <div class="flex flex-wrap gap-2 mb-3">
-        <div class="flex-1 flex items-start gap-1">
-          <Input v-model="search" placeholder="Enter Student or Staff name to search" />
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Left Panel: Sign In -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-secondary-900">Sign In</h2>
+        <div class="flex gap-2">
+          <Button size="sm" @click="qrSignIn">
+            <i class="fa-solid fa-qrcode mr-2"></i> Scan QR
+          </Button>
+          <Button size="sm" variant="secondary" @click="guestSignInModal = true">
+            <i class="fa-solid fa-user-plus mr-2"></i> Guest
+          </Button>
+        </div>
+      </div>
+
+      <!-- Search Section -->
+      <div class="bg-white rounded-xl border border-secondary-200 p-4 shadow-sm">
+        <div class="flex gap-2">
+          <Input
+            v-model="search"
+            placeholder="Search student or staff name..."
+            class="flex-1"
+          />
           <Button
             v-if="search.trim().length"
-            variant="secondary"
+            variant="ghost"
+            size="sm"
             @click="clearSearch"
           >
             <i class="fa-solid fa-xmark"></i>
           </Button>
         </div>
-        <div class="flex flex-wrap gap-1">
-          <Button class="mb-1" @click="qrSignIn">
-            Scan QR <i class="ml-2 fa-solid fa-qrcode"></i>
-          </Button>
-          <Button class="mb-1" @click="guestSignInModal = true">
-            Guest Sign In
-          </Button>
+      </div>
+
+      <!-- Search Results -->
+      <div v-if="search.trim().length">
+        <SearchResults @onSelect="onSelectFromSearch" />
+      </div>
+
+      <!-- Selected Student Section -->
+      <div v-if="selectedStudent" id="student-row">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold text-secondary-700 uppercase tracking-wide">
+            Selected Student
+          </h3>
           <Button
-            variant="secondary"
+            variant="ghost"
+            size="sm"
             @click="clearSearch"
-            v-if="selectedStudent && !search"
           >
-            Clear
+            <i class="fa-solid fa-xmark mr-1"></i> Clear
           </Button>
         </div>
-      </div>
-      <SearchResults class="mt-3" v-if="search.trim().length" @onSelect="onSelectFromSearch" />
-      <div class="mb-3" id="student-row">
         <GuardianList
-          v-if="selectedStudent"
           :student="selectedStudent"
           @onSelectSignIn="onSelectGuardian"
           @onSelectSignOut="onSelectSignOut"
           @onAddGuardian="onAddGuardian"
         />
       </div>
+
+      <div v-else class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-8 text-center">
+        <i class="fa-solid fa-search text-3xl text-secondary-300 mb-3"></i>
+        <p class="text-secondary-500 text-sm">
+          Search for a student or staff member to sign in
+        </p>
+      </div>
     </div>
 
-    <div class="order-3">
-      <div class="flex gap-1">
-        <Input v-model="signedInFilter" placeholder="Filter" />
-        <Button
-          v-if="signedInFilter.length || signedInFilterId"
-          variant="secondary"
-          @click="
-            signedInFilter = '';
-            signedInFilterId = null;
-          "
-        >
-          <i class="fa-solid fa-xmark"></i>
-        </Button>
-        <Button
-          variant="secondary"
-          @click="logBookStore.fetchList"
-          :disabled="logBookStore.fetching"
-        >
-          <i class="fa-solid fa-arrows-rotate"></i>
-        </Button>
-        <Button @click="qrSignOut">
-          <i class="fa-solid fa-qrcode"></i>
-        </Button>
+    <!-- Right Panel: Signed In -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-secondary-900">Signed In</h2>
+        <div class="flex gap-2">
+          <Button
+            size="sm"
+            variant="ghost"
+            @click="logBookStore.fetchList"
+            :disabled="logBookStore.fetching"
+          >
+            <i class="fa-solid fa-arrows-rotate" :class="{ 'animate-spin': logBookStore.fetching }"></i>
+          </Button>
+          <Button size="sm" @click="qrSignOut">
+            <i class="fa-solid fa-qrcode"></i>
+          </Button>
+        </div>
       </div>
-      <div class="mt-3">
-        <SignedInList
-          :filter="signedInFilter"
-          :filter-id="signedInFilterId"
-          @onSelect="onSelectSignOut"
-          @onFeedback="onFeedbackModal"
-        />
+
+      <!-- Filter Section -->
+      <div class="relative">
+        <div class="bg-white rounded-xl border border-secondary-200 p-4 shadow-sm">
+          <div class="flex gap-2">
+            <Input
+              v-model="signedInFilter"
+              placeholder="Filter signed in..."
+              class="flex-1"
+            />
+            <Button
+              v-if="signedInFilter.length || signedInFilterId"
+              variant="ghost"
+              size="sm"
+              @click="
+                signedInFilter = '';
+                signedInFilterId = null;
+              "
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </Button>
+          </div>
+        </div>
       </div>
+
+      <!-- Signed In List -->
+      <SignedInList
+        :filter="signedInFilter"
+        :filter-id="signedInFilterId"
+        @onSelect="onSelectSignOut"
+        @onFeedback="onFeedbackModal"
+      />
     </div>
   </div>
 

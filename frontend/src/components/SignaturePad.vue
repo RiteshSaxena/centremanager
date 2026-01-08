@@ -43,24 +43,19 @@ defineExpose({
       ref="canvas"
       v-model:image="image"
       :width="canvasWidth || 1"
-      :height="350"
+      :height="400"
       stroke-type="dash"
       line-cap="round"
       line-join="round"
       :fill-shape="true"
-      :lineWidth="4"
+      :lineWidth="5"
       color="black"
       background-color="white"
       saveAs="png"
       :styles="{
-        border: 'solid 1px rgb(207 207 207)',
-        'border-radius': '8px'
+        border: 'solid 2px rgb(203 213 225)',
+        'border-radius': '12px'
       }"
     />
-    <div class="text-right mt-2">
-      <Button variant="outline" size="sm" @click.prevent="reset">
-        <span aria-hidden="true">&times;</span> Clear
-      </Button>
-    </div>
   </div>
 </template>

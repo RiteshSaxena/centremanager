@@ -48,6 +48,14 @@ watch(
 
 const isParentWithStudent = ref(false);
 
+const clearSignature = () => {
+  signaturePad.value?.reset();
+};
+
+const closeModal = () => {
+  emit('update:show', false);
+};
+
 const onSubmit = async () => {
   if (!props.item) {
     toast.error('User not found');
@@ -96,6 +104,7 @@ const onSubmit = async () => {
     loading.value = false;
   }
 };
+
 </script>
 
 <template>
@@ -104,28 +113,71 @@ const onSubmit = async () => {
     size="xl"
     :closable="!qrMode"
     :title="`Sign In - ${item?.firstName} ${item?.lastName}`"
-    @close="emit('update:show', false)"
+    @close="closeModal"
   >
+    <!-- QR Mode Processing -->
     <div v-if="qrMode" class="w-full text-center py-12">
       <Spinner size="lg" />
+      <p class="text-secondary-600 mt-4">Processing sign in...</p>
     </div>
+
     <div v-else>
-      <signature-pad ref="signaturePad" />
-      <div class="-mt-8" v-if="item?.type === 'parent'">
-        <Checkbox
-          v-model="isParentWithStudent"
-          label="Is Parent coming with student?"
-        />
+      <!-- Person Info Card -->
+      <div class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 mb-6 border border-primary-200">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-user text-white text-2xl"></i>
+          </div>
+          <div>
+            <p class="text-base text-primary-600 font-medium mb-1">Signing In</p>
+            <p class="text-2xl font-bold text-primary-900">{{ item?.firstName }} {{ item?.lastName }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signature Section -->
+      <div class="bg-white rounded-2xl border-2 border-secondary-200 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <i class="fa-solid fa-signature text-primary-600 text-2xl flex-shrink-0"></i>
+          <label class="text-xl font-bold text-secondary-900">Signature Required</label>
+        </div>
+        <p class="text-base text-secondary-600 mb-4">Please sign below to confirm sign in</p>
+        <signature-pad ref="signaturePad" />
+        <div class="mt-4" v-if="item?.type === 'parent'">
+          <Checkbox
+            v-model="isParentWithStudent"
+            label="Is Parent coming with student?"
+          />
+        </div>
       </div>
     </div>
+
     <template #footer>
-      <Button
-        v-if="!qrMode"
-        @click.prevent="onSubmit"
-        :disabled="loading"
-      >
-        {{ loading ? '...' : 'Submit' }}
-      </Button>
+      <div v-if="!qrMode" class="flex gap-3 w-full">
+        <Button
+          variant="outline"
+          size="lg"
+          @click="closeModal"
+          :disabled="loading"
+          class="flex-1 text-lg h-14"
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="ghost"
+          size="lg"
+          @click.prevent="clearSignature"
+          :disabled="loading"
+          class="h-14"
+        >
+          <i class="fa-solid fa-eraser mr-2 text-xl"></i>
+          <span class="text-lg">Clear</span>
+        </Button>
+        <Button size="lg" @click.prevent="onSubmit" :disabled="loading" class="flex-1 text-lg h-14">
+          <i v-if="!loading" class="fa-solid fa-check mr-2 text-xl"></i>
+          {{ loading ? 'Processing...' : 'Confirm Sign In' }}
+        </Button>
+      </div>
     </template>
   </Modal>
 </template>

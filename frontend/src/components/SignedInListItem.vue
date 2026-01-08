@@ -180,27 +180,42 @@ const iconColorClass = computed(() => {
 </script>
 
 <template>
-  <div class="bg-secondary-100 rounded-xl px-3 py-2.5 mb-2.5 cursor-pointer flex justify-between items-center hover:bg-accent-300 transition-colors">
-    <div class="flex items-center gap-3 flex-1" @click.stop="$emit('onSelect')">
-      <i class="fa-solid fa-user" :class="iconColorClass"></i>
-      <div>
-        <span class="block text-sm font-bold text-primary-800">{{ name }} ({{ type }})</span>
-        <span class="block text-xs text-primary-800">{{ desc }}</span>
+  <div class="group bg-white border border-secondary-200 rounded-xl p-4 mb-3 cursor-pointer flex justify-between items-center hover:border-primary-300 hover:shadow-md transition-all duration-200">
+    <div class="flex items-center gap-4 flex-1" @click.stop="$emit('onSelect')">
+      <!-- Icon -->
+      <div class="flex-shrink-0">
+        <div class="w-10 h-10 rounded-full bg-secondary-100 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
+          <i class="fa-solid fa-user text-lg" :class="iconColorClass"></i>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="font-semibold text-secondary-900 text-sm truncate">{{ name }}</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-secondary-100 text-secondary-700">
+            {{ type }}
+          </span>
+        </div>
+        <p class="text-xs text-secondary-500 truncate">{{ desc }}</p>
       </div>
     </div>
-    <div class="flex gap-1 mr-2">
-      <a
+
+    <!-- Actions -->
+    <div class="flex gap-2 ml-3">
+      <button
         v-if="props.item?.type === 'Student'"
-        href="#"
         @click.stop.prevent="$emit('onFeedback', props.item)"
-        :class="['flex items-center justify-center w-8 h-8 rounded-lg text-white', feedbackBtnClass]"
+        :class="['flex items-center justify-center w-9 h-9 rounded-lg text-white transition-transform hover:scale-110', feedbackBtnClass]"
+        title="Feedback"
       >
-        <i class="fa-comments fa-regular text-sm"></i>
-      </a>
+        <i class="fa-regular fa-comments text-sm"></i>
+      </button>
       <a
         :href="`tel:${rowPhoneNumber}`"
         v-if="canShowCallIcon && rowPhoneNumber"
-        class="flex items-center justify-center w-8 h-8 rounded-lg bg-secondary-400 text-white"
+        class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all hover:scale-110"
+        title="Call"
       >
         <i class="fa-solid fa-phone text-sm"></i>
       </a>

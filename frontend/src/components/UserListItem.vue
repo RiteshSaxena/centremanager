@@ -42,19 +42,64 @@ const isStudentDue = computed(() => {
 
 <template>
   <div
-    class="flex items-center gap-3 bg-primary-50 rounded-xl px-6 py-2.5 mb-2.5 border-2 border-primary-200 cursor-pointer shadow-[2px_4px_0px_0px_rgba(84,147,194,0.43)] hover:bg-white transition-colors"
+    class="group flex items-center gap-4 bg-white border border-secondary-200 rounded-xl p-3.5 mb-2 cursor-pointer hover:border-primary-400 hover:shadow-md hover:bg-primary-50/50 transition-all duration-200"
     @click="$emit('click')"
   >
-    <i class="fa-solid fa-user" :class="iconColorClass"></i>
-    <div class="flex-1">
-      <span class="block text-xs font-bold text-primary-800">{{ item?.firstName }} {{ item?.lastName }}</span>
-      <span class="block text-xs text-primary-800" v-if="item?.type === 'student'"> Student </span>
-      <span class="block text-xs text-primary-800" v-if="item?.type === 'staff'"> Staff - {{ item?.email }} </span>
-      <span class="block text-xs text-primary-800" v-if="item?.type === 'parent'"> {{ (item as any)?.contactNumber }} </span>
+    <!-- Avatar -->
+    <div class="flex-shrink-0">
+      <div class="w-11 h-11 rounded-full bg-secondary-100 flex items-center justify-center group-hover:bg-primary-100 transition-colors">
+        <i class="fa-solid fa-user text-lg" :class="iconColorClass"></i>
+      </div>
     </div>
-    <span v-if="isStudentDue" class="badge badge-warning cursor-pointer">
-      <i class="fa-solid fa-dollar-sign text-[10px]"></i>
-    </span>
-    <i class="fa-solid fa-chevron-right text-secondary-400"></i>
+
+    <!-- Info -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 mb-0.5">
+        <span class="font-semibold text-secondary-900 text-sm truncate">
+          {{ item?.firstName }} {{ item?.lastName }}
+        </span>
+        <span
+          v-if="isStudentDue"
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-warning-100 text-warning-700"
+          title="Payment Due"
+        >
+          <i class="fa-solid fa-circle-dollar text-[10px]"></i>
+        </span>
+      </div>
+
+      <!-- Type Badge & Details -->
+      <div class="flex items-center gap-2">
+        <span
+          v-if="item?.type === 'student'"
+          class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-700"
+        >
+          Student
+        </span>
+        <span
+          v-if="item?.type === 'staff'"
+          class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-purple-100 text-purple-700"
+        >
+          Staff
+        </span>
+        <span
+          v-if="item?.type === 'parent'"
+          class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-green-100 text-green-700"
+        >
+          Guardian
+        </span>
+
+        <span v-if="item?.type === 'staff'" class="text-xs text-secondary-500 truncate">
+          {{ item?.email }}
+        </span>
+        <span v-if="item?.type === 'parent'" class="text-xs text-secondary-500">
+          {{ (item as any)?.contactNumber }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Arrow -->
+    <div class="flex-shrink-0">
+      <i class="fa-solid fa-chevron-right text-secondary-300 group-hover:text-primary-500 transition-colors"></i>
+    </div>
   </div>
 </template>

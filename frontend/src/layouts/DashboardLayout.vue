@@ -13,9 +13,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex flex-col md:flex-row min-h-screen bg-secondary-100">
+  <div class="min-h-screen bg-secondary-100">
     <Sidebar v-if="!isKioskApp" />
-    <main class="flex-1 overflow-auto">
+    <main class="flex-1" :class="{ 'md:ml-16': !isKioskApp }">
       <div class="p-4 sm:p-6 max-w-7xl mx-auto">
         <CentreHeader />
         <slot />

@@ -98,7 +98,7 @@ onMounted(async () => {
 });
 
 const getDueAmount = (amount: number) => {
-  return amount > 1 ? `$${amount}` : 'NA';
+  return amount > 1 ? `€${amount}` : 'NA';
 };
 
 const gridCols = computed(() => {
@@ -113,90 +113,149 @@ const gridCols = computed(() => {
     <Spinner size="lg" />
   </div>
 
-  <!-- Calendar Grid -->
-  <div v-else class="mt-4 overflow-x-auto">
-    <div class="min-w-[600px]">
-      <!-- Header Row -->
-      <div class="grid gap-0 mb-3" :style="gridCols">
-        <div></div>
-        <div
-          v-for="day in days"
-          :key="day"
-          class="flex justify-center"
-        >
-          <span
-            :class="[
-              'px-4 py-1.5 text-xs font-bold rounded-full',
-              day === today
-                ? 'bg-accent-300 text-primary-800'
-                : 'text-primary-400'
-            ]"
-          >
-            {{ day }}
-          </span>
+  <!-- Calendar View -->
+  <div v-else>
+    <!-- Header -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm">
+            <i class="fa-solid fa-calendar-week text-white text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-secondary-900">Weekly Calendar</h2>
+            <p class="text-sm text-secondary-500">Class schedule overview</p>
+          </div>
+        </div>
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-xl shadow-sm">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>{{ moment().format('MMM YYYY') }}</span>
         </div>
       </div>
+    </div>
 
-      <!-- Time Slot Rows -->
-      <div
-        v-for="(timing, rowIndex) in timings"
-        :key="rowIndex"
-        class="grid gap-0"
-        :style="gridCols"
-      >
-        <!-- Time Label -->
-        <div class="flex items-start justify-center pt-3">
-          <span class="text-xs font-bold text-primary-400">{{ timing.text }}</span>
+    <!-- Empty State -->
+    <div v-if="!timings.length || !days.length" class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-12 text-center">
+      <i class="fa-solid fa-calendar-xmark text-4xl text-secondary-300 mb-3"></i>
+      <p class="text-secondary-500 font-medium">No class schedule available</p>
+      <p class="text-xs text-secondary-400 mt-1">Set up time slots to see the calendar</p>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div v-else class="overflow-x-auto">
+      <div class="min-w-[800px]">
+        <!-- Days Header -->
+        <div class="grid gap-2 mb-4" :style="gridCols">
+          <div class="flex items-center justify-center">
+            <div class="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+              <i class="fa-solid fa-clock text-primary-600"></i>
+            </div>
+          </div>
+          <div
+            v-for="day in days"
+            :key="day"
+            class="flex justify-center"
+          >
+            <div
+              :class="[
+                'px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all',
+                day === today
+                  ? 'bg-primary-500 text-white'
+                  : 'bg-white border border-secondary-200 text-secondary-700'
+              ]"
+            >
+              {{ day }}
+            </div>
+          </div>
         </div>
 
-        <!-- Day Cells -->
-        <div
-          v-for="(day, colIndex) in days"
-          :key="day"
-          :class="[
-            'bg-white border border-secondary-200 p-3 min-h-[60px]',
-            // Top corners
-            rowIndex === 0 && colIndex === 0 ? 'rounded-tl-xl' : '',
-            rowIndex === 0 && colIndex === days.length - 1 ? 'rounded-tr-xl' : '',
-            // Bottom corners
-            rowIndex === timings.length - 1 && colIndex === 0 ? 'rounded-bl-xl' : '',
-            rowIndex === timings.length - 1 && colIndex === days.length - 1 ? 'rounded-br-xl' : '',
-            // Border adjustments
-            colIndex < days.length - 1 ? 'border-r-0' : '',
-            rowIndex < timings.length - 1 ? 'border-b-0' : ''
-          ]"
-        >
-          <div class="flex flex-col gap-2">
-            <div
-              v-for="student in getStudents(day, timing)"
-              :key="student.id"
-              class="flex items-center gap-2 text-sm"
-            >
-              <!-- Due Amount Badge -->
-              <div class="relative group" v-if="student.dueAmount && student.dueAmount > 0">
-                <span class="badge badge-warning cursor-pointer">
-                  <i class="fa-solid fa-dollar-sign text-[10px]"></i>
-                </span>
-                <div class="tooltip-content">
-                  Amount Due: {{ getDueAmount(student.dueAmount) }}
-                </div>
+        <!-- Time Slot Rows -->
+        <div class="space-y-3">
+          <div
+            v-for="(timing, rowIndex) in timings"
+            :key="rowIndex"
+            class="grid gap-2"
+            :style="gridCols"
+          >
+            <!-- Time Label -->
+            <div class="flex items-center justify-center">
+              <div class="text-center bg-white rounded-lg border border-secondary-200 px-3 py-2 shadow-sm">
+                <div class="text-xs font-bold text-primary-600">{{ timing.text }}</div>
               </div>
-              <span v-else-if="student.dueAmount === 0" class="badge badge-neutral">
-                <i class="fa-solid fa-dollar-sign text-[10px]"></i>
-              </span>
+            </div>
 
-              <!-- Student Name -->
-              <span class="text-secondary-800 text-xs">
-                {{ student.firstName }} {{ student.lastName }}
-              </span>
-
-              <!-- Early Learner Badge -->
+            <!-- Day Cells -->
+            <div
+              v-for="day in days"
+              :key="day"
+              class="bg-white border border-secondary-200 rounded-xl p-3 min-h-[80px] shadow-sm hover:shadow-md transition-shadow"
+            >
+              <!-- Empty State -->
               <div
-                class="relative group"
-                v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
+                v-if="getStudents(day, timing).length === 0"
+                class="flex items-center justify-center h-full text-secondary-300"
               >
-                <span class="badge badge-info cursor-pointer text-[10px]">EL</span>
-                <div class="tooltip-content">Early Learner</div>
+                <i class="fa-solid fa-minus text-sm"></i>
+              </div>
+
+              <!-- Students List -->
+              <div v-else class="space-y-2">
+                <div
+                  v-for="student in getStudents(day, timing)"
+                  :key="student.id"
+                  class="flex items-center gap-2 p-2 rounded-lg border border-secondary-100 hover:border-primary-300 hover:bg-primary-50/30 transition-all"
+                >
+                  <!-- Avatar -->
+                  <div class="flex-shrink-0">
+                    <div
+                      :class="[
+                        'w-7 h-7 rounded-full flex items-center justify-center',
+                        student.gender === 'Male' ? 'bg-blue-100' : student.gender === 'Female' ? 'bg-pink-100' : 'bg-secondary-100'
+                      ]"
+                    >
+                      <i
+                        :class="[
+                          'fa-solid fa-user text-xs',
+                          student.gender === 'Male' ? 'text-blue-500' : student.gender === 'Female' ? 'text-pink-400' : 'text-secondary-400'
+                        ]"
+                      ></i>
+                    </div>
+                  </div>
+
+                  <!-- Student Name -->
+                  <div class="flex-1 min-w-0">
+                    <span class="text-xs font-medium text-secondary-900 truncate block">
+                      {{ student.firstName }} {{ student.lastName }}
+                    </span>
+                  </div>
+
+                  <!-- Badges -->
+                  <div class="flex items-center gap-1">
+                    <!-- Payment Due Badge -->
+                    <div class="relative group" v-if="student.dueAmount && student.dueAmount > 0">
+                      <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-warning-100 text-warning-700 cursor-pointer hover:bg-warning-200 transition-colors">
+                        <i class="fa-solid fa-circle-dollar text-[9px]"></i>
+                      </span>
+                      <div class="tooltip-content">
+                        Amount Due: {{ getDueAmount(student.dueAmount) }}
+                      </div>
+                    </div>
+                    <span v-else-if="student.dueAmount === 0" class="inline-flex items-center justify-center w-5 h-5 rounded bg-secondary-100 text-secondary-500">
+                      <i class="fa-solid fa-circle-dollar text-[9px]"></i>
+                    </span>
+
+                    <!-- Early Learner Badge -->
+                    <div
+                      class="relative group"
+                      v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
+                    >
+                      <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-purple-100 text-purple-700 cursor-pointer hover:bg-purple-200 transition-colors text-[8px] font-bold">
+                        EL
+                      </span>
+                      <div class="tooltip-content">Early Learner</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

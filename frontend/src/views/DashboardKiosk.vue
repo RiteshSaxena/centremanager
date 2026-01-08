@@ -1,53 +1,107 @@
 <template>
-  <div class="flex justify-center mt-12">
-    <div class="w-full max-w-md">
-      <div v-if="!(isSearched || selectedStudent)">
-        <form
-          class="flex flex-col gap-3 mb-4"
-          v-if="!(isSearched || selectedStudent)"
-          @submit.prevent="searchStudents"
-        >
-          <Input
-            :has-dark-placeholder="true"
-            :is-floating="true"
-            v-model="studentLastName"
-            placeholder="Enter Student Last Name"
-            required
-          />
-          <Button size="lg" class="w-full" :disabled="isSearching">
-            {{ isSearching ? '...' : 'Sign In / Sign Out' }}
-          </Button>
-        </form>
-        <hr class="border-secondary-200" />
-        <div class="flex justify-between gap-2 mt-4">
-          <Button size="lg" class="flex-1" @click="qrSignIn">
-            Scan QR <i class="ml-2 fa-solid fa-qrcode"></i>
-          </Button>
+  <div class="min-h-[calc(100vh-8rem)] flex items-center justify-center py-8">
+    <div class="w-full max-w-2xl px-4">
+      <!-- Welcome Header -->
+      <div class="text-center mb-8" v-if="!(isSearched || selectedStudent)">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-3xl mb-4 shadow-xl">
+          <i class="fa-solid fa-building text-4xl text-white"></i>
         </div>
-        <div class="flex justify-between gap-2 mt-4">
-          <Button size="lg" class="flex-1" @click="guestSignInModal = true">
-            Guest Sign In
-          </Button>
-          <Button size="lg" class="flex-1" @click="guestSignOutModal = true">
-            Guest Sign Out
-          </Button>
+        <h1 class="text-4xl font-bold text-secondary-900 mb-2">
+          Welcome to Kumon {{ centre?.displayName || centre?.name }}
+        </h1>
+        <p class="text-lg text-secondary-600">Please sign in or sign out</p>
+      </div>
+
+      <!-- Main Content -->
+      <div v-if="!(isSearched || selectedStudent)">
+        <!-- Search by Name Card -->
+        <div class="bg-white rounded-2xl border border-secondary-200 shadow-xl p-8 mb-6">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center">
+              <i class="fa-solid fa-user-check text-primary-600 text-xl"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-secondary-900">Student Sign In/Out</h2>
+              <p class="text-sm text-secondary-500">Enter your last name to continue</p>
+            </div>
+          </div>
+
+          <form class="space-y-4" @submit.prevent="searchStudents">
+            <Input
+              v-model="studentLastName"
+              placeholder="Enter your last name..."
+              required
+              class="text-lg h-14"
+            />
+            <Button size="lg" class="w-full text-lg" :disabled="isSearching">
+              <i v-if="!isSearching" class="fa-solid fa-arrow-right-to-bracket mr-3 text-xl"></i>
+              {{ isSearching ? 'Searching...' : 'Continue' }}
+            </Button>
+          </form>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- QR Code -->
+          <button
+            @click="qrSignIn"
+            class="group bg-white rounded-2xl border border-secondary-200 shadow-lg hover:shadow-xl transition-all duration-200 p-6 text-center hover:border-primary-400"
+          >
+            <div class="w-16 h-16 rounded-xl bg-primary-100 group-hover:bg-primary-500 flex items-center justify-center mx-auto mb-4 transition-colors">
+              <i class="fa-solid fa-qrcode text-3xl text-primary-600 group-hover:text-white transition-colors"></i>
+            </div>
+            <h3 class="font-bold text-secondary-900 mb-1">Scan QR Code</h3>
+            <p class="text-xs text-secondary-500">Quick sign in with your QR</p>
+          </button>
+
+          <!-- Guest Sign In -->
+          <button
+            @click="guestSignInModal = true"
+            class="group bg-white rounded-2xl border border-secondary-200 shadow-lg hover:shadow-xl transition-all duration-200 p-6 text-center hover:border-success-400"
+          >
+            <div class="w-16 h-16 rounded-xl bg-success-100 group-hover:bg-success-500 flex items-center justify-center mx-auto mb-4 transition-colors">
+              <i class="fa-solid fa-user-plus text-3xl text-success-600 group-hover:text-white transition-colors"></i>
+            </div>
+            <h3 class="font-bold text-secondary-900 mb-1">Guest Sign In</h3>
+            <p class="text-xs text-secondary-500">Visitors and guests</p>
+          </button>
+
+          <!-- Guest Sign Out -->
+          <button
+            @click="guestSignOutModal = true"
+            class="group bg-white rounded-2xl border border-secondary-200 shadow-lg hover:shadow-xl transition-all duration-200 p-6 text-center hover:border-warning-400"
+          >
+            <div class="w-16 h-16 rounded-xl bg-warning-100 group-hover:bg-warning-500 flex items-center justify-center mx-auto mb-4 transition-colors">
+              <i class="fa-solid fa-user-minus text-3xl text-warning-600 group-hover:text-white transition-colors"></i>
+            </div>
+            <h3 class="font-bold text-secondary-900 mb-1">Guest Sign Out</h3>
+            <p class="text-xs text-secondary-500">Leaving the centre</p>
+          </button>
         </div>
       </div>
-      <SearchResults
-        v-if="isSearched && !selectedStudent"
-        class="mt-4"
-        @onSelect="onSelectFromSearch"
-      />
-      <GuardianList
-        v-if="selectedStudent"
-        :student="selectedStudent"
-        @onSelectSignIn="onSelectGuardian"
-        @onSelectSignOut="onSelectSignOut"
-        @onAddGuardian="onAddGuardian"
-      />
-      <div v-if="isSearched || selectedStudent" class="flex justify-center mt-3">
-        <Button variant="outline" class="w-full" @click="clearSearch">
-          Back
+
+      <!-- Search Results -->
+      <div v-if="isSearched && !selectedStudent" class="space-y-4">
+        <div class="bg-white rounded-2xl border border-secondary-200 shadow-xl p-6">
+          <SearchResults @onSelect="onSelectFromSearch" />
+        </div>
+        <Button variant="outline" size="lg" class="w-full" @click="clearSearch">
+          <i class="fa-solid fa-arrow-left mr-2"></i>
+          Back to Home
+        </Button>
+      </div>
+
+      <!-- Guardian Selection -->
+      <div v-if="selectedStudent" class="space-y-4">
+        <GuardianList
+          :student="selectedStudent"
+          @onSelectSignIn="onSelectGuardian"
+          @onSelectSignOut="onSelectSignOut"
+          @onAddGuardian="onAddGuardian"
+        />
+        <Button variant="outline" size="lg" class="w-full" @click="clearSearch">
+          <i class="fa-solid fa-arrow-left mr-2"></i>
+          Back to Home
         </Button>
       </div>
     </div>
@@ -85,13 +139,16 @@ import SignInModal from '@/components/SignInModal.vue';
 import SignOutModal from '@/components/SignOutModal.vue';
 import { Button } from '@/components/ui';
 
-import { useSearchStore, useLogBookStore, useStudentStore, useSlotStore } from '@/stores';
+import { useSearchStore, useLogBookStore, useStudentStore, useSlotStore, useUserStore } from '@/stores';
 import errorHandler from '@/utils/error-handler';
 
 const slotStore = useSlotStore();
 const searchStore = useSearchStore();
 const logBookStore = useLogBookStore();
 const studentStore = useStudentStore();
+const userStore = useUserStore();
+
+const centre = ref<any>(null);
 
 const qrMode = ref('');
 const scanQRModal = ref(false);
@@ -195,6 +252,7 @@ const qrSignIn = () => {
 let logBookTimer: any = null;
 
 onMounted(async () => {
+  centre.value = await userStore.getCentre();
   logBookStore
     .fetchList()
     .then()

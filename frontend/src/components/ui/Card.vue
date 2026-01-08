@@ -13,7 +13,7 @@ withDefaults(
   <div class="bg-white rounded-2xl shadow-card border border-secondary-100 overflow-hidden">
     <div
       v-if="$slots.header"
-      class="px-5 py-4 border-b border-secondary-100 bg-secondary-50/50"
+      class="px-5 font-bold py-4 border-b border-secondary-100 bg-secondary-50/50"
     >
       <slot name="header" />
     </div>
