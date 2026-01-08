@@ -278,7 +278,7 @@ watch(
               clearError('mathScore');
             "
             :class="[
-              'w-12 px-2 py-1.5 text-sm rounded-lg border focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+              'w-full px-2 py-1.5 text-sm rounded-lg border focus:ring-2 focus:ring-primary-500 focus:border-transparent',
               errors.mathScore ? 'border-danger-500' : 'border-secondary-200',
               feedbackForm.isMathChecked ? 'bg-secondary-100 text-secondary-400' : 'bg-white'
             ]"
