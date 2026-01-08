@@ -142,9 +142,21 @@ const onSubmit = async () => {
 
       <!-- Signature Section -->
       <div class="bg-white rounded-2xl border-2 border-secondary-200 p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <i class="fa-solid fa-signature text-primary-600 text-2xl flex-shrink-0"></i>
-          <label class="text-xl font-bold text-secondary-900">Signature Required</label>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-signature text-primary-600 text-2xl flex-shrink-0"></i>
+            <label class="text-xl font-bold text-secondary-900">Signature Required</label>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            @click.prevent="clearSignature"
+            :disabled="loading"
+            class="text-secondary-500 hover:text-secondary-700"
+          >
+            <i class="fa-solid fa-eraser mr-1"></i>
+            Clear
+          </Button>
         </div>
         <p class="text-base text-secondary-600 mb-4">Please sign below to confirm sign in</p>
         <signature-pad ref="signaturePad" />
@@ -164,16 +176,6 @@ const onSubmit = async () => {
           class="flex-1 text-lg h-14"
         >
           Cancel
-        </Button>
-        <Button
-          variant="ghost"
-          size="lg"
-          @click.prevent="clearSignature"
-          :disabled="loading"
-          class="h-14"
-        >
-          <i class="fa-solid fa-eraser mr-2 text-xl"></i>
-          <span class="text-lg">Clear</span>
         </Button>
         <Button size="lg" @click.prevent="onSubmit" :disabled="loading" class="flex-1 text-lg h-14">
           <i v-if="!loading" class="fa-solid fa-check mr-2 text-xl"></i>
