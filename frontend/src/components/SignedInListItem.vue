@@ -16,11 +16,10 @@ defineEmits(['onSelect', 'onFeedback']);
 const name = ref('');
 const type = ref('');
 const desc = ref('');
+
 const fetchFeedbackStatus = async () => {
   if (props.item.type !== 'Student' || !props.item.student?.id) return;
-  const feedback = await feedbackStore.fetchTodayFeedbackByChild(
-    props.item.student.id
-  );
+  const feedback = await feedbackStore.fetchTodayFeedbackByChild(props.item.student.id);
   feedbackData.value = feedback; // already single object or null
   updateFeedbackIcon();
 };
@@ -28,6 +27,18 @@ const fetchFeedbackStatus = async () => {
 watch(
   () => props.item.student?.id,
   () => fetchFeedbackStatus()
+);
+
+// Auto-update icon when feedback is submitted for this student
+watch(
+  () => feedbackStore.todayFeedback,
+  (newFeedback) => {
+    if (props.item.type !== 'Student' || !props.item.student?.id) return;
+    if (newFeedback?.child === props.item.student.id) {
+      feedbackData.value = newFeedback;
+      updateFeedbackIcon();
+    }
+  }
 );
 const updateVars = () => {
   name.value = '';
@@ -113,15 +124,9 @@ const updateFeedbackIcon = () => {
     return;
   }
   const hasFeedbackText = !!f.feedback?.trim();
-  const hasMath =
-    f.mathScore !== null &&
-    f.mathScore !== undefined &&
-    f.mathTime;
+  const hasMath = f.mathScore !== null && f.mathScore !== undefined && f.mathTime;
 
-  const hasEnglish =
-    f.englishScore !== null &&
-    f.englishScore !== undefined &&
-    f.englishTime;
+  const hasEnglish = f.englishScore !== null && f.englishScore !== undefined && f.englishTime;
 
   let isComplete = false;
   // both subjects
@@ -172,8 +177,6 @@ const iconColorClass = computed(() => {
   }
   return 'icon-general';
 });
-
-
 </script>
 
 <template>
@@ -188,14 +191,19 @@ const iconColorClass = computed(() => {
       </div>
     </div>
     <div class="d-flex gap-1 mr-2">
-      <a v-if="props.item?.type === 'Student'" href="#" @click.stop.prevent="$emit('onFeedback', props.item)" :class="[
-        'btn align-items-center d-flex rounded-3',
-        feedbackBtnClass
-      ]">
+      <a
+        v-if="props.item?.type === 'Student'"
+        href="#"
+        @click.stop.prevent="$emit('onFeedback', props.item)"
+        :class="['btn align-items-center d-flex rounded-3', feedbackBtnClass]"
+      >
         <i class="fa-comments fa-regular"></i>
       </a>
-      <a :href="`tel:${rowPhoneNumber}`" v-if="canShowCallIcon && rowPhoneNumber"
-        class="btn btn-secondary align-items-center d-flex rounded-3">
+      <a
+        :href="`tel:${rowPhoneNumber}`"
+        v-if="canShowCallIcon && rowPhoneNumber"
+        class="btn btn-secondary align-items-center d-flex rounded-3"
+      >
         <i class="fa-solid fa-phone"></i>
       </a>
     </div>
