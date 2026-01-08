@@ -13,6 +13,7 @@ export interface Feedback {
   createdAt: string;
   updatedAt: string;
   feedback: string;
+  child?: number;
   createdByUser?: {
     firstName: string;
     lastName: string;
@@ -44,6 +45,7 @@ export const useFeedbackStore = defineStore('feedback', {
       try {
         this.loading = true;
         const res = await axios.post('/feedback/custom-create', payload);
+        this.todayFeedback = { ...res.data, child: payload.child };
         return res.data;
       } finally {
         this.loading = false;
@@ -64,8 +66,7 @@ export const useFeedbackStore = defineStore('feedback', {
       try {
         this.loading = true;
         const res = await axios.put(`/feedback/by-child/${childId}/today`, payload);
-
-        this.todayFeedback = res.data;
+        this.todayFeedback = { ...res.data, child: childId };
         return res.data;
       } finally {
         this.loading = false;

@@ -6,32 +6,23 @@ import { useFeedbackStore } from '@/stores/feedback';
 import Modal from '@/components/base/Modal.vue';
 
 const feedbackStore = useFeedbackStore();
+const toast = useToast();
+
 const props = withDefaults(
   defineProps<{
     show: boolean;
     item: LogRecord | null;
   }>(),
-  {
-    show: false,
-    item: null
-  }
+  { show: false, item: null }
 );
 
 const emit = defineEmits(['update:show', 'onSuccess']);
-const toast = useToast();
-const errors = ref({
-  mathScore: '',
-  englishScore: '',
-  mathTime: '',
-  englishTime: ''
-});
-const qrMode = ref(false);
+
 const loading = ref(false);
 const originalFeedback = ref<any>(null);
-const previousMathScore = ref<string>('');
-const previousEnglishScore = ref<string>('');
+const previousScores = ref({ math: '', english: '' });
 
-const feedbackForm = ref({
+const getInitialForm = () => ({
   mathScore: '',
   englishScore: '',
   mathTime: '',
@@ -42,133 +33,111 @@ const feedbackForm = ref({
   isMathChecked: false
 });
 
+const feedbackForm = ref(getInitialForm());
+
+const errors = ref({
+  mathScore: '',
+  englishScore: '',
+  mathTime: '',
+  englishTime: ''
+});
+
 const resetForm = () => {
-  feedbackForm.value.mathScore = '';
-  feedbackForm.value.englishScore = '';
-  feedbackForm.value.mathTime = '';
-  feedbackForm.value.englishTime = '';
-  feedbackForm.value.feedback = '';
-  feedbackForm.value.isPercentFeedbackRequired = false;
+  feedbackForm.value = getInitialForm();
   originalFeedback.value = null;
-  feedbackForm.value.isMathChecked = false;
-  feedbackForm.value.isEnglishChecked = false;
+};
+
+const resetErrors = () => {
+  errors.value = { mathScore: '', englishScore: '', mathTime: '', englishTime: '' };
 };
 
 const clearError = (field: keyof typeof errors.value) => {
   errors.value[field] = '';
 };
 
-const resetErrors = () => {
-  errors.value = {
-    mathScore: '',
-    englishScore: '',
-    mathTime: '',
-    englishTime: ''
-  };
-};
-
-const validateForm = () => {
-  let isValid = true;
-  if (!feedbackForm.value.isMathChecked && !feedbackForm.value.mathScore) {
-    errors.value.mathScore = 'Math score is required.';
-    isValid = false;
-  }
-  if (!feedbackForm.value.isEnglishChecked && !feedbackForm.value.englishScore) {
-    errors.value.englishScore = 'English score is required.';
-    isValid = false;
-  }
-  if (!feedbackForm.value.mathTime) {
-    errors.value.mathTime = 'Math time is required.';
-    isValid = false;
-  }
-  if (!feedbackForm.value.englishTime) {
-    errors.value.englishTime = 'English time is required.';
-    isValid = false;
-  }
-  return isValid;
-};
-
-const hasChanges = () => {
-  if (!originalFeedback.value) return true;
-  return (
-    Number(feedbackForm.value.mathScore) !== originalFeedback.value.mathScore ||
-    Number(feedbackForm.value.englishScore) !== originalFeedback.value.englishScore ||
-    feedbackForm.value.mathTime !== originalFeedback.value.mathTime ||
-    feedbackForm.value.englishTime !== originalFeedback.value.englishTime ||
-    feedbackForm.value.feedback !== originalFeedback.value.feedback ||
-    feedbackForm.value.isPercentFeedbackRequired !==
-    originalFeedback.value.isPercentFeedbackRequired
-  );
-};
-
-function onScoreInput(value: string, field: 'mathScore' | 'englishScore') {
-  let v = value.replace(/\D/g, '');
+const onScoreInput = (value: string, field: 'mathScore' | 'englishScore') => {
+  const v = value.replace(/\D/g, '');
   if (v === '') {
     feedbackForm.value[field] = '';
     return;
   }
-  let num = parseInt(v, 10);
-  // Allow only 0–99
-  if (num > 99) num = 99;
+  const num = Math.min(parseInt(v, 10), 99);
   feedbackForm.value[field] = String(num);
-}
+};
 
-const studentSubjects = computed(() => {
-  return props.item?.student?.subjects ?? [];
+const studentSubjects = computed(() => props.item?.student?.subjects ?? []);
+
+const hasSubject = (name: string) =>
+  studentSubjects.value.some((s: any) => s.name.toLowerCase() === name);
+
+const hasMaths = computed(() => hasSubject('maths'));
+const hasEnglish = computed(() => hasSubject('english'));
+
+const selectedName = computed(() => {
+  const item = props.item;
+  if (!item) return '';
+
+  if (['Student', 'StudentWithParent', 'Parent'].includes(item.type)) {
+    const parentName = `${item.parent?.firstName} ${item.parent?.lastName}`;
+    if (item.student) {
+      return `${item.student.firstName} ${item.student.lastName} (${parentName})`;
+    }
+    return parentName;
+  }
+  if (item.type === 'Staff') {
+    return `${item.staff?.firstName} ${item.staff?.lastName}`;
+  }
+  if (item.type === 'Guest') {
+    return `${item.guest?.firstName} ${item.guest?.lastName}`;
+  }
+  return '';
 });
 
-const hasMaths = computed(() =>
-  studentSubjects.value.some(
-    (s: any) => s.name.toLowerCase() === 'maths'
-  )
-);
+const hasChanges = () => {
+  if (!originalFeedback.value) return true;
+  const form = feedbackForm.value;
+  const orig = originalFeedback.value;
+  return (
+    Number(form.mathScore) !== orig.mathScore ||
+    Number(form.englishScore) !== orig.englishScore ||
+    form.mathTime !== orig.mathTime ||
+    form.englishTime !== orig.englishTime ||
+    form.feedback !== orig.feedback ||
+    form.isPercentFeedbackRequired !== orig.isPercentFeedbackRequired
+  );
+};
 
-const hasEnglish = computed(() =>
-  studentSubjects.value.some(
-    (s: any) => s.name.toLowerCase() === 'english'
-  )
-);
+const getScorePayload = (hasSubject: boolean, isChecked: boolean, score: string) => {
+  if (!hasSubject) return null;
+  if (isChecked) return 100;
+  return score ? Number(score) : null;
+};
+
+const getTimePayload = (hasSubject: boolean, time: string) => {
+  if (!hasSubject) return null;
+  return time ? Number(time) : null;
+};
 
 const submitFeedback = async () => {
   if (!props.item?.student?.id) return;
-  // VALIDATION: no values entered
-  // if (!validateForm()) {
-  //   return;
-  // }
+
   if (!hasChanges()) {
     toast.info('No changes detected');
     return;
   }
+
   try {
     loading.value = true;
+    const form = feedbackForm.value;
     const payload = {
-       mathScore:hasMaths.value ?  feedbackForm.value.isMathChecked
-      ? 100
-      : feedbackForm.value.mathScore
-      ? Number(feedbackForm.value.mathScore)
-      : null
-    : null,
-      englishScore: hasEnglish.value
-    ? feedbackForm.value.isEnglishChecked
-      ? 100
-      : feedbackForm.value.englishScore
-      ? Number(feedbackForm.value.englishScore)
-      : null
-    : null,
-      mathTime: hasMaths.value
-    ? feedbackForm.value.mathTime
-      ? Number(feedbackForm.value.mathTime)
-      : null
-    : null,
-      englishTime: hasEnglish.value
-    ? feedbackForm.value.englishTime
-      ? Number(feedbackForm.value.englishTime)
-      : null
-    : null,
-      isPercentFeedbackRequired: feedbackForm.value.isPercentFeedbackRequired,
+      mathScore: getScorePayload(hasMaths.value, form.isMathChecked, form.mathScore),
+      englishScore: getScorePayload(hasEnglish.value, form.isEnglishChecked, form.englishScore),
+      mathTime: getTimePayload(hasMaths.value, form.mathTime),
+      englishTime: getTimePayload(hasEnglish.value, form.englishTime),
+      isPercentFeedbackRequired: form.isPercentFeedbackRequired,
       createdDate: new Date().toISOString().split('T')[0],
       child: props.item.student.id,
-      feedback: feedbackForm.value.feedback
+      feedback: form.feedback
     };
 
     if (feedbackStore.todayFeedback) {
@@ -187,143 +156,105 @@ const submitFeedback = async () => {
   }
 };
 
-const selectedName = computed(() => {
-  if (props.item) {
-    if (
-      props.item.type === 'Student' ||
-      props.item.type === 'StudentWithParent' ||
-      props.item.type === 'Parent'
-    ) {
-      if (props.item.student) {
-        return `${props.item.student.firstName} ${props.item.student.lastName} (${props.item.parent?.firstName} ${props.item.parent?.lastName})`;
-      }
-      return `${props.item.parent?.firstName} ${props.item.parent?.lastName}`;
-    } else if (props.item?.type === 'Staff') {
-      return `${props.item.staff?.firstName} ${props.item.staff?.lastName}`;
-    } else if (props.item?.type === 'Guest') {
-      return `${props.item.guest?.firstName} ${props.item.guest?.lastName}`;
-    }
-  }
+const populateFormFromFeedback = (feedback: any) => {
+  const form = feedbackForm.value;
+  form.isMathChecked = feedback.mathScore === 100;
+  form.isEnglishChecked = feedback.englishScore === 100;
 
-  return '';
-});
+  const getScoreString = (score: number | null | undefined) =>
+    score !== null && score !== undefined && score !== 100 ? String(score) : '';
 
+  form.mathScore = getScoreString(feedback.mathScore);
+  form.englishScore = getScoreString(feedback.englishScore);
+  previousScores.value.math = form.mathScore;
+  previousScores.value.english = form.englishScore;
+  form.mathTime = feedback.mathTime || '';
+  form.englishTime = feedback.englishTime || '';
+  form.feedback = feedback.feedback || '';
+  form.isPercentFeedbackRequired = feedback.isPercentFeedbackRequired ?? false;
 
+  originalFeedback.value = {
+    mathScore: feedback.mathScore,
+    englishScore: feedback.englishScore,
+    mathTime: feedback.mathTime,
+    englishTime: feedback.englishTime,
+    feedback: feedback.feedback,
+    isPercentFeedbackRequired: feedback.isPercentFeedbackRequired ?? false
+  };
+};
 
 watch(
   () => props.show,
   async (val) => {
-    if (val) {
-      resetForm();
-      if (!hasMaths.value) {
-        feedbackForm.value.mathScore = '';
-        feedbackForm.value.mathTime = '';
-        feedbackForm.value.isMathChecked = false;
-      }
-
-      if (!hasEnglish.value) {
-        feedbackForm.value.englishScore = '';
-        feedbackForm.value.englishTime = '';
-        feedbackForm.value.isEnglishChecked = false;
-      }
-
+    if (!val) {
       resetErrors();
-      feedbackStore.resetTodayFeedback();
-      // THEN fetch fresh data
-      if (props.item?.student?.id) {
-        try {
-          loading.value = true;
-          const feedback = await feedbackStore.fetchTodayFeedbackByChild(props.item.student.id);
-          if (feedback) {
-            feedbackForm.value.isMathChecked = feedback.mathScore === 100;
-            feedbackForm.value.isEnglishChecked = feedback.englishScore === 100;
-            // only bind input if NOT 100
-            feedbackForm.value.mathScore =
-              feedback.mathScore !== null &&
-                feedback.mathScore !== undefined &&
-                feedback.mathScore !== 100
-                ? String(feedback.mathScore)
-                : '';
-            feedbackForm.value.englishScore =
-              feedback.englishScore !== null &&
-                feedback.englishScore !== undefined &&
-                feedback.englishScore !== 100
-                ? String(feedback.englishScore)
-                : '';
-            previousMathScore.value =
-              feedback.mathScore !== 100 ? String(feedback.mathScore ?? '') : '';
-            previousEnglishScore.value =
-              feedback.englishScore !== 100 ? String(feedback.englishScore ?? '') : '';
-            feedbackForm.value.mathTime = feedback.mathTime || '';
-            feedbackForm.value.englishTime = feedback.englishTime || '';
-            feedbackForm.value.feedback = feedback.feedback || '';
-            feedbackForm.value.isPercentFeedbackRequired =
-              feedback.isPercentFeedbackRequired ?? false;
-            originalFeedback.value = {
-              mathScore: feedback.mathScore,
-              englishScore: feedback.englishScore,
-              mathTime: feedback.mathTime,
-              englishTime: feedback.englishTime,
-              feedback: feedback.feedback,
-              isPercentFeedbackRequired: feedback.isPercentFeedbackRequired ?? false
-            };
-          }
-        } finally {
-          loading.value = false;
+      return;
+    }
+
+    resetForm();
+    resetErrors();
+    feedbackStore.resetTodayFeedback();
+
+    if (props.item?.student?.id) {
+      try {
+        loading.value = true;
+        const feedback = await feedbackStore.fetchTodayFeedbackByChild(props.item.student.id);
+        if (feedback) {
+          populateFormFromFeedback(feedback);
         }
+      } finally {
+        loading.value = false;
       }
-    } else {
-      resetErrors();
     }
   }
 );
+
+const createCheckedWatcher = (
+  subject: 'math' | 'english',
+  scoreField: 'mathScore' | 'englishScore',
+  errorField: 'mathScore' | 'englishScore'
+) => {
+  return (checked: boolean) => {
+    if (checked) {
+      previousScores.value[subject] = feedbackForm.value[scoreField];
+      feedbackForm.value[scoreField] = '';
+      errors.value[errorField] = '';
+    } else {
+      feedbackForm.value[scoreField] = previousScores.value[subject];
+    }
+  };
+};
 
 watch(
   () => feedbackForm.value.isMathChecked,
-  (checked) => {
-    if (checked) {
-      // save current value before clearing
-      previousMathScore.value = feedbackForm.value.mathScore;
-      feedbackForm.value.mathScore = '';
-      errors.value.mathScore = '';
-    } else {
-      // restore previous value when unchecked
-      feedbackForm.value.mathScore = previousMathScore.value;
-    }
-  }
+  createCheckedWatcher('math', 'mathScore', 'mathScore')
 );
-
 watch(
   () => feedbackForm.value.isEnglishChecked,
-  (checked) => {
-    if (checked) {
-      // save current value before clearing
-      previousEnglishScore.value = feedbackForm.value.englishScore;
-      feedbackForm.value.englishScore = '';
-      errors.value.englishScore = '';
-    } else {
-      // restore previous value when unchecked
-      feedbackForm.value.englishScore = previousEnglishScore.value;
-    }
-  }
+  createCheckedWatcher('english', 'englishScore', 'englishScore')
 );
 </script>
 
 <template>
-  <!-- <Modal :large="false" v-if="show" :show-footer-close-button="!qrMode" :title="Feedback - ${selectedName}"
-    @close="emit('update:show', false)"> -->
-  <Modal :large="false" v-if="show" :show-footer-close-button="!qrMode" @close="emit('update:show', false)">
+  <Modal
+    :large="false"
+    v-if="show"
+    :show-footer-close-button="true"
+    @close="emit('update:show', false)"
+  >
     <template #title>
       <div class="d-flex flex-column">
         <span>Feedback</span>
         <small>{{ selectedName }}</small>
       </div>
     </template>
+
     <div class="text-center mb-3" v-if="loading">
       <div class="spinner-border text-dark text-center" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
+
     <div v-if="!loading" class="w-100 fs-5 d-flex flex-column gap-2">
       <div class="row gx-2">
         <div class="col-5"></div>
@@ -332,83 +263,120 @@ watch(
           <strong>Time <small>(M)</small></strong>
         </div>
       </div>
+
       <div class="row gx-2" v-if="hasMaths">
         <div class="col-5">
           <div class="d-flex gap-3 align-items-center w-100 justify-content-between">
             <span class="fs-6"><b>Maths</b></span>
             <label class="form-check">
-              <input type="checkbox" class="form-check-input" v-model="feedbackForm.isMathChecked" />
+              <input
+                type="checkbox"
+                class="form-check-input"
+                v-model="feedbackForm.isMathChecked"
+              />
               <span class="form-check-label fs-6">100%</span>
             </label>
           </div>
         </div>
         <div class="col-3 text-start">
-          <input type="text" name="score" v-model="feedbackForm.mathScore" inputmode="numeric" pattern="[0-9]*"
-            maxlength="2" :disabled="feedbackForm.isMathChecked" @input="
+          <input
+            type="text"
+            v-model="feedbackForm.mathScore"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="2"
+            :disabled="feedbackForm.isMathChecked"
+            @input="
               onScoreInput(($event.target as HTMLInputElement).value, 'mathScore');
-            clearError('mathScore');
-            " class="form-control max-width-50" :class="{ 'is-invalid': errors.mathScore }" />
-          <div v-if="errors.mathScore" class="invalid-feedback">
-            {{ errors.mathScore }}
-          </div>
+              clearError('mathScore');
+            "
+            class="form-control max-width-50"
+            :class="{ 'is-invalid': errors.mathScore }"
+          />
+          <div v-if="errors.mathScore" class="invalid-feedback">{{ errors.mathScore }}</div>
         </div>
-
         <div class="col-4">
-          <input type="text" name="time" v-model="feedbackForm.mathTime" inputmode="numeric" pattern="[0-9]*"
-            maxlength="2" class="form-control" @input="clearError('mathTime')"
-            :class="{ 'is-invalid': errors.mathTime }" />
-          <div v-if="errors.mathTime" class="invalid-feedback">
-            {{ errors.mathTime }}
-          </div>
+          <input
+            type="text"
+            v-model="feedbackForm.mathTime"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="2"
+            class="form-control"
+            @input="clearError('mathTime')"
+            :class="{ 'is-invalid': errors.mathTime }"
+          />
+          <div v-if="errors.mathTime" class="invalid-feedback">{{ errors.mathTime }}</div>
         </div>
       </div>
+
       <div class="row gx-2" v-if="hasEnglish">
         <div class="col-5">
           <div class="d-flex gap-3 align-items-center w-100 justify-content-between">
             <span class="fs-6"><b>Eng</b></span>
             <label class="form-check">
-              <input type="checkbox" class="form-check-input" v-model="feedbackForm.isEnglishChecked" />
+              <input
+                type="checkbox"
+                class="form-check-input"
+                v-model="feedbackForm.isEnglishChecked"
+              />
               <span class="form-check-label fs-6">100%</span>
             </label>
           </div>
         </div>
         <div class="col-3 text-start">
-          <input type="text" name="score" v-model="feedbackForm.englishScore" inputmode="numeric" pattern="[0-9]*"
-            maxlength="2" :disabled="feedbackForm.isEnglishChecked" @input="
+          <input
+            type="text"
+            v-model="feedbackForm.englishScore"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="2"
+            :disabled="feedbackForm.isEnglishChecked"
+            @input="
               onScoreInput(($event.target as HTMLInputElement).value, 'englishScore');
-            clearError('englishScore');
-            " class="form-control" :class="{ 'is-invalid': errors.englishScore }" />
-          <div v-if="errors.englishScore" class="invalid-feedback">
-            {{ errors.englishScore }}
-          </div>
+              clearError('englishScore');
+            "
+            class="form-control"
+            :class="{ 'is-invalid': errors.englishScore }"
+          />
+          <div v-if="errors.englishScore" class="invalid-feedback">{{ errors.englishScore }}</div>
         </div>
-
         <div class="col-4">
-          <input type="text" name="time" v-model="feedbackForm.englishTime" inputmode="numeric" pattern="[0-9]*"
-            maxlength="2" class="form-control" @input="clearError('englishTime')"
-            :class="{ 'is-invalid': errors.englishTime }" />
-          <div v-if="errors.englishTime" class="invalid-feedback">
-            {{ errors.englishTime }}
-          </div>
+          <input
+            type="text"
+            v-model="feedbackForm.englishTime"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="2"
+            class="form-control"
+            @input="clearError('englishTime')"
+            :class="{ 'is-invalid': errors.englishTime }"
+          />
+          <div v-if="errors.englishTime" class="invalid-feedback">{{ errors.englishTime }}</div>
         </div>
       </div>
+
       <div class="row">
         <div class="col-12 align-items-start justify-content-start d-flex">
           <label><b>Feedback</b></label>
         </div>
         <div class="col-12">
-          <textarea name="" v-model="feedbackForm.feedback" class="form-control" rows="7" id=""></textarea>
+          <textarea v-model="feedbackForm.feedback" class="form-control" rows="7"></textarea>
         </div>
         <label for="inperson" class="text-start mt-2">
-          <input type="checkbox" v-model="feedbackForm.isPercentFeedbackRequired" name="inperson" id="inperson" />
+          <input
+            type="checkbox"
+            v-model="feedbackForm.isPercentFeedbackRequired"
+            name="inperson"
+            id="inperson"
+          />
           In person feedback required.
         </label>
       </div>
     </div>
 
     <template #footer>
-      <button v-if="!qrMode" type="button" class="btn btn-info" :disabled="loading" @click="submitFeedback">
-        <!-- {{ loading ? '...' : 'Submit' }} -->
+      <button type="button" class="btn btn-info" :disabled="loading" @click="submitFeedback">
         {{ feedbackStore.todayFeedback ? 'Update' : 'Submit' }}
       </button>
     </template>
