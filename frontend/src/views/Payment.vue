@@ -200,31 +200,58 @@ onMounted(async () => {
             empty-text="No overdue payments"
           >
             <template #cell-index="{ value }">
-              <span class="text-secondary-500">{{ value }}</span>
+              <span class="text-secondary-400 text-xs font-medium">{{ value }}</span>
             </template>
             <template #cell-name="{ row }">
-              <span class="font-medium text-secondary-900">{{ row.name }}</span>
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-8 h-8 rounded-full bg-danger-100 flex items-center justify-center flex-shrink-0"
+                >
+                  <i class="fa-solid fa-user text-danger-600 text-xs"></i>
+                </div>
+                <span class="font-semibold text-secondary-900">{{ row.name }}</span>
+              </div>
             </template>
             <template #cell-dueAmount="{ row }">
-              <span class="font-semibold text-danger-600">{{ row.dueAmountFormatted }}</span>
+              <span
+                class="inline-flex items-center px-3 py-1 rounded-lg bg-danger-100 font-bold text-danger-700 text-sm"
+              >
+                {{ row.dueAmountFormatted }}
+              </span>
             </template>
             <template #cell-action="{ row }">
-              <Button size="sm" @click="openPaymentModal(row)">Add Payment</Button>
+              <Button size="sm" @click="openPaymentModal(row)">
+                <i class="fa-solid fa-plus mr-1"></i>
+                Add Payment
+              </Button>
             </template>
 
             <!-- Mobile card view -->
             <template #mobile-card="{ row }">
-              <div class="flex justify-between items-start">
-                <div>
-                  <p class="font-medium text-secondary-900">{{ row.name }}</p>
-                  <p class="text-sm mt-1">
-                    <span class="text-secondary-500">Due:</span>
-                    <span class="font-semibold text-danger-600 ml-1">{{
-                      row.dueAmountFormatted
-                    }}</span>
-                  </p>
+              <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-danger-100 flex items-center justify-center flex-shrink-0"
+                  >
+                    <i class="fa-solid fa-user text-danger-600"></i>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-semibold text-secondary-900">{{ row.name }}</p>
+                    <p class="text-xs text-secondary-500">Student #{row.index}</p>
+                  </div>
                 </div>
-                <Button size="sm" @click="openPaymentModal(row)">Add</Button>
+                <div class="flex items-center justify-between pt-2 border-t border-secondary-100">
+                  <span class="text-sm text-secondary-600">Amount Due:</span>
+                  <span
+                    class="inline-flex items-center px-3 py-1 rounded-lg bg-danger-100 font-bold text-danger-700 text-sm"
+                  >
+                    {{ row.dueAmountFormatted }}
+                  </span>
+                </div>
+                <Button class="w-full" size="sm" @click="openPaymentModal(row)">
+                  <i class="fa-solid fa-plus mr-2"></i>
+                  Add Payment
+                </Button>
               </div>
             </template>
 
@@ -258,13 +285,19 @@ onMounted(async () => {
         </div>
 
         <div class="p-5">
-          <!-- Search -->
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-secondary-700 mb-2">
-              Search by Student
-            </label>
-            <div class="flex gap-2 items-center max-w-md">
-              <Input v-model="search" type="search" placeholder="Enter student name..." />
+          <!-- Search Section -->
+          <div class="bg-secondary-50 rounded-xl border border-secondary-200 p-4 mb-4">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fa-solid fa-magnifying-glass text-primary-600"></i>
+              <label class="text-sm font-semibold text-secondary-700"> Search by Student </label>
+            </div>
+            <div class="flex gap-2 items-center">
+              <Input
+                v-model="search"
+                type="search"
+                placeholder="Enter student name..."
+                class="flex-1"
+              />
               <Button v-if="search.trim().length" variant="ghost" size="sm" @click="clearSearch">
                 <i class="fa-solid fa-xmark"></i>
               </Button>
@@ -278,15 +311,22 @@ onMounted(async () => {
 
           <!-- Selected filter indicator -->
           <div v-if="searchedId" class="mb-4">
-            <div class="p-3 bg-primary-50 border border-primary-200 rounded-lg">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-filter text-primary-600"></i>
-                  <span class="text-sm text-primary-900">
-                    Showing payments for: <strong>{{ selectedName }}</strong>
-                  </span>
+            <div class="p-4 bg-primary-50 border-2 border-primary-200 rounded-xl shadow-sm">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center flex-shrink-0"
+                  >
+                    <i class="fa-solid fa-filter text-white text-sm"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs font-medium text-primary-600 uppercase tracking-wide">
+                      Filtered By
+                    </p>
+                    <p class="text-sm font-bold text-primary-900">{{ selectedName }}</p>
+                  </div>
                 </div>
-                <Button variant="ghost" size="sm" @click="clearSelected">
+                <Button variant="outline" size="sm" @click="clearSelected">
                   <i class="fa-solid fa-xmark mr-1"></i> Clear
                 </Button>
               </div>
@@ -301,30 +341,60 @@ onMounted(async () => {
             empty-text="No payment records found"
           >
             <template #cell-index="{ value }">
-              <span class="text-secondary-500">{{ value }}</span>
+              <span class="text-secondary-400 text-xs font-medium">{{ value }}</span>
             </template>
             <template #cell-name="{ row }">
-              <span class="font-medium text-secondary-900">{{ row.name }}</span>
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0"
+                >
+                  <i class="fa-solid fa-user text-primary-600 text-xs"></i>
+                </div>
+                <span class="font-semibold text-secondary-900">{{ row.name }}</span>
+              </div>
             </template>
             <template #cell-amount="{ row }">
-              <span class="font-semibold text-success-600">{{ row.amountFormatted }}</span>
+              <span
+                class="inline-flex items-center px-3 py-1 rounded-lg bg-success-100 font-bold text-success-700 text-sm"
+              >
+                {{ row.amountFormatted }}
+              </span>
             </template>
             <template #cell-date="{ row }">
-              <span class="text-secondary-700">{{ row.date }}</span>
+              <div class="flex items-center gap-2 text-secondary-600">
+                <i class="fa-solid fa-calendar text-secondary-400 text-xs"></i>
+                <span class="text-sm">{{ row.date }}</span>
+              </div>
             </template>
             <template #cell-notes="{ row }">
-              <span class="text-secondary-500">{{ row.notesDisplay }}</span>
+              <span class="text-sm text-secondary-500 italic">{{ row.notesDisplay }}</span>
             </template>
 
             <!-- Mobile card view -->
             <template #mobile-card="{ row }">
-              <div class="flex justify-between items-start mb-2">
-                <p class="font-medium text-secondary-900">{{ row.name }}</p>
-                <span class="font-semibold text-success-600">{{ row.amountFormatted }}</span>
-              </div>
-              <div class="text-sm text-secondary-500 space-y-1">
-                <p>{{ row.date }}</p>
-                <p v-if="row.notes">{{ row.notes }}</p>
+              <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0"
+                  >
+                    <i class="fa-solid fa-user text-primary-600"></i>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-semibold text-secondary-900">{{ row.name }}</p>
+                    <div class="flex items-center gap-1.5 text-xs text-secondary-500 mt-0.5">
+                      <i class="fa-solid fa-calendar text-secondary-400"></i>
+                      <span>{{ row.date }}</span>
+                    </div>
+                  </div>
+                  <span
+                    class="inline-flex items-center px-3 py-1 rounded-lg bg-success-100 font-bold text-success-700 text-sm"
+                  >
+                    {{ row.amountFormatted }}
+                  </span>
+                </div>
+                <div v-if="row.notes" class="pt-2 border-t border-secondary-100">
+                  <p class="text-xs text-secondary-500 italic">{{ row.notes }}</p>
+                </div>
               </div>
             </template>
 

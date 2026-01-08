@@ -39,7 +39,7 @@ const isEmpty = computed(() => !props.loading && props.data.length === 0);
 </script>
 
 <template>
-  <div class="w-full overflow-hidden rounded-2xl border border-secondary-100 bg-white shadow-card">
+  <div class="w-full overflow-hidden rounded-lg">
     <!-- Desktop Table -->
     <div class="hidden md:block overflow-x-auto">
       <table class="w-full">
@@ -49,7 +49,7 @@ const isEmpty = computed(() => !props.loading && props.data.length === 0);
               v-for="col in columns"
               :key="col.key"
               :class="[
-                'px-4 py-3 text-sm font-semibold',
+                'px-4 py-3.5 text-xs font-bold uppercase tracking-wider',
                 alignClasses[col.align || 'left'],
                 col.width ? `w-[${col.width}]` : ''
               ]"
@@ -82,7 +82,7 @@ const isEmpty = computed(() => !props.loading && props.data.length === 0);
             <td
               v-for="col in columns"
               :key="col.key"
-              :class="['px-4 py-3 text-sm text-secondary-700', alignClasses[col.align || 'left']]"
+              :class="['px-4 py-4 text-sm text-secondary-700', alignClasses[col.align || 'left']]"
             >
               <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
                 {{ row[col.key] }}
@@ -105,7 +105,7 @@ const isEmpty = computed(() => !props.loading && props.data.length === 0);
         <div
           v-for="(row, index) in data"
           :key="index"
-          class="p-4 hover:bg-secondary-50 transition-colors"
+          class="p-5 hover:bg-secondary-50 transition-colors"
         >
           <slot name="mobile-card" :row="row" :index="index">
             <div class="space-y-2">
