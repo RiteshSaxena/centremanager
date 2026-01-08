@@ -119,7 +119,9 @@ const gridCols = computed(() => {
     <div class="mb-6">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm">
+          <div
+            class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm"
+          >
             <i class="fa-solid fa-calendar-week text-white text-xl"></i>
           </div>
           <div>
@@ -127,7 +129,9 @@ const gridCols = computed(() => {
             <p class="text-sm text-secondary-500">Class schedule overview</p>
           </div>
         </div>
-        <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-xl shadow-sm">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-xl shadow-sm"
+        >
           <i class="fa-solid fa-calendar-days"></i>
           <span>{{ moment().format('MMM YYYY') }}</span>
         </div>
@@ -135,7 +139,10 @@ const gridCols = computed(() => {
     </div>
 
     <!-- Empty State -->
-    <div v-if="!timings.length || !days.length" class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-12 text-center">
+    <div
+      v-if="!timings.length || !days.length"
+      class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-12 text-center"
+    >
       <i class="fa-solid fa-calendar-xmark text-4xl text-secondary-300 mb-3"></i>
       <p class="text-secondary-500 font-medium">No class schedule available</p>
       <p class="text-xs text-secondary-400 mt-1">Set up time slots to see the calendar</p>
@@ -151,11 +158,7 @@ const gridCols = computed(() => {
               <i class="fa-solid fa-clock text-primary-600"></i>
             </div>
           </div>
-          <div
-            v-for="day in days"
-            :key="day"
-            class="flex justify-center"
-          >
+          <div v-for="day in days" :key="day" class="flex justify-center">
             <div
               :class="[
                 'px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all',
@@ -179,7 +182,9 @@ const gridCols = computed(() => {
           >
             <!-- Time Label -->
             <div class="flex items-center justify-center">
-              <div class="text-center bg-white rounded-lg border border-secondary-200 px-3 py-2 shadow-sm">
+              <div
+                class="text-center bg-white rounded-lg border border-secondary-200 px-3 py-2 shadow-sm"
+              >
                 <div class="text-xs font-bold text-primary-600">{{ timing.text }}</div>
               </div>
             </div>
@@ -210,13 +215,21 @@ const gridCols = computed(() => {
                     <div
                       :class="[
                         'w-7 h-7 rounded-full flex items-center justify-center',
-                        student.gender === 'Male' ? 'bg-blue-100' : student.gender === 'Female' ? 'bg-pink-100' : 'bg-secondary-100'
+                        student.gender === 'Male'
+                          ? 'bg-blue-100'
+                          : student.gender === 'Female'
+                          ? 'bg-pink-100'
+                          : 'bg-secondary-100'
                       ]"
                     >
                       <i
                         :class="[
                           'fa-solid fa-user text-xs',
-                          student.gender === 'Male' ? 'text-blue-500' : student.gender === 'Female' ? 'text-pink-400' : 'text-secondary-400'
+                          student.gender === 'Male'
+                            ? 'text-blue-500'
+                            : student.gender === 'Female'
+                            ? 'text-pink-400'
+                            : 'text-secondary-400'
                         ]"
                       ></i>
                     </div>
@@ -233,14 +246,19 @@ const gridCols = computed(() => {
                   <div class="flex items-center gap-1">
                     <!-- Payment Due Badge -->
                     <div class="relative group" v-if="student.dueAmount && student.dueAmount > 0">
-                      <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-warning-100 text-warning-700 cursor-pointer hover:bg-warning-200 transition-colors">
+                      <span
+                        class="inline-flex items-center justify-center w-5 h-5 rounded bg-warning-100 text-warning-700 cursor-pointer hover:bg-warning-200 transition-colors"
+                      >
                         <i class="fa-solid fa-circle-dollar text-[9px]"></i>
                       </span>
                       <div class="tooltip-content">
                         Amount Due: {{ getDueAmount(student.dueAmount) }}
                       </div>
                     </div>
-                    <span v-else-if="student.dueAmount === 0" class="inline-flex items-center justify-center w-5 h-5 rounded bg-secondary-100 text-secondary-500">
+                    <span
+                      v-else-if="student.dueAmount === 0"
+                      class="inline-flex items-center justify-center w-5 h-5 rounded bg-secondary-100 text-secondary-500"
+                    >
                       <i class="fa-solid fa-circle-dollar text-[9px]"></i>
                     </span>
 
@@ -249,7 +267,9 @@ const gridCols = computed(() => {
                       class="relative group"
                       v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
                     >
-                      <span class="inline-flex items-center justify-center w-5 h-5 rounded bg-purple-100 text-purple-700 cursor-pointer hover:bg-purple-200 transition-colors text-[8px] font-bold">
+                      <span
+                        class="inline-flex items-center justify-center w-5 h-5 rounded bg-purple-100 text-purple-700 cursor-pointer hover:bg-purple-200 transition-colors text-[8px] font-bold"
+                      >
                         EL
                       </span>
                       <div class="tooltip-content">Early Learner</div>

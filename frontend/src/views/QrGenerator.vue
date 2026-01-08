@@ -102,17 +102,10 @@ onMounted(async () => {
     <div v-else>
       <!-- Search Section -->
       <div class="bg-white rounded-xl border border-secondary-200 shadow-sm p-5 mb-6">
-        <label class="block text-sm font-medium text-secondary-700 mb-2">
-          Search Students
-        </label>
+        <label class="block text-sm font-medium text-secondary-700 mb-2"> Search Students </label>
         <div class="flex gap-2 max-w-md">
           <Input v-model="search" placeholder="Enter student name or year..." />
-          <Button
-            v-if="search.trim().length"
-            type="button"
-            variant="ghost"
-            @click="search = ''"
-          >
+          <Button v-if="search.trim().length" type="button" variant="ghost" @click="search = ''">
             <i class="fa-solid fa-xmark"></i>
           </Button>
         </div>
@@ -122,7 +115,10 @@ onMounted(async () => {
       </div>
 
       <!-- Empty State -->
-      <div v-if="students.length === 0" class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-12 text-center">
+      <div
+        v-if="students.length === 0"
+        class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-12 text-center"
+      >
         <i class="fa-solid fa-inbox text-4xl text-secondary-300 mb-3"></i>
         <p class="text-secondary-500 font-medium">No students found</p>
         <p class="text-xs text-secondary-400 mt-1">Try a different search term</p>

@@ -43,12 +43,7 @@ const classes = computed(() => {
     lg: 'px-6 py-3 text-base min-h-[52px]'
   };
 
-  return [
-    base,
-    variants[props.variant],
-    sizes[props.size],
-    props.block ? 'w-full' : ''
-  ].join(' ');
+  return [base, variants[props.variant], sizes[props.size], props.block ? 'w-full' : ''].join(' ');
 });
 </script>
 
@@ -61,14 +56,7 @@ const classes = computed(() => {
       fill="none"
       viewBox="0 0 24 24"
     >
-      <circle
-        class="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        stroke-width="4"
-      />
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
       <path
         class="opacity-75"
         fill="currentColor"

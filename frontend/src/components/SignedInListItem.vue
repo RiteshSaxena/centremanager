@@ -180,11 +180,15 @@ const iconColorClass = computed(() => {
 </script>
 
 <template>
-  <div class="group bg-white border border-secondary-200 rounded-xl p-4 mb-3 cursor-pointer flex justify-between items-center hover:border-primary-300 hover:shadow-md transition-all duration-200">
+  <div
+    class="group bg-white border border-secondary-200 rounded-xl p-4 mb-3 cursor-pointer flex justify-between items-center hover:border-primary-300 hover:shadow-md transition-all duration-200"
+  >
     <div class="flex items-center gap-4 flex-1" @click.stop="$emit('onSelect')">
       <!-- Icon -->
       <div class="flex-shrink-0">
-        <div class="w-10 h-10 rounded-full bg-secondary-100 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
+        <div
+          class="w-10 h-10 rounded-full bg-secondary-100 flex items-center justify-center group-hover:bg-primary-50 transition-colors"
+        >
           <i class="fa-solid fa-user text-lg" :class="iconColorClass"></i>
         </div>
       </div>
@@ -193,7 +197,9 @@ const iconColorClass = computed(() => {
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
           <span class="font-semibold text-secondary-900 text-sm truncate">{{ name }}</span>
-          <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-secondary-100 text-secondary-700">
+          <span
+            class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-secondary-100 text-secondary-700"
+          >
             {{ type }}
           </span>
         </div>
@@ -206,7 +212,10 @@ const iconColorClass = computed(() => {
       <button
         v-if="props.item?.type === 'Student'"
         @click.stop.prevent="$emit('onFeedback', props.item)"
-        :class="['flex items-center justify-center w-9 h-9 rounded-lg text-white transition-transform hover:scale-110', feedbackBtnClass]"
+        :class="[
+          'flex items-center justify-center w-9 h-9 rounded-lg text-white transition-transform hover:scale-110',
+          feedbackBtnClass
+        ]"
         title="Feedback"
       >
         <i class="fa-regular fa-comments text-sm"></i>

@@ -37,7 +37,9 @@ const onSubmit = async () => {
 <template>
   <form class="mt-4 flex flex-col items-start gap-4" @submit.prevent="onSubmit">
     <div>
-      <label class="block text-sm font-medium text-secondary-700 mb-2">Select file to import data:</label>
+      <label class="block text-sm font-medium text-secondary-700 mb-2"
+        >Select file to import data:</label
+      >
       <input
         type="file"
         @change="onSelect"

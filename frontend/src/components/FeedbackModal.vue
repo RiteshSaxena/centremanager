@@ -237,12 +237,7 @@ watch(
 </script>
 
 <template>
-  <Modal
-    size="md"
-    :open="show"
-    :closable="true"
-    @close="emit('update:show', false)"
-  >
+  <Modal size="md" :open="show" :closable="true" @close="emit('update:show', false)">
     <template #title>
       <div class="flex flex-col">
         <span>Feedback</span>
@@ -267,10 +262,7 @@ watch(
         <div class="col-span-5">
           <div class="flex gap-3 items-center w-full justify-between">
             <span class="text-sm"><b>Maths</b></span>
-            <Checkbox
-              v-model="feedbackForm.isMathChecked"
-              label="100%"
-            />
+            <Checkbox v-model="feedbackForm.isMathChecked" label="100%" />
           </div>
         </div>
         <div class="col-span-3 text-left">
@@ -314,10 +306,7 @@ watch(
         <div class="col-span-5">
           <div class="flex gap-3 items-center w-full justify-between">
             <span class="text-sm"><b>Eng</b></span>
-            <Checkbox
-              v-model="feedbackForm.isEnglishChecked"
-              label="100%"
-            />
+            <Checkbox v-model="feedbackForm.isEnglishChecked" label="100%" />
           </div>
         </div>
         <div class="col-span-3 text-left">
@@ -338,7 +327,9 @@ watch(
               feedbackForm.isEnglishChecked ? 'bg-secondary-100 text-secondary-400' : 'bg-white'
             ]"
           />
-          <p v-if="errors.englishScore" class="text-xs text-danger-500 mt-1">{{ errors.englishScore }}</p>
+          <p v-if="errors.englishScore" class="text-xs text-danger-500 mt-1">
+            {{ errors.englishScore }}
+          </p>
         </div>
         <div class="col-span-4">
           <input
@@ -353,7 +344,9 @@ watch(
               errors.englishTime ? 'border-danger-500' : 'border-secondary-200'
             ]"
           />
-          <p v-if="errors.englishTime" class="text-xs text-danger-500 mt-1">{{ errors.englishTime }}</p>
+          <p v-if="errors.englishTime" class="text-xs text-danger-500 mt-1">
+            {{ errors.englishTime }}
+          </p>
         </div>
       </div>
 

@@ -65,10 +65,7 @@ const isEmpty = computed(() => !props.loading && props.data.length === 0);
             </td>
           </tr>
           <tr v-else-if="isEmpty">
-            <td
-              :colspan="columns.length"
-              class="px-4 py-12 text-center text-secondary-400"
-            >
+            <td :colspan="columns.length" class="px-4 py-12 text-center text-secondary-400">
               {{ emptyText }}
             </td>
           </tr>
@@ -85,10 +82,7 @@ const isEmpty = computed(() => !props.loading && props.data.length === 0);
             <td
               v-for="col in columns"
               :key="col.key"
-              :class="[
-                'px-4 py-3 text-sm text-secondary-700',
-                alignClasses[col.align || 'left']
-              ]"
+              :class="['px-4 py-3 text-sm text-secondary-700', alignClasses[col.align || 'left']]"
             >
               <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
                 {{ row[col.key] }}
@@ -116,7 +110,7 @@ const isEmpty = computed(() => !props.loading && props.data.length === 0);
           <slot name="mobile-card" :row="row" :index="index">
             <div class="space-y-2">
               <div
-                v-for="col in columns.filter(c => !c.hideOnMobile)"
+                v-for="col in columns.filter((c) => !c.hideOnMobile)"
                 :key="col.key"
                 class="flex justify-between items-start gap-4"
               >

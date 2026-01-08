@@ -120,7 +120,9 @@ onMounted(() => {
     <!-- Header with Student Info -->
     <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-5 py-4">
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
+        <div
+          class="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center"
+        >
           <i class="fa-solid fa-user-graduate text-2xl text-white"></i>
         </div>
         <div class="flex-1">
@@ -157,27 +159,21 @@ onMounted(() => {
         >
           <i class="fa-solid fa-clock text-danger-600"></i>
           <div class="flex-1">
-            <p class="text-sm font-medium text-danger-900">
-              {{ isStudentLate.late }} minutes late
-            </p>
-            <p class="text-xs text-danger-700">
-              Expected arrival: {{ isStudentLate.startTime }}
-            </p>
+            <p class="text-sm font-medium text-danger-900">{{ isStudentLate.late }} minutes late</p>
+            <p class="text-xs text-danger-700">Expected arrival: {{ isStudentLate.startTime }}</p>
           </div>
         </div>
       </div>
 
       <!-- Already Signed In -->
       <div v-if="isSignedInRecord" class="text-center py-6">
-        <div class="w-16 h-16 rounded-full bg-success-100 flex items-center justify-center mx-auto mb-3">
+        <div
+          class="w-16 h-16 rounded-full bg-success-100 flex items-center justify-center mx-auto mb-3"
+        >
           <i class="fa-solid fa-check text-2xl text-success-600"></i>
         </div>
         <p class="text-sm font-medium text-secondary-700 mb-4">Student is already signed in</p>
-        <Button
-          variant="secondary"
-          size="lg"
-          @click="$emit('onSelectSignOut', isSignedInRecord)"
-        >
+        <Button variant="secondary" size="lg" @click="$emit('onSelectSignOut', isSignedInRecord)">
           <i class="fa-solid fa-right-from-bracket mr-2"></i>
           Sign Out
         </Button>
@@ -191,9 +187,7 @@ onMounted(() => {
             <h4 class="text-sm font-semibold text-secondary-900">
               {{ isKioskApp ? 'Select Your Name' : 'Select Guardian' }}
             </h4>
-            <p class="text-xs text-secondary-500 mt-0.5">
-              Choose who is signing in the student
-            </p>
+            <p class="text-xs text-secondary-500 mt-0.5">Choose who is signing in the student</p>
           </div>
         </div>
 
@@ -218,11 +212,7 @@ onMounted(() => {
         </div>
 
         <!-- Add Guardian Button -->
-        <Button
-          variant="outline"
-          :block="true"
-          @click="showModal = true"
-        >
+        <Button variant="outline" :block="true" @click="showModal = true">
           <i class="fa-solid fa-user-plus mr-2"></i>
           Add Guardian
         </Button>

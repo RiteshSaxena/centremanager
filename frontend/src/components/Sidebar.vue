@@ -49,7 +49,9 @@ onMounted(async () => {
   <aside
     class="sidebar bg-primary-800 flex flex-col justify-between transition-all duration-300 ease-in-out no-print"
     :class="[
-      sidebarExpanded ? 'w-full md:w-56' : 'max-h-16 md:max-h-none overflow-hidden md:overflow-visible md:w-16',
+      sidebarExpanded
+        ? 'w-full md:w-56'
+        : 'max-h-16 md:max-h-none overflow-hidden md:overflow-visible md:w-16'
     ]"
   >
     <!-- Mobile Header -->

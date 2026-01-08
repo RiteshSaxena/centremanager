@@ -104,7 +104,6 @@ const onSubmit = async () => {
     loading.value = false;
   }
 };
-
 </script>
 
 <template>
@@ -123,14 +122,20 @@ const onSubmit = async () => {
 
     <div v-else>
       <!-- Person Info Card -->
-      <div class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 mb-6 border border-primary-200">
+      <div
+        class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 mb-6 border border-primary-200"
+      >
         <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0">
+          <div
+            class="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0"
+          >
             <i class="fa-solid fa-user text-white text-2xl"></i>
           </div>
           <div>
             <p class="text-base text-primary-600 font-medium mb-1">Signing In</p>
-            <p class="text-2xl font-bold text-primary-900">{{ item?.firstName }} {{ item?.lastName }}</p>
+            <p class="text-2xl font-bold text-primary-900">
+              {{ item?.firstName }} {{ item?.lastName }}
+            </p>
           </div>
         </div>
       </div>
@@ -144,10 +149,7 @@ const onSubmit = async () => {
         <p class="text-base text-secondary-600 mb-4">Please sign below to confirm sign in</p>
         <signature-pad ref="signaturePad" />
         <div class="mt-4" v-if="item?.type === 'parent'">
-          <Checkbox
-            v-model="isParentWithStudent"
-            label="Is Parent coming with student?"
-          />
+          <Checkbox v-model="isParentWithStudent" label="Is Parent coming with student?" />
         </div>
       </div>
     </div>

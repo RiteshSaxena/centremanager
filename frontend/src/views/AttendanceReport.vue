@@ -199,11 +199,7 @@ onMounted(async () => {
               Search by Student or Staff
             </label>
             <div class="flex gap-2">
-              <Input
-                v-model="search"
-                placeholder="Enter name to search..."
-                class="flex-1"
-              />
+              <Input v-model="search" placeholder="Enter name to search..." class="flex-1" />
               <Button
                 v-if="search.trim().length"
                 type="button"
@@ -230,17 +226,9 @@ onMounted(async () => {
 
           <!-- Search by Date -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-secondary-700">
-              Search by Date
-            </label>
+            <label class="block text-sm font-medium text-secondary-700"> Search by Date </label>
             <div class="flex gap-2">
-              <Input
-                type="date"
-                :max="todayDate"
-                v-model="reportDate"
-                required
-                class="flex-1"
-              />
+              <Input type="date" :max="todayDate" v-model="reportDate" required class="flex-1" />
               <Button type="submit" :disabled="loading">
                 <i v-if="!loading" class="fa-solid fa-magnifying-glass mr-2"></i>
                 {{ loading ? 'Loading...' : 'View' }}
@@ -255,7 +243,10 @@ onMounted(async () => {
         </div>
 
         <!-- Selected Person -->
-        <div v-if="studentId || staffId" class="mt-4 p-3 bg-primary-50 border border-primary-200 rounded-lg">
+        <div
+          v-if="studentId || staffId"
+          class="mt-4 p-3 bg-primary-50 border border-primary-200 rounded-lg"
+        >
           <div class="flex items-center gap-2">
             <i class="fa-solid fa-user text-primary-600"></i>
             <span class="text-sm text-primary-900">
@@ -275,7 +266,9 @@ onMounted(async () => {
     <div v-else-if="isSearched" class="space-y-6">
       <!-- Present Records -->
       <div class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden">
-        <div class="bg-gradient-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200">
+        <div
+          class="bg-gradient-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200"
+        >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center">
               <i class="fa-solid fa-clipboard-check text-white text-lg"></i>
@@ -283,7 +276,11 @@ onMounted(async () => {
             <div>
               <h3 class="text-base font-bold text-primary-900">Attendance Records</h3>
               <p class="text-xs text-primary-600">
-                {{ searchMode === 'date' ? `${reportDay} - ${moment(reportDate).format('MMM D, YYYY')}` : selectedName }}
+                {{
+                  searchMode === 'date'
+                    ? `${reportDay} - ${moment(reportDate).format('MMM D, YYYY')}`
+                    : selectedName
+                }}
               </p>
             </div>
           </div>
@@ -294,32 +291,63 @@ onMounted(async () => {
           <table class="w-full min-w-[600px]">
             <thead>
               <tr class="bg-secondary-50 border-b border-secondary-200">
-                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">#</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Type</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Name</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Sign In Time</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Sign Out Time</th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider"
+                >
+                  #
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider"
+                >
+                  Type
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider"
+                >
+                  Name
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider"
+                >
+                  Sign In Time
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider"
+                >
+                  Sign Out Time
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-secondary-100">
-              <tr v-for="(record, index) in reportList" :key="record.id" class="hover:bg-secondary-50 transition-colors">
+              <tr
+                v-for="(record, index) in reportList"
+                :key="record.id"
+                class="hover:bg-secondary-50 transition-colors"
+              >
                 <td class="px-4 py-3 text-sm text-secondary-600">{{ index + 1 }}</td>
                 <td class="px-4 py-3">
                   <span
                     :class="[
                       'inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium',
-                      record.type === 'Student' || record.type === 'Student & Parent' ? 'bg-blue-100 text-blue-700' :
-                      record.type === 'Staff' ? 'bg-purple-100 text-purple-700' :
-                      record.type === 'Parent' ? 'bg-green-100 text-green-700' :
-                      'bg-secondary-100 text-secondary-700'
+                      record.type === 'Student' || record.type === 'Student & Parent'
+                        ? 'bg-blue-100 text-blue-700'
+                        : record.type === 'Staff'
+                        ? 'bg-purple-100 text-purple-700'
+                        : record.type === 'Parent'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-secondary-100 text-secondary-700'
                     ]"
                   >
                     {{ record.type }}
                   </span>
                 </td>
                 <td class="px-4 py-3 text-sm font-medium text-secondary-900">{{ record.name }}</td>
-                <td class="px-4 py-3 text-sm text-secondary-600">{{ formatTime(record.signInTime) }}</td>
-                <td class="px-4 py-3 text-sm text-secondary-600">{{ formatTime(record?.signOutTime) }}</td>
+                <td class="px-4 py-3 text-sm text-secondary-600">
+                  {{ formatTime(record.signInTime) }}
+                </td>
+                <td class="px-4 py-3 text-sm text-secondary-600">
+                  {{ formatTime(record?.signOutTime) }}
+                </td>
               </tr>
               <tr v-if="!records.length">
                 <td class="text-center px-4 py-12" colspan="5">
@@ -334,8 +362,13 @@ onMounted(async () => {
       </div>
 
       <!-- Absent Students -->
-      <div v-if="absentChildren.length && searchMode === 'date'" class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden">
-        <div class="bg-gradient-to-r from-danger-50 to-danger-100 px-5 py-4 border-b border-danger-200">
+      <div
+        v-if="absentChildren.length && searchMode === 'date'"
+        class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden"
+      >
+        <div
+          class="bg-gradient-to-r from-danger-50 to-danger-100 px-5 py-4 border-b border-danger-200"
+        >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-danger-500 flex items-center justify-center">
               <i class="fa-solid fa-user-xmark text-white text-lg"></i>
@@ -352,22 +385,50 @@ onMounted(async () => {
           <table class="w-full min-w-[600px]">
             <thead>
               <tr class="bg-secondary-50 border-b border-secondary-200">
-                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">#</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Type</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Name</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Sign In Time</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Sign Out Time</th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider"
+                >
+                  #
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider"
+                >
+                  Type
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider"
+                >
+                  Name
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider"
+                >
+                  Sign In Time
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider"
+                >
+                  Sign Out Time
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-secondary-100">
-              <tr v-for="(record, index) in absentChildren" :key="record.id" class="hover:bg-secondary-50 transition-colors">
+              <tr
+                v-for="(record, index) in absentChildren"
+                :key="record.id"
+                class="hover:bg-secondary-50 transition-colors"
+              >
                 <td class="px-4 py-3 text-sm text-secondary-600">{{ index + 1 }}</td>
                 <td class="px-4 py-3">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-700"
+                  >
                     Student
                   </span>
                 </td>
-                <td class="px-4 py-3 text-sm font-medium text-secondary-900">{{ record.firstName }} {{ record.lastName }}</td>
+                <td class="px-4 py-3 text-sm font-medium text-secondary-900">
+                  {{ record.firstName }} {{ record.lastName }}
+                </td>
                 <td class="px-4 py-3 text-sm text-secondary-400">-</td>
                 <td class="px-4 py-3 text-sm text-secondary-400">-</td>
               </tr>

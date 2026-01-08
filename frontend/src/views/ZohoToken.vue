@@ -49,30 +49,14 @@ const generateToken = async () => {
     <div class="w-[450px] p-8 rounded-2xl shadow-lg bg-white">
       <h3 class="text-xl font-bold text-secondary-900 mb-6">Zoho Token Generate</h3>
       <form @submit.prevent="generateToken" v-if="!accessToken" class="space-y-4">
-        <Input
-          v-model="clientId"
-          label="Client ID"
-          required
-        />
-        <Input
-          v-model="clientSecret"
-          label="Client Secret"
-          required
-        />
+        <Input v-model="clientId" label="Client ID" required />
+        <Input v-model="clientSecret" label="Client Secret" required />
         <div>
-          <Input
-            v-model="grantCode"
-            label="Grant Code"
-            required
-          />
+          <Input v-model="grantCode" label="Grant Code" required />
           <p class="text-xs text-secondary-500 mt-1">OAuth Scope: ZohoBooks.contacts.READ</p>
         </div>
         <div>
-          <Input
-            v-model="domain"
-            label="Domain"
-            required
-          />
+          <Input v-model="domain" label="Domain" required />
           <p class="text-xs text-secondary-500 mt-1">Can be: com, in, eu, com.au, jp</p>
         </div>
         <Button type="submit" :disabled="loading">

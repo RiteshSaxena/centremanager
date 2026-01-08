@@ -53,7 +53,9 @@ const register = async () => {
     <div class="w-full max-w-3xl">
       <!-- Logo/Brand Section -->
       <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-500 rounded-2xl mb-4 shadow-lg">
+        <div
+          class="inline-flex items-center justify-center w-16 h-16 bg-primary-500 rounded-2xl mb-4 shadow-lg"
+        >
           <i class="fa-solid fa-graduation-cap text-3xl text-white"></i>
         </div>
         <h1 class="text-3xl font-bold text-secondary-900 mb-2">Register Your Centre</h1>

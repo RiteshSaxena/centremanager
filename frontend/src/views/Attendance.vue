@@ -136,7 +136,9 @@ const getDueAmount = (amount: number) => {
     <div class="mb-6">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm">
+          <div
+            class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm"
+          >
             <i class="fa-solid fa-clipboard-check text-white text-xl"></i>
           </div>
           <div>
@@ -144,7 +146,9 @@ const getDueAmount = (amount: number) => {
             <p class="text-sm text-secondary-500">{{ moment().format('MMMM D, YYYY') }}</p>
           </div>
         </div>
-        <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-xl shadow-sm">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-xl shadow-sm"
+        >
           <i class="fa-solid fa-calendar-day"></i>
           <span>{{ day }}</span>
         </div>
@@ -152,7 +156,10 @@ const getDueAmount = (amount: number) => {
     </div>
 
     <!-- Empty State -->
-    <div v-if="!timings.length" class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-12 text-center">
+    <div
+      v-if="!timings.length"
+      class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-12 text-center"
+    >
       <i class="fa-solid fa-calendar-xmark text-4xl text-secondary-300 mb-3"></i>
       <p class="text-secondary-500 font-medium">No slots scheduled for today</p>
       <p class="text-xs text-secondary-400 mt-1">Check back on a different day</p>
@@ -166,7 +173,9 @@ const getDueAmount = (amount: number) => {
         class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden"
       >
         <!-- Time Header -->
-        <div class="bg-gradient-to-r from-primary-50 to-primary-100 px-5 py-3 border-b border-primary-200">
+        <div
+          class="bg-gradient-to-r from-primary-50 to-primary-100 px-5 py-3 border-b border-primary-200"
+        >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center">
               <i class="fa-solid fa-clock text-white text-lg"></i>
@@ -199,13 +208,21 @@ const getDueAmount = (amount: number) => {
                 <div
                   :class="[
                     'w-9 h-9 rounded-full flex items-center justify-center',
-                    student.gender === 'Male' ? 'bg-blue-100' : student.gender === 'Female' ? 'bg-pink-100' : 'bg-secondary-100'
+                    student.gender === 'Male'
+                      ? 'bg-blue-100'
+                      : student.gender === 'Female'
+                      ? 'bg-pink-100'
+                      : 'bg-secondary-100'
                   ]"
                 >
                   <i
                     :class="[
                       'fa-solid fa-user text-sm',
-                      student.gender === 'Male' ? 'text-blue-500' : student.gender === 'Female' ? 'text-pink-400' : 'text-secondary-400'
+                      student.gender === 'Male'
+                        ? 'text-blue-500'
+                        : student.gender === 'Female'
+                        ? 'text-pink-400'
+                        : 'text-secondary-400'
                     ]"
                   ></i>
                 </div>
@@ -222,38 +239,53 @@ const getDueAmount = (amount: number) => {
               <div class="flex items-center gap-1.5">
                 <!-- Payment Due Badge -->
                 <div class="relative group" v-if="student.dueAmount && student.dueAmount > 0">
-                  <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-warning-100 text-warning-700 cursor-pointer hover:bg-warning-200 transition-colors">
+                  <span
+                    class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-warning-100 text-warning-700 cursor-pointer hover:bg-warning-200 transition-colors"
+                  >
                     <i class="fa-solid fa-circle-dollar text-xs"></i>
                   </span>
                   <div class="tooltip-content">
                     Amount Due: {{ getDueAmount(student.dueAmount) }}
                   </div>
                 </div>
-                <span v-else-if="student.dueAmount === 0" class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-secondary-100 text-secondary-500">
+                <span
+                  v-else-if="student.dueAmount === 0"
+                  class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-secondary-100 text-secondary-500"
+                >
                   <i class="fa-solid fa-circle-dollar text-xs"></i>
                 </span>
 
                 <!-- Attendance Badge -->
                 <div class="relative group" v-if="student.attendance === 'present'">
-                  <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-success-100 text-success-700 cursor-pointer hover:bg-success-200 transition-colors">
+                  <span
+                    class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-success-100 text-success-700 cursor-pointer hover:bg-success-200 transition-colors"
+                  >
                     <i class="fa-solid fa-check text-xs"></i>
                   </span>
                   <div class="tooltip-content">
                     <div v-for="(time, i) in student.timeLog" :key="i">{{ time }}</div>
                   </div>
                 </div>
-                <span v-else-if="student.attendance === 'absent'" class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-danger-100 text-danger-700">
+                <span
+                  v-else-if="student.attendance === 'absent'"
+                  class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-danger-100 text-danger-700"
+                >
                   <i class="fa-solid fa-xmark text-xs"></i>
                 </span>
                 <div class="relative group" v-else-if="student.attendance === 'in-class'">
-                  <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-blue-100 text-blue-700 cursor-pointer hover:bg-blue-200 transition-colors">
+                  <span
+                    class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-blue-100 text-blue-700 cursor-pointer hover:bg-blue-200 transition-colors"
+                  >
                     <i class="fa-solid fa-arrow-right text-xs"></i>
                   </span>
                   <div class="tooltip-content">
                     <div v-for="(time, i) in student.timeLog" :key="i">{{ time }}</div>
                   </div>
                 </div>
-                <span v-else class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-secondary-100 text-secondary-500">
+                <span
+                  v-else
+                  class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-secondary-100 text-secondary-500"
+                >
                   <i class="fa-solid fa-minus text-xs"></i>
                 </span>
 
@@ -262,7 +294,9 @@ const getDueAmount = (amount: number) => {
                   class="relative group"
                   v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
                 >
-                  <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-purple-100 text-purple-700 cursor-pointer hover:bg-purple-200 transition-colors text-[10px] font-bold">
+                  <span
+                    class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-purple-100 text-purple-700 cursor-pointer hover:bg-purple-200 transition-colors text-[10px] font-bold"
+                  >
                     EL
                   </span>
                   <div class="tooltip-content">Early Learner</div>

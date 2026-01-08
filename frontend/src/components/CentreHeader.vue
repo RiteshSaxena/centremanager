@@ -28,7 +28,9 @@ const logout = async () => {
 <template>
   <header class="flex justify-between items-start mb-6">
     <div v-if="isKioskApp" class="flex-1">
-      <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-secondary-200 text-sm font-medium text-secondary-700 rounded-xl shadow-sm">
+      <div
+        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-secondary-200 text-sm font-medium text-secondary-700 rounded-xl shadow-sm"
+      >
         <i class="fa-solid fa-calendar-day text-primary-600"></i>
         <span>{{ date }}</span>
       </div>

@@ -50,12 +50,7 @@ const handleChange = (event: Event) => {
       {{ label }}
     </label>
     <div class="relative">
-      <select
-        :value="modelValue"
-        :disabled="disabled"
-        :class="classes"
-        @change="handleChange"
-      >
+      <select :value="modelValue" :disabled="disabled" :class="classes" @change="handleChange">
         <option value="" disabled>{{ placeholder }}</option>
         <option
           v-for="option in options"

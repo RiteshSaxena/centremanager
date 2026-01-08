@@ -20,10 +20,7 @@ withDefaults(
     <div :class="padding ? 'p-5' : ''">
       <slot />
     </div>
-    <div
-      v-if="$slots.footer"
-      class="px-5 py-4 border-t border-secondary-100 bg-secondary-50/30"
-    >
+    <div v-if="$slots.footer" class="px-5 py-4 border-t border-secondary-100 bg-secondary-50/30">
       <slot name="footer" />
     </div>
   </div>

@@ -376,7 +376,13 @@ const modalTitle = computed(() => {
         >
           Cancel
         </Button>
-        <Button size="lg" @click.prevent="nextStep" :disabled="loading" :class="qrMode ? 'w-full' : 'flex-1'" class="text-lg h-14">
+        <Button
+          size="lg"
+          @click.prevent="nextStep"
+          :disabled="loading"
+          :class="qrMode ? 'w-full' : 'flex-1'"
+          class="text-lg h-14"
+        >
           {{ qrMode ? 'Next - Confirm Sign Out' : 'Next - Add Signature' }}
           <i class="fa-solid fa-arrow-right ml-2 text-xl"></i>
         </Button>

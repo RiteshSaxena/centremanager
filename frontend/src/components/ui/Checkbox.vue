@@ -21,7 +21,10 @@ const handleChange = (event: Event) => {
 </script>
 
 <template>
-  <label class="inline-flex items-center gap-3 cursor-pointer select-none" :class="{ 'opacity-50 cursor-not-allowed': disabled }">
+  <label
+    class="inline-flex items-center gap-3 cursor-pointer select-none"
+    :class="{ 'opacity-50 cursor-not-allowed': disabled }"
+  >
     <div class="relative">
       <input
         type="checkbox"

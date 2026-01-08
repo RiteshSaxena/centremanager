@@ -17,17 +17,8 @@
       <!-- Search Section -->
       <div class="bg-white rounded-xl border border-secondary-200 p-4 shadow-sm">
         <div class="flex gap-2">
-          <Input
-            v-model="search"
-            placeholder="Search student or staff name..."
-            class="flex-1"
-          />
-          <Button
-            v-if="search.trim().length"
-            variant="ghost"
-            size="sm"
-            @click="clearSearch"
-          >
+          <Input v-model="search" placeholder="Search student or staff name..." class="flex-1" />
+          <Button v-if="search.trim().length" variant="ghost" size="sm" @click="clearSearch">
             <i class="fa-solid fa-xmark"></i>
           </Button>
         </div>
@@ -44,11 +35,7 @@
           <h3 class="text-sm font-semibold text-secondary-700 uppercase tracking-wide">
             Selected Student
           </h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            @click="clearSearch"
-          >
+          <Button variant="ghost" size="sm" @click="clearSearch">
             <i class="fa-solid fa-xmark mr-1"></i> Clear
           </Button>
         </div>
@@ -60,11 +47,12 @@
         />
       </div>
 
-      <div v-else class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-8 text-center">
+      <div
+        v-else
+        class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-8 text-center"
+      >
         <i class="fa-solid fa-search text-3xl text-secondary-300 mb-3"></i>
-        <p class="text-secondary-500 text-sm">
-          Search for a student or staff member to sign in
-        </p>
+        <p class="text-secondary-500 text-sm">Search for a student or staff member to sign in</p>
       </div>
     </div>
 
@@ -79,7 +67,10 @@
             @click="logBookStore.fetchList"
             :disabled="logBookStore.fetching"
           >
-            <i class="fa-solid fa-arrows-rotate" :class="{ 'animate-spin': logBookStore.fetching }"></i>
+            <i
+              class="fa-solid fa-arrows-rotate"
+              :class="{ 'animate-spin': logBookStore.fetching }"
+            ></i>
           </Button>
           <Button size="sm" @click="qrSignOut">
             <i class="fa-solid fa-qrcode"></i>
@@ -91,11 +82,7 @@
       <div class="relative">
         <div class="bg-white rounded-xl border border-secondary-200 p-4 shadow-sm">
           <div class="flex gap-2">
-            <Input
-              v-model="signedInFilter"
-              placeholder="Filter signed in..."
-              class="flex-1"
-            />
+            <Input v-model="signedInFilter" placeholder="Filter signed in..." class="flex-1" />
             <Button
               v-if="signedInFilter.length || signedInFilterId"
               variant="ghost"

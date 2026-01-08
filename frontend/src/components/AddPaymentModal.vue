@@ -81,12 +81,7 @@ const emit = defineEmits(['update:show', 'onSuccess']);
           label="Payment Date"
           required
         />
-        <Input
-          v-model="guestData.notes"
-          type="text"
-          placeholder="Notes (Optional)"
-          label="Notes"
-        />
+        <Input v-model="guestData.notes" type="text" placeholder="Notes (Optional)" label="Notes" />
       </div>
     </form>
     <template #footer>

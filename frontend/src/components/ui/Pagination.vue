@@ -96,18 +96,18 @@ const goToPage = (page: number) => {
         @click="goToPage(currentPage - 1)"
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
       </button>
 
       <!-- Page numbers -->
       <template v-for="page in visiblePages" :key="page">
-        <span
-          v-if="page === '...'"
-          class="px-2 py-1 text-secondary-400"
-        >
-          ...
-        </span>
+        <span v-if="page === '...'" class="px-2 py-1 text-secondary-400"> ... </span>
         <button
           v-else
           type="button"

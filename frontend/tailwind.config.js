@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -18,7 +15,7 @@ export default {
           600: '#0B8490',
           700: '#08636C',
           800: '#054248',
-          900: '#032124',
+          900: '#032124'
         },
         // Secondary - Slate
         secondary: {
@@ -31,7 +28,7 @@ export default {
           600: '#475569',
           700: '#334155',
           800: '#1E293B',
-          900: '#0F172A',
+          900: '#0F172A'
         },
         // Accent - Amber
         accent: {
@@ -44,7 +41,7 @@ export default {
           600: '#D97706',
           700: '#B45309',
           800: '#92400E',
-          900: '#78350F',
+          900: '#78350F'
         },
         // Success - Green
         success: {
@@ -57,7 +54,7 @@ export default {
           600: '#059669',
           700: '#047857',
           800: '#065F46',
-          900: '#064E3B',
+          900: '#064E3B'
         },
         // Warning - Amber (same as accent)
         warning: {
@@ -70,7 +67,7 @@ export default {
           600: '#D97706',
           700: '#B45309',
           800: '#92400E',
-          900: '#78350F',
+          900: '#78350F'
         },
         // Danger - Red
         danger: {
@@ -83,29 +80,34 @@ export default {
           600: '#DC2626',
           700: '#B91C1C',
           800: '#991B1B',
-          900: '#7F1D1D',
-        },
+          900: '#7F1D1D'
+        }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        sans: [
+          'Inter',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'sans-serif'
+        ]
       },
       boxShadow: {
-        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-        'card': '0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1)',
-        'modal': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        soft: '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+        card: '0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1)',
+        modal: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
       },
       minHeight: {
-        'touch': '44px',
+        touch: '44px'
       },
       minWidth: {
-        'touch': '44px',
+        touch: '44px'
       },
       screens: {
-        'xs': '375px',
-      },
-    },
+        xs: '375px'
+      }
+    }
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
-}
+  plugins: [require('@tailwindcss/forms')]
+};

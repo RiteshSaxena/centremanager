@@ -105,14 +105,12 @@ watch(
       <p class="text-secondary-600">Initializing camera...</p>
     </div>
     <div v-if="permissionError">
-      <p class="text-secondary-600 mb-3">Unable to access camera. Please allow camera access in your settings.</p>
+      <p class="text-secondary-600 mb-3">
+        Unable to access camera. Please allow camera access in your settings.
+      </p>
       <Button @click="startScan">Retry</Button>
     </div>
-    <video
-      id="qr-scanner"
-      autoplay
-      :class="['w-full h-full', !isScanning ? 'w-0 h-0' : '']"
-    />
+    <video id="qr-scanner" autoplay :class="['w-full h-full', !isScanning ? 'w-0 h-0' : '']" />
 
     <template #footer>
       <Button variant="outline" size="lg" class="w-full" @click="emit('update:show', false)">

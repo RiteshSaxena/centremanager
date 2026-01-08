@@ -178,7 +178,9 @@ onMounted(async () => {
     <div class="space-y-6">
       <!-- Payments Overdue Section -->
       <div class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden">
-        <div class="bg-gradient-to-r from-danger-50 to-danger-100 px-5 py-4 border-b border-danger-200">
+        <div
+          class="bg-gradient-to-r from-danger-50 to-danger-100 px-5 py-4 border-b border-danger-200"
+        >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-danger-500 flex items-center justify-center">
               <i class="fa-solid fa-exclamation-triangle text-white text-lg"></i>
@@ -217,7 +219,9 @@ onMounted(async () => {
                   <p class="font-medium text-secondary-900">{{ row.name }}</p>
                   <p class="text-sm mt-1">
                     <span class="text-secondary-500">Due:</span>
-                    <span class="font-semibold text-danger-600 ml-1">{{ row.dueAmountFormatted }}</span>
+                    <span class="font-semibold text-danger-600 ml-1">{{
+                      row.dueAmountFormatted
+                    }}</span>
                   </p>
                 </div>
                 <Button size="sm" @click="openPaymentModal(row)">Add</Button>
@@ -239,7 +243,9 @@ onMounted(async () => {
 
       <!-- Payment History Section -->
       <div class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden">
-        <div class="bg-gradient-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200">
+        <div
+          class="bg-gradient-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200"
+        >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center">
               <i class="fa-solid fa-clock-rotate-left text-white text-lg"></i>
@@ -258,17 +264,8 @@ onMounted(async () => {
               Search by Student
             </label>
             <div class="flex gap-2 items-center max-w-md">
-              <Input
-                v-model="search"
-                type="search"
-                placeholder="Enter student name..."
-              />
-              <Button
-                v-if="search.trim().length"
-                variant="ghost"
-                size="sm"
-                @click="clearSearch"
-              >
+              <Input v-model="search" type="search" placeholder="Enter student name..." />
+              <Button v-if="search.trim().length" variant="ghost" size="sm" @click="clearSearch">
                 <i class="fa-solid fa-xmark"></i>
               </Button>
             </div>

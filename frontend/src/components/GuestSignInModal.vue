@@ -62,7 +62,10 @@ const validateStep1 = () => {
     isValid = false;
   }
 
-  if (guestData.phoneNumber && !/^\d{10,}$/.test(guestData.phoneNumber.toString().replace(/\D/g, ''))) {
+  if (
+    guestData.phoneNumber &&
+    !/^\d{10,}$/.test(guestData.phoneNumber.toString().replace(/\D/g, ''))
+  ) {
     errors.value.phoneNumber = 'Please enter a valid phone number (at least 10 digits)';
     isValid = false;
   }
@@ -183,17 +186,9 @@ const emit = defineEmits(['update:show']);
       <signature-pad ref="signaturePad" />
     </div>
     <template #footer>
-      <Button v-if="step === 1" type="submit" form="add-guardian-form">
-        Next
-      </Button>
-      <Button v-if="step === 2" variant="secondary" @click.prevent="step = 1">
-        Back
-      </Button>
-      <Button
-        v-if="step === 2"
-        @click.prevent="onSubmit"
-        :disabled="loading"
-      >
+      <Button v-if="step === 1" type="submit" form="add-guardian-form"> Next </Button>
+      <Button v-if="step === 2" variant="secondary" @click.prevent="step = 1"> Back </Button>
+      <Button v-if="step === 2" @click.prevent="onSubmit" :disabled="loading">
         {{ loading ? '...' : 'Submit' }}
       </Button>
     </template>

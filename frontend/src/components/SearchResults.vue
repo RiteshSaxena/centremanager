@@ -51,10 +51,7 @@ const handleItemSelect = (item: any) => {
       </div>
 
       <!-- Empty State -->
-      <div
-        v-else-if="!searchStore.results.length"
-        class="text-center py-8"
-      >
+      <div v-else-if="!searchStore.results.length" class="text-center py-8">
         <i class="fa-solid fa-inbox text-4xl text-secondary-300 mb-3"></i>
         <p class="text-sm text-secondary-500">No results found.</p>
         <p class="text-xs text-secondary-400 mt-1">Try a different search term</p>

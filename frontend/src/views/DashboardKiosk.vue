@@ -3,7 +3,9 @@
     <div class="w-full max-w-2xl px-4">
       <!-- Welcome Header -->
       <div class="text-center mb-8" v-if="!(isSearched || selectedStudent)">
-        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-3xl mb-4 shadow-xl">
+        <div
+          class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-3xl mb-4 shadow-xl"
+        >
           <i class="fa-solid fa-building text-4xl text-white"></i>
         </div>
         <h1 class="text-4xl font-bold text-secondary-900 mb-2">
@@ -47,8 +49,12 @@
             @click="qrSignIn"
             class="group bg-white rounded-2xl border border-secondary-200 shadow-lg hover:shadow-xl transition-all duration-200 p-6 text-center hover:border-primary-400"
           >
-            <div class="w-16 h-16 rounded-xl bg-primary-100 group-hover:bg-primary-500 flex items-center justify-center mx-auto mb-4 transition-colors">
-              <i class="fa-solid fa-qrcode text-3xl text-primary-600 group-hover:text-white transition-colors"></i>
+            <div
+              class="w-16 h-16 rounded-xl bg-primary-100 group-hover:bg-primary-500 flex items-center justify-center mx-auto mb-4 transition-colors"
+            >
+              <i
+                class="fa-solid fa-qrcode text-3xl text-primary-600 group-hover:text-white transition-colors"
+              ></i>
             </div>
             <h3 class="font-bold text-secondary-900 mb-1">Scan QR Code</h3>
             <p class="text-xs text-secondary-500">Quick sign in with your QR</p>
@@ -59,8 +65,12 @@
             @click="guestSignInModal = true"
             class="group bg-white rounded-2xl border border-secondary-200 shadow-lg hover:shadow-xl transition-all duration-200 p-6 text-center hover:border-success-400"
           >
-            <div class="w-16 h-16 rounded-xl bg-success-100 group-hover:bg-success-500 flex items-center justify-center mx-auto mb-4 transition-colors">
-              <i class="fa-solid fa-user-plus text-3xl text-success-600 group-hover:text-white transition-colors"></i>
+            <div
+              class="w-16 h-16 rounded-xl bg-success-100 group-hover:bg-success-500 flex items-center justify-center mx-auto mb-4 transition-colors"
+            >
+              <i
+                class="fa-solid fa-user-plus text-3xl text-success-600 group-hover:text-white transition-colors"
+              ></i>
             </div>
             <h3 class="font-bold text-secondary-900 mb-1">Guest Sign In</h3>
             <p class="text-xs text-secondary-500">Visitors and guests</p>
@@ -71,8 +81,12 @@
             @click="guestSignOutModal = true"
             class="group bg-white rounded-2xl border border-secondary-200 shadow-lg hover:shadow-xl transition-all duration-200 p-6 text-center hover:border-warning-400"
           >
-            <div class="w-16 h-16 rounded-xl bg-warning-100 group-hover:bg-warning-500 flex items-center justify-center mx-auto mb-4 transition-colors">
-              <i class="fa-solid fa-user-minus text-3xl text-warning-600 group-hover:text-white transition-colors"></i>
+            <div
+              class="w-16 h-16 rounded-xl bg-warning-100 group-hover:bg-warning-500 flex items-center justify-center mx-auto mb-4 transition-colors"
+            >
+              <i
+                class="fa-solid fa-user-minus text-3xl text-warning-600 group-hover:text-white transition-colors"
+              ></i>
             </div>
             <h3 class="font-bold text-secondary-900 mb-1">Guest Sign Out</h3>
             <p class="text-xs text-secondary-500">Leaving the centre</p>
@@ -139,7 +153,13 @@ import SignInModal from '@/components/SignInModal.vue';
 import SignOutModal from '@/components/SignOutModal.vue';
 import { Button } from '@/components/ui';
 
-import { useSearchStore, useLogBookStore, useStudentStore, useSlotStore, useUserStore } from '@/stores';
+import {
+  useSearchStore,
+  useLogBookStore,
+  useStudentStore,
+  useSlotStore,
+  useUserStore
+} from '@/stores';
 import errorHandler from '@/utils/error-handler';
 
 const slotStore = useSlotStore();
