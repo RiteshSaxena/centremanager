@@ -147,16 +147,11 @@ const updateFeedbackIcon = () => {
 };
 
 const rowPhoneNumber = computed(() => {
-  if (props.item?.type === 'Student') {
+  if (props.item?.type === 'Student' || props.item?.type === 'StudentWithParent' || props.item?.type === 'Parent') {
     return props.item.parent?.contactNumber || '';
-  }
-  if (props.item?.type === 'Staff') {
+  } else if (props.item?.type === 'Staff') {
     return props.item.staff?.phoneNumber || '';
-  }
-  if (props.item?.type === 'Parent') {
-    return props.item.parent?.contactNumber || '';
-  }
-  if (props.item?.type === 'Guest') {
+  } else if (props.item?.type === 'Guest') {
     return props.item.guest?.phoneNumber || '';
   }
   return '';
@@ -192,7 +187,7 @@ const iconColorClass = computed(() => {
     </div>
     <div class="d-flex gap-1 mr-2">
       <a
-        v-if="props.item?.type === 'Student'"
+        v-if="props.item?.type === 'Student' || props.item?.type === 'StudentWithParent'"
         href="#"
         @click.stop.prevent="$emit('onFeedback', props.item)"
         :class="['btn align-items-center d-flex rounded-3', feedbackBtnClass]"
