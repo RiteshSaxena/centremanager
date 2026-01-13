@@ -3,3 +3,4 @@ export { logBookStore as useLogBookStore } from './log-book';
 export { slotStore as useSlotStore } from './slot';
 export { studentStore as useStudentStore } from './student';
 export { userStore as useUserStore } from './user';
+export { useFeedbackStore } from './feedback';

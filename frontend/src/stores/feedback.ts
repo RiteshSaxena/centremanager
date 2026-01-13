@@ -33,19 +33,14 @@ export interface FeedbackPayload {
 
 export const useFeedbackStore = defineStore('feedback', {
   state: () => ({
-    loading: false,
-    todayFeedback: null as Feedback | null
+    loading: false
   }),
 
   actions: {
-    resetTodayFeedback() {
-      this.todayFeedback = null;
-    },
     async createFeedback(payload: FeedbackPayload) {
       try {
         this.loading = true;
         const res = await axios.post('/feedback/custom-create', payload);
-        this.todayFeedback = { ...res.data, child: payload.child };
         return res.data;
       } finally {
         this.loading = false;
@@ -56,8 +51,7 @@ export const useFeedbackStore = defineStore('feedback', {
       try {
         this.loading = true;
         const res = await axios.get(`/feedback/by-child/${childId}/today`);
-        this.todayFeedback = res.data?.[0] || null;
-        return this.todayFeedback;
+        return res.data?.[0] || null;
       } finally {
         this.loading = false;
       }
@@ -66,7 +60,6 @@ export const useFeedbackStore = defineStore('feedback', {
       try {
         this.loading = true;
         const res = await axios.put(`/feedback/by-child/${childId}/today`, payload);
-        this.todayFeedback = { ...res.data, child: childId };
         return res.data;
       } finally {
         this.loading = false;
