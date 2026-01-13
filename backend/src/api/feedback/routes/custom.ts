@@ -16,7 +16,7 @@ export default {
         auth: {}, // set false if public API
       },
     },
-     {
+    {
       method: 'PUT',
       path: '/feedback/by-child/:childId/today',
       handler: 'feedback.updateTodayFeedbackByChild',

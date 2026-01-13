@@ -2,10 +2,8 @@
 import type { LogRecord } from '@/types';
 import { computed, onMounted, ref, watch } from 'vue';
 import moment from 'moment';
-import { userStore as useUserStore } from '@/stores/user';
-import { useFeedbackStore } from '@/stores/feedback';
+import { useUserStore } from '@/stores';
 
-const feedbackStore = useFeedbackStore();
 const feedbackData = ref<any | null>(null);
 const feedbackBtnClass = ref('btn-secondary');
 const userStore = useUserStore();
@@ -19,27 +17,28 @@ const desc = ref('');
 
 const fetchFeedbackStatus = async () => {
   if (props.item.type !== 'Student' || !props.item.student?.id) return;
-  const feedback = await feedbackStore.fetchTodayFeedbackByChild(props.item.student.id);
-  feedbackData.value = feedback; // already single object or null
+  // const feedback = await feedbackStore.fetchTodayFeedbackByChild(props.item.student.id);
+  feedbackData.value = props.item.feedback;
   updateFeedbackIcon();
 };
 
 watch(
-  () => props.item.student?.id,
+  () => props.item.feedback,
   () => fetchFeedbackStatus()
 );
 
 // Auto-update icon when feedback is submitted for this student
-watch(
-  () => feedbackStore.todayFeedback,
-  (newFeedback) => {
-    if (props.item.type !== 'Student' || !props.item.student?.id) return;
-    if (newFeedback?.child === props.item.student.id) {
-      feedbackData.value = newFeedback;
-      updateFeedbackIcon();
-    }
-  }
-);
+// watch(
+//   () => feedbackStore.todayFeedback,
+//   (newFeedback) => {
+//     if (props.item.type !== 'Student' || !props.item.student?.id) return;
+//     if (newFeedback?.child === props.item.student.id) {
+//       feedbackData.value = newFeedback;
+//       updateFeedbackIcon();
+//     }
+//   }
+// );
+
 const updateVars = () => {
   name.value = '';
   type.value = '';
@@ -124,30 +123,43 @@ const updateFeedbackIcon = () => {
     return;
   }
   const hasFeedbackText = !!f.feedback?.trim();
-  const hasMath = f.mathScore !== null && f.mathScore !== undefined && f.mathTime;
 
-  const hasEnglish = f.englishScore !== null && f.englishScore !== undefined && f.englishTime;
+  const hasMaths = props.item.student?.subjects?.some((subj: any) => subj.name === 'Maths');
+  const hasEnglish = props.item.student?.subjects?.some((subj: any) => subj.name === 'English');
+  const mathFilled = f.mathScore !== null && f.mathScore !== undefined && f.mathTime;
+  const englishFilled = f.englishScore !== null && f.englishScore !== undefined && f.englishTime;
 
   let isComplete = false;
-  // both subjects
-  if (hasMath && hasEnglish) {
-    isComplete = hasFeedbackText;
+
+  if (hasFeedbackText) {
+    if (hasMaths && hasEnglish) {
+      if (mathFilled && englishFilled) {
+        isComplete = true;
+      }
+    } else if (hasMaths && !hasEnglish) {
+      if (mathFilled) {
+        isComplete = true;
+      }
+    } else if (!hasMaths && hasEnglish) {
+      if (englishFilled) {
+        isComplete = true;
+      }
+    } else {
+      isComplete = true;
+    }
   }
-  // only maths
-  else if (hasMath && !hasEnglish) {
-    isComplete = hasFeedbackText;
-  }
-  // only english
-  else if (!hasMath && hasEnglish) {
-    isComplete = hasFeedbackText;
-  }
+
   if (isComplete) {
     feedbackBtnClass.value = 'btn-success';
   }
 };
 
 const rowPhoneNumber = computed(() => {
-  if (props.item?.type === 'Student' || props.item?.type === 'StudentWithParent' || props.item?.type === 'Parent') {
+  if (
+    props.item?.type === 'Student' ||
+    props.item?.type === 'StudentWithParent' ||
+    props.item?.type === 'Parent'
+  ) {
     return props.item.parent?.contactNumber || '';
   } else if (props.item?.type === 'Staff') {
     return props.item.staff?.phoneNumber || '';

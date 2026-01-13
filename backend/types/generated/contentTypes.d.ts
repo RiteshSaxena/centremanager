@@ -388,7 +388,7 @@ export interface ApiFeedbackFeedback extends Schema.CollectionType {
     singularName: 'feedback';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     child: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'api::child.child'>;
@@ -402,7 +402,6 @@ export interface ApiFeedbackFeedback extends Schema.CollectionType {
     isPercentFeedbackRequired: Attribute.Boolean;
     mathScore: Attribute.Decimal;
     mathTime: Attribute.BigInteger;
-    publishedAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     updatedBy: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'admin::user'> & Attribute.Private;
     updatedByUser: Attribute.Relation<'api::feedback.feedback', 'oneToOne', 'plugin::users-permissions.user'>;

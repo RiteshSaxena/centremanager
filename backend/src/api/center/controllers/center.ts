@@ -115,7 +115,7 @@ export default factories.createCoreController('api::center.center', () => ({
         phoneNumber: payload.phoneNumber,
         role: roles[0].id,
         confirmed: true,
-        type:'admin',
+        type: 'admin',
       },
     });
 

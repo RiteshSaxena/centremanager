@@ -15,7 +15,7 @@ const feedbackRefreshKey = ref(0);
 const handleFeedbackUpdated = () => {
   feedbackRefreshKey.value++;
 };
-const emit = defineEmits(['onSelect', 'onFeedback','onFeedbackUpdated']);
+const emit = defineEmits(['onSelect', 'onFeedback', 'onFeedbackUpdated']);
 
 const userStore = useUserStore();
 const logBookStore = useLogBookStore();

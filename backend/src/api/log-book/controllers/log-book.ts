@@ -303,14 +303,14 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
   },
   async list(ctx) {
     // const populate = ['student', 'parent', 'staff', 'guest'];
-      const populate: any = {
-    student: {
-      populate: ['subjects'],
-    },
-    parent: true,
-    staff: true,
-    guest: true,
-  };
+    const populate: any = {
+      student: {
+        populate: ['subjects'],
+      },
+      parent: true,
+      staff: true,
+      guest: true,
+    };
     const andFilters: any[] = [
       {
         center: ctx.state.center.id as any,
@@ -354,7 +354,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
         },
       });
       // populate.push('signatureIn');
-          populate.signatureIn = true;
+      populate.signatureIn = true;
     }
 
     const entries = await strapi.entityService.findMany('api::log-book.log-book', {
@@ -365,21 +365,43 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       sort: sort as any,
     });
 
-    return entries.map((entry: any) => {
-      if (entry.student) {
-        entry.student = sanitizeChild(entry.student);
-      }
-      if (entry.staff) {
-        entry.staff = sanitizeUser(entry.staff);
-      }
+    const today = new Date().toISOString().split('T')[0];
 
-      if (entry.signatureIn) {
-        entry.signatureId = entry.signatureIn.id;
-      }
+    const entriesWithFeedback = await Promise.all(
+      entries.map(async (entry: any) => {
+        if (entry.student) {
+          entry.student = sanitizeChild(entry.student);
+          const feedback = await strapi.entityService.findMany('api::feedback.feedback', {
+            filters: {
+              child: entry.student.id,
+              createdDate: today,
+            },
+            populate: {
+              createdByUser: true,
+            },
+            limit: 1,
+          });
+          if (feedback.length) {
+            entry.feedback = {
+              ...feedback[0],
+              createdByUser: sanitizeUser(feedback[0].createdByUser),
+            };
+          }
+        }
+        if (entry.staff) {
+          entry.staff = sanitizeUser(entry.staff);
+        }
 
-      delete entry.signatureIn;
+        if (entry.signatureIn) {
+          entry.signatureId = entry.signatureIn.id;
+        }
 
-      return entry;
-    });
+        delete entry.signatureIn;
+
+        return entry;
+      })
+    );
+
+    return entriesWithFeedback;
   },
 }));

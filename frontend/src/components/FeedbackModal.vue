@@ -2,9 +2,10 @@
 import type { LogRecord } from '@/types';
 import { computed, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
-import { useFeedbackStore } from '@/stores/feedback';
+import { useFeedbackStore, useLogBookStore } from '@/stores';
 import Modal from '@/components/base/Modal.vue';
 
+const logBookStore = useLogBookStore();
 const feedbackStore = useFeedbackStore();
 const toast = useToast();
 
@@ -140,13 +141,14 @@ const submitFeedback = async () => {
       feedback: form.feedback
     };
 
-    if (feedbackStore.todayFeedback) {
+    if (props.item.feedback) {
       await feedbackStore.updateFeedback(props.item.student.id, payload);
       toast.success('Feedback updated successfully');
     } else {
       await feedbackStore.createFeedback(payload);
       toast.success('Feedback submitted successfully');
     }
+    await logBookStore.fetchList();
     emit('onSuccess');
     emit('update:show', false);
   } catch {
@@ -193,14 +195,12 @@ watch(
 
     resetForm();
     resetErrors();
-    feedbackStore.resetTodayFeedback();
 
     if (props.item?.student?.id) {
       try {
         loading.value = true;
-        const feedback = await feedbackStore.fetchTodayFeedbackByChild(props.item.student.id);
-        if (feedback) {
-          populateFormFromFeedback(feedback);
+        if (props.item.feedback) {
+          populateFormFromFeedback(props.item.feedback);
         }
       } finally {
         loading.value = false;
@@ -377,7 +377,7 @@ watch(
 
     <template #footer>
       <button type="button" class="btn btn-info" :disabled="loading" @click="submitFeedback">
-        {{ feedbackStore.todayFeedback ? 'Update' : 'Submit' }}
+        {{ props.item?.feedback ? 'Update' : 'Submit' }}
       </button>
     </template>
   </Modal>
