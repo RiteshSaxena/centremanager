@@ -101,11 +101,11 @@ const isEmpty = computed(() => !props.loading && props.data.length === 0);
       <div v-else-if="isEmpty" class="p-8 text-center text-secondary-400">
         {{ emptyText }}
       </div>
-      <div v-else class="divide-y divide-secondary-100">
+      <div v-else class="">
         <div
           v-for="(row, index) in data"
           :key="index"
-          class="p-5 hover:bg-secondary-50 transition-colors"
+          class="hover:bg-secondary-50 transition-colors"
         >
           <slot name="mobile-card" :row="row" :index="index">
             <div class="space-y-2">

@@ -7,6 +7,7 @@ import type { LogRecord, SearchResult } from '@/types';
 import { Input } from '@/components/ui';
 import SearchResults from '@/components/SearchResults.vue';
 import { Button, Spinner } from '@/components/ui';
+import FeedbackModal from '@/components/FeedbackModal.vue';
 import { debounce } from 'lodash';
 
 const searchStore = useSearchStore();
@@ -22,6 +23,8 @@ const staffId = ref<number | null>(null);
 const records = ref<LogRecord[]>([]);
 const isSearched = ref(false);
 const loading = ref(false);
+const showFeedbackModal = ref(false);
+const selectedRecord = ref<LogRecord | null>(null);
 
 const todayDate = moment().format('YYYY-MM-DD');
 
@@ -166,6 +169,38 @@ const absentChildren = computed(() => {
 
   return allChildren.filter((child) => !presentChildren.includes(child.id));
 });
+
+const onRowClick = (recordId) => {
+  const record = records.value.find((r) => r.id === recordId);
+  if (!record) return;
+
+  // Only open feedback modal for Student records
+  if (record.type === 'Student' || record.type === 'StudentWithParent') {
+    selectedRecord.value = record;
+    showFeedbackModal.value = true;
+  }
+};
+
+const onAbsentStudentClick = (child) => {
+  // Create a mock LogRecord for absent student to work with FeedbackModal
+  const mockRecord = {
+    id: null,
+    type: 'Student',
+    student: child,
+    parent: null,
+    staff: null,
+    guest: null,
+    signInTime: null,
+    signOutTime: null
+  };
+  selectedRecord.value = mockRecord;
+  showFeedbackModal.value = true;
+};
+
+const onFeedbackSuccess = () => {
+  // Optionally refresh records after feedback is submitted
+  showFeedbackModal.value = false;
+};
 
 onMounted(async () => {
   await slotStore.fetchSlots();
@@ -322,7 +357,13 @@ onMounted(async () => {
               <tr
                 v-for="(record, index) in reportList"
                 :key="record.id"
-                class="hover:bg-secondary-50 transition-colors"
+                :class="[
+                  'transition-colors',
+                  (record.type === 'Student' || record.type === 'Student & Parent')
+                    ? 'hover:bg-primary-50 cursor-pointer'
+                    : 'hover:bg-secondary-50'
+                ]"
+                @click="onRowClick(record.id)"
               >
                 <td class="px-4 py-3 text-sm text-secondary-600">{{ index + 1 }}</td>
                 <td class="px-4 py-3">
@@ -416,7 +457,8 @@ onMounted(async () => {
               <tr
                 v-for="(record, index) in absentChildren"
                 :key="record.id"
-                class="hover:bg-secondary-50 transition-colors"
+                class="hover:bg-primary-50 cursor-pointer transition-colors"
+                @click="onAbsentStudentClick(record)"
               >
                 <td class="px-4 py-3 text-sm text-secondary-600">{{ index + 1 }}</td>
                 <td class="px-4 py-3">
@@ -437,5 +479,13 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+
+    <!-- Feedback Modal -->
+    <FeedbackModal
+      :show="showFeedbackModal"
+      :item="selectedRecord"
+      @update:show="showFeedbackModal = $event"
+      @onSuccess="onFeedbackSuccess"
+    />
   </div>
 </template>

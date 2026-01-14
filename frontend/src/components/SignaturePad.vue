@@ -43,7 +43,7 @@ defineExpose({
       ref="canvas"
       v-model:image="image"
       :width="canvasWidth || 1"
-      :height="400"
+      :height="300"
       stroke-type="dash"
       line-cap="round"
       line-join="round"

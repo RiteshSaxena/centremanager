@@ -115,25 +115,25 @@ const onSubmit = async () => {
     @close="closeModal"
   >
     <!-- QR Mode Processing -->
-    <div v-if="qrMode" class="w-full text-center py-12">
+    <div v-if="qrMode" class="w-full text-center py-8 md:py-12">
       <Spinner size="lg" />
-      <p class="text-secondary-600 mt-4">Processing sign in...</p>
+      <p class="text-sm md:text-base text-secondary-600 mt-3 md:mt-4">Processing sign in...</p>
     </div>
 
     <div v-else>
       <!-- Person Info Card -->
       <div
-        class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 mb-6 border border-primary-200"
+        class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl md:rounded-2xl p-3 md:p-6 mb-4 md:mb-6 border border-primary-200"
       >
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 md:gap-4">
           <div
-            class="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0"
+            class="w-10 h-10 md:w-16 md:h-16 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0"
           >
-            <i class="fa-solid fa-user text-white text-2xl"></i>
+            <i class="fa-solid fa-user text-white text-base md:text-2xl"></i>
           </div>
           <div>
-            <p class="text-base text-primary-600 font-medium mb-1">Signing In</p>
-            <p class="text-2xl font-bold text-primary-900">
+            <p class="text-xs md:text-base text-primary-600 font-medium mb-0.5 md:mb-1">Signing In</p>
+            <p class="text-sm md:text-2xl font-bold text-primary-900">
               {{ item?.firstName }} {{ item?.lastName }}
             </p>
           </div>
@@ -141,11 +141,11 @@ const onSubmit = async () => {
       </div>
 
       <!-- Signature Section -->
-      <div class="bg-white rounded-2xl border-2 border-secondary-200 p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-signature text-primary-600 text-2xl flex-shrink-0"></i>
-            <label class="text-xl font-bold text-secondary-900">Signature Required</label>
+      <div class="bg-white rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6">
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <div class="flex items-center gap-2 md:gap-3">
+            <i class="fa-solid fa-signature text-primary-600 text-base md:text-2xl flex-shrink-0"></i>
+            <label class="text-base md:text-xl font-bold text-secondary-900">Signature Required</label>
           </div>
           <Button
             variant="ghost"
@@ -154,31 +154,31 @@ const onSubmit = async () => {
             :disabled="loading"
             class="text-secondary-500 hover:text-secondary-700"
           >
-            <i class="fa-solid fa-eraser mr-1"></i>
-            Clear
+            <i class="fa-solid fa-eraser mr-1 text-xs md:text-sm"></i>
+            <span class="text-xs md:text-sm">Clear</span>
           </Button>
         </div>
-        <p class="text-base text-secondary-600 mb-4">Please sign below to confirm sign in</p>
+        <p class="text-sm md:text-base text-secondary-600 mb-3 md:mb-4">Please sign below to confirm sign in</p>
         <signature-pad ref="signaturePad" />
-        <div class="mt-4" v-if="item?.type === 'parent'">
+        <div class="mt-3 md:mt-4" v-if="item?.type === 'parent'">
           <Checkbox v-model="isParentWithStudent" label="Is Parent coming with student?" />
         </div>
       </div>
     </div>
 
     <template #footer>
-      <div v-if="!qrMode" class="flex gap-3 w-full">
+      <div v-if="!qrMode" class="flex gap-2 md:gap-3 w-full">
         <Button
           variant="outline"
-          size="lg"
+          size="md"
           @click="closeModal"
           :disabled="loading"
-          class="flex-1 text-lg h-14"
+          class="flex-1 text-sm md:text-base"
         >
           Cancel
         </Button>
-        <Button size="lg" @click.prevent="onSubmit" :disabled="loading" class="flex-1 text-lg h-14">
-          <i v-if="!loading" class="fa-solid fa-check mr-2 text-xl"></i>
+        <Button size="md" @click.prevent="onSubmit" :disabled="loading" class="flex-1 text-sm md:text-base">
+          <i v-if="!loading" class="fa-solid fa-check mr-1 md:mr-2 text-sm md:text-base"></i>
           {{ loading ? 'Processing...' : 'Confirm Sign In' }}
         </Button>
       </div>

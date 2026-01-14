@@ -34,7 +34,7 @@ const isKioskApp = APP_TYPE === 'app-kiosk';
 const loading = ref(false);
 
 const getDueAmount = (amount: number) => {
-  return amount > 1 ? `£${amount}` : 'NA';
+  return amount >= 1 ? `£${amount}` : 'NA';
 };
 
 const onSubmit = async (data: any) => {

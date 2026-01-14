@@ -237,54 +237,54 @@ const modalTitle = computed(() => {
 <template>
   <Modal size="xl" :open="show" :closable="!qrMode" :title="modalTitle" @close="closeModal">
     <!--LOADER -->
-    <div v-if="loading" class="w-full flex justify-center items-center py-12">
+    <div v-if="loading" class="w-full flex justify-center items-center py-8 md:py-12">
       <Spinner size="lg" />
     </div>
     <template v-else>
       <!-- Person Info Card (Always shown) -->
       <div
-        class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 mb-6 border border-primary-200"
+        class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl md:rounded-2xl p-3 md:p-6 mb-4 md:mb-6 border border-primary-200"
       >
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 md:gap-4">
           <div
-            class="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0"
+            class="w-10 h-10 md:w-16 md:h-16 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0"
           >
-            <i class="fa-solid fa-user text-white text-2xl"></i>
+            <i class="fa-solid fa-user text-white text-base md:text-2xl"></i>
           </div>
           <div>
-            <p class="text-base text-primary-600 font-medium mb-1">Signing Out</p>
-            <p class="text-2xl font-bold text-primary-900">{{ selectedName }}</p>
+            <p class="text-xs md:text-base text-primary-600 font-medium mb-0.5 md:mb-1">Signing Out</p>
+            <p class="text-sm md:text-2xl font-bold text-primary-900">{{ selectedName }}</p>
           </div>
         </div>
       </div>
 
       <!-- Step 1: Performance Review -->
       <div v-if="step === 1 && shouldShowFeedback">
-        <h3 class="text-base font-semibold text-secondary-700 uppercase tracking-wide mb-4">
+        <h3 class="text-sm md:text-base font-semibold text-secondary-700 uppercase tracking-wide mb-3 md:mb-4">
           Today's Performance
         </h3>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 mb-4 md:mb-5">
           <!-- Math Card -->
-          <div class="bg-white rounded-2xl border-2 border-secondary-200 p-6 shadow-sm">
-            <div class="flex items-center gap-3 mb-5">
+          <div class="bg-white rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6 shadow-sm">
+            <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-5">
               <div
-                class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0"
+                class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0"
               >
-                <i class="fa-solid fa-calculator text-blue-600 text-xl"></i>
+                <i class="fa-solid fa-calculator text-blue-600 text-sm md:text-xl"></i>
               </div>
-              <h4 class="text-xl font-bold text-secondary-900">Mathematics</h4>
+              <h4 class="text-base md:text-xl font-bold text-secondary-900">Mathematics</h4>
             </div>
-            <div class="space-y-4">
-              <div class="flex justify-between items-center py-2 border-b border-secondary-100">
-                <span class="text-base text-secondary-600 font-medium">Score:</span>
-                <span :class="['text-3xl font-bold', getScoreClass(feedbackData?.mathScore)]">
+            <div class="space-y-2 md:space-y-4">
+              <div class="flex justify-between items-center py-1.5 md:py-2 border-b border-secondary-100">
+                <span class="text-sm md:text-base text-secondary-600 font-medium">Score:</span>
+                <span :class="['text-xl md:text-3xl font-bold', getScoreClass(feedbackData?.mathScore)]">
                   {{ getScoreText(feedbackData?.mathScore) }}
                 </span>
               </div>
-              <div class="flex justify-between items-center py-2">
-                <span class="text-base text-secondary-600 font-medium">Time:</span>
-                <span :class="['text-2xl font-semibold', getTimeClass(feedbackData?.mathTime)]">
+              <div class="flex justify-between items-center py-1.5 md:py-2">
+                <span class="text-sm md:text-base text-secondary-600 font-medium">Time:</span>
+                <span :class="['text-lg md:text-2xl font-semibold', getTimeClass(feedbackData?.mathTime)]">
                   {{ feedbackData?.mathTime ? `${feedbackData.mathTime} min` : '--' }}
                 </span>
               </div>
@@ -292,25 +292,25 @@ const modalTitle = computed(() => {
           </div>
 
           <!-- English Card -->
-          <div class="bg-white rounded-2xl border-2 border-secondary-200 p-6 shadow-sm">
-            <div class="flex items-center gap-3 mb-5">
+          <div class="bg-white rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6 shadow-sm">
+            <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-5">
               <div
-                class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0"
+                class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0"
               >
-                <i class="fa-solid fa-book-open text-purple-600 text-xl"></i>
+                <i class="fa-solid fa-book-open text-purple-600 text-sm md:text-xl"></i>
               </div>
-              <h4 class="text-xl font-bold text-secondary-900">English</h4>
+              <h4 class="text-base md:text-xl font-bold text-secondary-900">English</h4>
             </div>
-            <div class="space-y-4">
-              <div class="flex justify-between items-center py-2 border-b border-secondary-100">
-                <span class="text-base text-secondary-600 font-medium">Score:</span>
-                <span :class="['text-3xl font-bold', getScoreClass(feedbackData?.englishScore)]">
+            <div class="space-y-2 md:space-y-4">
+              <div class="flex justify-between items-center py-1.5 md:py-2 border-b border-secondary-100">
+                <span class="text-sm md:text-base text-secondary-600 font-medium">Score:</span>
+                <span :class="['text-xl md:text-3xl font-bold', getScoreClass(feedbackData?.englishScore)]">
                   {{ getScoreText(feedbackData?.englishScore) }}
                 </span>
               </div>
-              <div class="flex justify-between items-center py-2">
-                <span class="text-base text-secondary-600 font-medium">Time:</span>
-                <span :class="['text-2xl font-semibold', getTimeClass(feedbackData?.englishTime)]">
+              <div class="flex justify-between items-center py-1.5 md:py-2">
+                <span class="text-sm md:text-base text-secondary-600 font-medium">Time:</span>
+                <span :class="['text-lg md:text-2xl font-semibold', getTimeClass(feedbackData?.englishTime)]">
                   {{ feedbackData?.englishTime ? `${feedbackData.englishTime} min` : '--' }}
                 </span>
               </div>
@@ -319,23 +319,23 @@ const modalTitle = computed(() => {
         </div>
 
         <!-- Feedback Section -->
-        <div class="bg-secondary-50 rounded-2xl border-2 border-secondary-200 p-6">
-          <div class="flex items-start gap-3 mb-3">
-            <i class="fa-solid fa-comment-dots text-secondary-500 text-xl mt-1 flex-shrink-0"></i>
+        <div class="bg-secondary-50 rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6">
+          <div class="flex items-start gap-2 md:gap-3 mb-2 md:mb-3">
+            <i class="fa-solid fa-comment-dots text-secondary-500 text-base md:text-xl mt-0.5 md:mt-1 flex-shrink-0"></i>
             <div class="flex-1">
-              <h4 class="font-bold text-secondary-900 text-lg mb-2">
+              <h4 class="font-bold text-secondary-900 text-sm md:text-lg mb-1.5 md:mb-2">
                 Instructor Feedback
                 <span
                   v-if="feedbackData?.createdByName"
-                  class="font-normal text-secondary-600 text-sm ml-2"
+                  class="font-normal text-secondary-600 text-xs md:text-sm ml-1 md:ml-2"
                 >
                   by {{ feedbackData.createdByName }}
                 </span>
               </h4>
-              <p v-if="feedbackData?.feedback" class="text-base text-secondary-700 leading-relaxed">
+              <p v-if="feedbackData?.feedback" class="text-sm md:text-base text-secondary-700 leading-relaxed">
                 {{ feedbackData.feedback }}
               </p>
-              <p v-else class="text-base text-secondary-400 italic">
+              <p v-else class="text-sm md:text-base text-secondary-400 italic">
                 No feedback provided for today
               </p>
             </div>
@@ -346,12 +346,12 @@ const modalTitle = computed(() => {
       <!-- Step 2: Signature Section -->
       <div
         v-if="!qrMode && step === 2"
-        class="bg-white rounded-2xl border-2 border-secondary-200 p-6"
+        class="bg-white rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6"
       >
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-signature text-primary-600 text-2xl flex-shrink-0"></i>
-            <label class="text-xl font-bold text-secondary-900">Signature Required</label>
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <div class="flex items-center gap-2 md:gap-3">
+            <i class="fa-solid fa-signature text-primary-600 text-base md:text-2xl flex-shrink-0"></i>
+            <label class="text-base md:text-xl font-bold text-secondary-900">Signature Required</label>
           </div>
           <Button
             variant="ghost"
@@ -360,72 +360,72 @@ const modalTitle = computed(() => {
             :disabled="loading"
             class="text-secondary-500 hover:text-secondary-700"
           >
-            <i class="fa-solid fa-eraser mr-1"></i>
-            Clear
+            <i class="fa-solid fa-eraser mr-1 text-xs md:text-sm"></i>
+            <span class="text-xs md:text-sm">Clear</span>
           </Button>
         </div>
-        <p class="text-base text-secondary-600 mb-4">Please sign below to confirm sign out</p>
+        <p class="text-sm md:text-base text-secondary-600 mb-3 md:mb-4">Please sign below to confirm sign out</p>
         <signature-pad ref="signaturePad" />
       </div>
 
       <!-- QR Mode Processing (only when no feedback to show) -->
-      <div v-if="qrMode && !shouldShowFeedback" class="w-full text-center py-12">
+      <div v-if="qrMode && !shouldShowFeedback" class="w-full text-center py-8 md:py-12">
         <Spinner size="lg" />
-        <p class="text-secondary-600 mt-4">Processing sign out...</p>
+        <p class="text-sm md:text-base text-secondary-600 mt-3 md:mt-4">Processing sign out...</p>
       </div>
     </template>
 
     <template #footer>
       <!-- Step 1 Footer (Review) -->
-      <div v-if="step === 1 && shouldShowFeedback" class="flex gap-4 w-full">
+      <div v-if="step === 1 && shouldShowFeedback" class="flex gap-2 md:gap-4 w-full">
         <Button
           v-if="!qrMode"
           variant="outline"
-          size="lg"
+          size="md"
           @click="closeModal"
           :disabled="loading"
-          class="flex-1 text-lg h-14"
+          class="flex-1 text-sm md:text-base"
         >
           Cancel
         </Button>
         <Button
-          size="lg"
+          size="md"
           @click.prevent="nextStep"
           :disabled="loading"
           :class="qrMode ? 'w-full' : 'flex-1'"
-          class="text-lg h-14"
+          class="text-sm md:text-base"
         >
           {{ qrMode ? 'Next - Confirm Sign Out' : 'Next - Add Signature' }}
-          <i class="fa-solid fa-arrow-right ml-2 text-xl"></i>
+          <i class="fa-solid fa-arrow-right ml-1 md:ml-2 text-sm md:text-base"></i>
         </Button>
       </div>
 
       <!-- Step 2 Footer (Signature) -->
-      <div v-if="!qrMode && step === 2" class="flex gap-3 w-full">
+      <div v-if="!qrMode && step === 2" class="flex gap-2 md:gap-3 w-full">
         <Button
           v-if="shouldShowFeedback"
           variant="outline"
-          size="lg"
+          size="md"
           @click="step = 1"
           :disabled="loading"
-          class="flex-1 text-lg h-14"
+          class="flex-1 text-sm md:text-base"
         >
-          <i class="fa-solid fa-arrow-left mr-2 text-xl"></i>
+          <i class="fa-solid fa-arrow-left mr-1 md:mr-2 text-sm md:text-base"></i>
           Back
         </Button>
         <Button
           v-else
           variant="outline"
-          size="lg"
+          size="md"
           @click="closeModal"
           :disabled="loading"
-          class="flex-1 text-lg h-14"
+          class="flex-1 text-sm md:text-base"
         >
           Cancel
         </Button>
-        <Button size="lg" @click.prevent="onSubmit" :disabled="loading" class="flex-1 text-lg h-14">
-          <i v-if="!loading" class="fa-solid fa-check mr-2 text-xl"></i>
-          {{ loading ? 'Processing...' : 'Confirm Sign Out' }}
+        <Button size="md" @click.prevent="onSubmit" :disabled="loading" class="flex-1 text-sm md:text-base">
+          <i v-if="!loading" class="fa-solid fa-check mr-1 md:mr-2 text-sm md:text-base"></i>
+          {{ loading ? 'Processing...' : 'Confirm' }}
         </Button>
       </div>
     </template>
