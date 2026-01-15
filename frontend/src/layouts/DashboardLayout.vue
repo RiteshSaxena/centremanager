@@ -15,7 +15,7 @@ onMounted(async () => {
 <template>
   <div class="min-h-screen bg-secondary-100">
     <Sidebar v-if="!isKioskApp" />
-    <main class="flex-1" :class="{ 'md:ml-16': !isKioskApp }">
+    <main class="flex-1" :class="{ 'md:ml-20': !isKioskApp }">
       <div class="p-4 sm:p-6 max-w-7xl mx-auto">
         <CentreHeader />
         <slot />

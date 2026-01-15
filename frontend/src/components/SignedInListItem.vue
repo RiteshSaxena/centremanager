@@ -196,54 +196,54 @@ const typeTagClass = computed(() => {
 
 <template>
   <div
-    class="group bg-white border border-secondary-200 rounded-xl p-2 mb-3 md:p-4 cursor-pointer flex justify-between items-center hover:border-primary-300 hover:shadow-md transition-all duration-200"
+    class="group bg-white border border-secondary-200 rounded-xl p-3 mb-3 md:p-4 cursor-pointer hover:border-primary-300 hover:shadow-md transition-all duration-200"
   >
-    <div class="flex items-center gap-2 md:gap-4 flex-1" @click.stop="$emit('onSelect')">
+    <div class="flex items-center gap-3 md:gap-4">
       <!-- Icon -->
-      <div class="flex-shrink-0">
+      <div class="flex-shrink-0" @click.stop="$emit('onSelect')">
         <div
-          class="w-10 h-10 rounded-full bg-secondary-100 flex items-center justify-center group-hover:bg-primary-50 transition-colors"
+          class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-secondary-100 flex items-center justify-center group-hover:bg-primary-50 transition-colors"
         >
-          <i class="fa-solid fa-user text-lg" :class="iconColorClass"></i>
+          <i class="fa-solid fa-user text-base md:text-lg" :class="iconColorClass"></i>
         </div>
       </div>
 
       <!-- Info -->
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-1 mb-1 flex-wrap">
-          <span class="font-semibold text-secondary-900 text-sm truncate">{{ name }}</span>
+      <div class="flex-1 min-w-0" @click.stop="$emit('onSelect')">
+        <div class="flex items-center gap-2 mb-1 flex-wrap">
+          <span class="font-semibold text-secondary-900 text-sm md:text-base">{{ name }}</span>
           <span
             v-if="type != 'Student'"
-            :class="['inline-flex items-center px-2 py-0.5 rounded-md  text-xs font-medium', typeTagClass]"
+            :class="['inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium', typeTagClass]"
           >
             {{ type }}
           </span>
         </div>
-        <p class="text-xs text-secondary-500 truncate">{{ desc }}</p>
+        <p class="text-xs md:text-sm text-secondary-500 break-words">{{ desc }}</p>
       </div>
-    </div>
 
-    <!-- Actions -->
-    <div class="flex gap-2 ml-3">
-      <button
-        v-if="props.item?.type === 'Student'"
-        @click.stop.prevent="$emit('onFeedback', props.item)"
-        :class="[
-          'flex items-center justify-center w-9 h-9 rounded-lg text-white transition-transform hover:scale-110',
-          feedbackBtnClass
-        ]"
-        title="Feedback"
-      >
-        <i class="fa-regular fa-comments text-sm"></i>
-      </button>
-      <a
-        :href="`tel:${rowPhoneNumber}`"
-        v-if="canShowCallIcon && rowPhoneNumber"
-        class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all hover:scale-110"
-        title="Call"
-      >
-        <i class="fa-solid fa-phone text-sm"></i>
-      </a>
+      <!-- Actions -->
+      <div class="flex gap-2 flex-shrink-0">
+        <button
+          v-if="props.item?.type === 'Student'"
+          @click.stop.prevent="$emit('onFeedback', props.item)"
+          :class="[
+            'flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-lg text-white transition-transform hover:scale-110',
+            feedbackBtnClass
+          ]"
+          title="Feedback"
+        >
+          <i class="fa-regular fa-comments text-sm"></i>
+        </button>
+        <a
+          :href="`tel:${rowPhoneNumber}`"
+          v-if="canShowCallIcon && rowPhoneNumber"
+          class="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all hover:scale-110"
+          title="Call"
+        >
+          <i class="fa-solid fa-phone text-sm"></i>
+        </a>
+      </div>
     </div>
   </div>
 </template>

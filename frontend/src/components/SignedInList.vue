@@ -91,7 +91,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Card class="max-h-[600px] overflow-y-auto">
+  <Card class="overflow-y-auto">
     <template #header> People Signed In </template>
     <div class="text-center mb-3" v-if="loading">
       <Spinner size="md" />

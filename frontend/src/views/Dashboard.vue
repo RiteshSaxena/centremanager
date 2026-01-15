@@ -48,7 +48,7 @@
       </div>
 
       <div
-        v-else
+        v-if="!search.trim().length"
         class="bg-secondary-50 rounded-xl border-2 border-dashed border-secondary-200 p-8 text-center"
       >
         <i class="fa-solid fa-search text-3xl text-secondary-300 mb-3"></i>

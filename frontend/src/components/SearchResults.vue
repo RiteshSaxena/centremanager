@@ -45,7 +45,7 @@ const handleItemSelect = (item: any) => {
     <!-- Content -->
     <div class="max-h-[40vh] md:max-h-[70vh] overflow-y-auto p-4">
       <!-- Loading -->
-      <div v-if="searchStore.loading" class="text-center py-8">
+      <div v-if="searchStore.loading" class="flex flex-col items-center w-full py-8">
         <Spinner size="md" />
         <p class="text-sm text-secondary-500 mt-3">Searching...</p>
       </div>

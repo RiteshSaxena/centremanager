@@ -206,6 +206,8 @@ const populateFormFromFeedback = (feedback: any) => {
   };
 };
 
+const mathScoreInput = ref<HTMLInputElement | null>(null);
+
 watch(
   () => props.show,
   async (val) => {
@@ -227,10 +229,22 @@ watch(
         }
       } finally {
         loading.value = false;
+        // Auto-focus first input after loading
+        setTimeout(() => {
+          mathScoreInput.value?.focus();
+        }, 100);
       }
     }
   }
 );
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  // Ctrl/Cmd + Enter to submit
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    event.preventDefault();
+    submitFeedback();
+  }
+};
 
 const createCheckedWatcher = (
   subject: 'math' | 'english',
@@ -259,186 +273,197 @@ watch(
 </script>
 
 <template>
-  <Modal size="xl" :open="show" :closable="true" title="Student Feedback" @close="emit('update:show', false)">
+  <Modal size="lg" :open="show" :closable="true" @close="emit('update:show', false)" @keydown="handleKeyDown">
+    <template #title>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-primary-500 flex items-center justify-center">
+          <i class="fa-solid fa-chart-line text-white text-sm md:text-base"></i>
+        </div>
+        <div>
+          <h3 class="text-base md:text-lg font-bold text-secondary-900">Student Feedback</h3>
+          <p class="text-xs md:text-sm text-secondary-600">{{ selectedName }}</p>
+        </div>
+      </div>
+    </template>
+
     <!-- Loading State -->
-    <div v-if="loading" class="w-full flex justify-center items-center py-8 md:py-12">
+    <div v-if="loading" class="w-full flex justify-center items-center py-6 md:py-8">
       <Spinner size="lg" />
     </div>
 
-    <div v-else class="space-y-4 md:space-y-6">
-      <!-- Student Info Card -->
-      <div class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl md:rounded-2xl p-3 md:p-6 border border-primary-200">
-        <div class="flex items-center gap-2 md:gap-4">
-          <div class="w-10 h-10 md:w-16 md:h-16 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0">
-            <i class="fa-solid fa-user text-white text-base md:text-2xl"></i>
-          </div>
-          <div>
-            <p class="text-xs md:text-base text-primary-600 font-medium mb-0.5 md:mb-1">Student</p>
-            <p class="hidden md:block text-sm md:text-2xl font-bold text-primary-900">{{ selectedName }}</p>
-            <p class="block md:hidden text-sm font-bold text-primary-900" v-html="selectedNameMobile"></p>
-          </div>
-        </div>
-      </div>
+    <div v-else class="space-y-3 md:space-y-4">
+      <!-- Performance Card -->
+      <div v-if="hasMaths || hasEnglish" class="bg-white rounded-lg md:rounded-xl border-2 border-secondary-200 p-3 md:p-4">
+        <h3 class="text-xs md:text-sm font-bold text-secondary-900 mb-2 md:mb-3 uppercase tracking-wide">Today's Performance</h3>
 
-      <!-- Performance Section -->
-      <div class="space-y-3 md:space-y-4">
-        <h3 class="text-sm md:text-lg font-bold text-secondary-900 uppercase tracking-wide">Today's Performance</h3>
-
-        <!-- Mathematics Card -->
-        <div v-if="hasMaths || hasEnglish" class="bg-white rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6 gap-4 flex flex-col">
-          <div v-if="hasMaths" >
-            <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
-              <div class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-calculator text-blue-600 text-sm md:text-xl"></i>
+        <div class="space-y-3 md:space-y-4">
+          <!-- Mathematics -->
+          <div v-if="hasMaths" class="pb-3 md:pb-4" :class="{ 'border-b-2 border-secondary-200': hasEnglish }">
+            <div class="flex items-center gap-2 mb-2 md:mb-3">
+              <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-blue-500 flex items-center justify-center">
+                <i class="fa-solid fa-calculator text-white text-xs md:text-sm"></i>
               </div>
-              <h4 class="text-base md:text-xl font-bold text-secondary-900">Mathematics</h4>
-              <div class="ml-auto">
-                <Checkbox v-model="feedbackForm.isMathChecked" label="100% Score" />
-              </div>
+              <h4 class="text-sm md:text-base font-bold text-secondary-900">Mathematics</h4>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 md:gap-4">
+            <div class="grid grid-cols-3 gap-2 md:gap-3">
               <div>
-                <label class="block text-xs md:text-sm font-semibold text-secondary-700 mb-1.5 md:mb-2">Wrong Answers</label>
+                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">100%</label>
+                <div class="h-10 md:h-12 flex items-center justify-center bg-secondary-50 rounded-lg border-2 border-secondary-200">
+                  <Checkbox v-model="feedbackForm.isMathChecked" label="" class="scale-110 md:scale-125" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">Wrong</label>
                 <input
+                  ref="mathScoreInput"
                   type="text"
                   v-model="feedbackForm.mathScore"
                   inputmode="numeric"
                   pattern="[0-9]*"
                   maxlength="2"
-                  placeholder="Enter number"
+                  placeholder="0"
+                  tabindex="1"
                   :disabled="feedbackForm.isMathChecked"
                   @input="
                     onScoreInput(($event.target as HTMLInputElement).value, 'mathScore');
                     clearError('mathScore');
                   "
                   :class="[
-                    'w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base rounded-lg md:rounded-xl border-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors',
-                    errors.mathScore ? 'border-danger-500' : 'border-secondary-200',
+                    'w-full h-10 md:h-12 px-2 md:px-3 text-base md:text-lg font-bold text-center rounded-lg border-2 focus:ring-4 focus:ring-primary-500 focus:border-primary-500 transition-all',
+                    errors.mathScore ? 'border-danger-500 bg-danger-50' : 'border-secondary-300',
                     feedbackForm.isMathChecked ? 'bg-secondary-100 text-secondary-400 cursor-not-allowed' : 'bg-white'
                   ]"
                 />
-                <p v-if="errors.mathScore" class="text-xs md:text-sm text-danger-500 mt-1 font-medium">{{ errors.mathScore }}</p>
+                <p v-if="errors.mathScore" class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium">{{ errors.mathScore }}</p>
               </div>
 
               <div>
-                <label class="block text-xs md:text-sm font-semibold text-secondary-700 mb-1.5 md:mb-2">Time Taken (Minutes)</label>
+                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">Time</label>
                 <input
                   type="text"
                   v-model="feedbackForm.mathTime"
                   inputmode="numeric"
                   pattern="[0-9]*"
-                  maxlength="2"
-                  placeholder="Enter minutes"
+                  maxlength="3"
+                  placeholder="0"
+                  tabindex="2"
                   @input="clearError('mathTime')"
                   :class="[
-                    'w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base rounded-lg md:rounded-xl border-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors',
-                    errors.mathTime ? 'border-danger-500' : 'border-secondary-200'
+                    'w-full h-10 md:h-12 px-2 md:px-3 text-base md:text-lg font-bold text-center rounded-lg border-2 focus:ring-4 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white',
+                    errors.mathTime ? 'border-danger-500 bg-danger-50' : 'border-secondary-300'
                   ]"
                 />
-                <p v-if="errors.mathTime" class="text-xs md:text-sm text-danger-500 mt-1 font-medium">{{ errors.mathTime }}</p>
+                <p v-if="errors.mathTime" class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium">{{ errors.mathTime }}</p>
               </div>
             </div>
           </div>
 
-          <!-- English Card -->
-          <div v-if="hasEnglish" >
-            <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
-              <div class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-book-open text-purple-600 text-sm md:text-xl"></i>
+          <!-- English -->
+          <div v-if="hasEnglish">
+            <div class="flex items-center gap-2 mb-2 md:mb-3">
+              <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-purple-500 flex items-center justify-center">
+                <i class="fa-solid fa-book-open text-white text-xs md:text-sm"></i>
               </div>
-              <h4 class="text-base md:text-xl font-bold text-secondary-900">English</h4>
-              <div class="ml-auto">
-                <Checkbox v-model="feedbackForm.isEnglishChecked" label="100% Score" />
-              </div>
+              <h4 class="text-sm md:text-base font-bold text-secondary-900">English</h4>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 md:gap-4">
+            <div class="grid grid-cols-3 gap-2 md:gap-3">
               <div>
-                <label class="block text-xs md:text-sm font-semibold text-secondary-700 mb-1.5 md:mb-2">Wrong Answers</label>
+                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">100%</label>
+                <div class="h-10 md:h-12 flex items-center justify-center bg-secondary-50 rounded-lg border-2 border-secondary-200">
+                  <Checkbox v-model="feedbackForm.isEnglishChecked" label="" class="scale-110 md:scale-125" :tabindex="hasMaths ? 3 : 1" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">Wrong</label>
                 <input
                   type="text"
                   v-model="feedbackForm.englishScore"
                   inputmode="numeric"
                   pattern="[0-9]*"
                   maxlength="2"
-                  placeholder="Enter number"
+                  placeholder="0"
+                  :tabindex="hasMaths ? 4 : 2"
                   :disabled="feedbackForm.isEnglishChecked"
                   @input="
                     onScoreInput(($event.target as HTMLInputElement).value, 'englishScore');
                     clearError('englishScore');
                   "
                   :class="[
-                    'w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base rounded-lg md:rounded-xl border-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors',
-                    errors.englishScore ? 'border-danger-500' : 'border-secondary-200',
+                    'w-full h-10 md:h-12 px-2 md:px-3 text-base md:text-lg font-bold text-center rounded-lg border-2 focus:ring-4 focus:ring-primary-500 focus:border-primary-500 transition-all',
+                    errors.englishScore ? 'border-danger-500 bg-danger-50' : 'border-secondary-300',
                     feedbackForm.isEnglishChecked ? 'bg-secondary-100 text-secondary-400 cursor-not-allowed' : 'bg-white'
                   ]"
                 />
-                <p v-if="errors.englishScore" class="text-xs md:text-sm text-danger-500 mt-1 font-medium">{{ errors.englishScore }}</p>
+                <p v-if="errors.englishScore" class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium">{{ errors.englishScore }}</p>
               </div>
 
               <div>
-                <label class="block text-xs md:text-sm font-semibold text-secondary-700 mb-1.5 md:mb-2">Time Taken (Minutes)</label>
+                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">Time</label>
                 <input
                   type="text"
                   v-model="feedbackForm.englishTime"
                   inputmode="numeric"
                   pattern="[0-9]*"
-                  maxlength="2"
-                  placeholder="Enter minutes"
+                  maxlength="3"
+                  placeholder="0"
+                  :tabindex="hasMaths ? 5 : 3"
                   @input="clearError('englishTime')"
                   :class="[
-                    'w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base rounded-lg md:rounded-xl border-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors',
-                    errors.englishTime ? 'border-danger-500' : 'border-secondary-200'
+                    'w-full h-10 md:h-12 px-2 md:px-3 text-base md:text-lg font-bold text-center rounded-lg border-2 focus:ring-4 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white',
+                    errors.englishTime ? 'border-danger-500 bg-danger-50' : 'border-secondary-300'
                   ]"
                 />
-                <p v-if="errors.englishTime" class="text-xs md:text-sm text-danger-500 mt-1 font-medium">{{ errors.englishTime }}</p>
+                <p v-if="errors.englishTime" class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium">{{ errors.englishTime }}</p>
               </div>
             </div>
           </div>
         </div>
-
       </div>
 
-      <!-- Feedback Section -->
-      <div class="bg-secondary-50 rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6">
-        <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
-          <i class="fa-solid fa-comment-dots text-secondary-600 text-base md:text-xl"></i>
-          <label class="text-sm md:text-lg font-bold text-secondary-900">Instructor Notes</label>
+      <!-- Notes -->
+      <div class="bg-secondary-50 rounded-lg md:rounded-xl border-2 border-secondary-200 p-3 md:p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-comment-dots text-secondary-600 text-sm md:text-base"></i>
+          <label class="text-xs md:text-sm font-bold text-secondary-900">Notes (Optional)</label>
         </div>
         <Textarea
           v-model="feedbackForm.feedback"
-          :rows="4"
-          placeholder="Enter detailed feedback for the student..."
-          class="mb-3 md:mb-4"
+          :rows="2"
+          placeholder="Enter any additional feedback..."
+          :tabindex="hasMaths && hasEnglish ? 6 : hasMaths || hasEnglish ? 4 : 2"
+          class="mb-2 text-sm"
         />
-        <div class="flex items-center gap-2">
-          <Checkbox
-            v-model="feedbackForm.isPercentFeedbackRequired"
-            label="In-person feedback required"
-          />
-        </div>
+        <Checkbox
+          v-model="feedbackForm.isPercentFeedbackRequired"
+          :tabindex="hasMaths && hasEnglish ? 7 : hasMaths || hasEnglish ? 5 : 3"
+          label="Requires in-person follow-up"
+          class="text-xs md:text-sm"
+        />
       </div>
     </div>
 
     <template #footer>
-      <div class="flex gap-2 md:gap-3 w-full">
+      <div class="flex gap-2 w-full">
         <Button
           variant="outline"
-          size="md"
+          size="sm"
           @click="emit('update:show', false)"
           :disabled="loading"
-          class="flex-1 text-sm md:text-base"
+          class="flex-1 md:!px-4 md:!py-2"
         >
           Cancel
         </Button>
         <Button
-          size="md"
+          size="sm"
           @click="submitFeedback"
           :disabled="loading"
-          class="flex-1 text-sm md:text-base"
+          class="flex-1 md:!px-4 md:!py-2"
         >
-          <i v-if="!loading" class="fa-solid fa-check mr-1 md:mr-2 text-sm md:text-base"></i>
+          <i v-if="!loading" class="fa-solid fa-check mr-1 md:mr-2"></i>
           {{ feedbackStore.todayFeedback ? 'Update' : 'Submit' }}
         </Button>
       </div>
