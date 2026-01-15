@@ -210,7 +210,9 @@ const selectedName = computed(() => {
       props.item.type === 'Parent'
     ) {
       if (props.item.student) {
-        return `${props.item.student.firstName} ${props.item.student.lastName} (${props.item.parent?.firstName} ${props.item.parent?.lastName})`;
+        const parentName = `${props.item.parent?.firstName || ''} ${props.item.parent?.lastName || ''}`.trim();
+        const studentName = `${props.item.student.firstName} ${props.item.student.lastName}`;
+        return parentName ? `${studentName} (${parentName})` : studentName;
       }
       return `${props.item.parent?.firstName} ${props.item.parent?.lastName}`;
     } else if (props.item?.type === 'Staff') {
@@ -221,6 +223,44 @@ const selectedName = computed(() => {
   }
 
   return '';
+});
+
+const selectedNameMobile = computed(() => {
+  if (props.item) {
+    if (
+      props.item.type === 'Student' ||
+      props.item.type === 'StudentWithParent' ||
+      props.item.type === 'Parent'
+    ) {
+      if (props.item.student) {
+        const parentName = `${props.item.parent?.firstName || ''} ${props.item.parent?.lastName || ''}`.trim();
+        const studentName = `${props.item.student.firstName} ${props.item.student.lastName}`;
+        return parentName ? `${studentName}<br>(${parentName})` : studentName;
+      }
+      return `${props.item.parent?.firstName} ${props.item.parent?.lastName}`;
+    } else if (props.item?.type === 'Staff') {
+      return `${props.item.staff?.firstName} ${props.item.staff?.lastName}`;
+    } else if (props.item?.type === 'Guest') {
+      return `${props.item.guest?.firstName} ${props.item.guest?.lastName}`;
+    }
+  }
+
+  return '';
+});
+
+const hasParentName = computed(() => {
+  if (!props.item) return false;
+  if (
+    props.item.type === 'Student' ||
+    props.item.type === 'StudentWithParent' ||
+    props.item.type === 'Parent'
+  ) {
+    if (props.item.student && props.item.parent) {
+      const parentName = `${props.item.parent.firstName || ''} ${props.item.parent.lastName || ''}`.trim();
+      return parentName.length > 0;
+    }
+  }
+  return false;
 });
 
 const modalTitle = computed(() => {
@@ -253,7 +293,11 @@ const modalTitle = computed(() => {
           </div>
           <div>
             <p class="text-xs md:text-base text-primary-600 font-medium mb-0.5 md:mb-1">Signing Out</p>
-            <p class="text-sm md:text-2xl font-bold text-primary-900">{{ selectedName }}</p>
+            <p v-if="!hasParentName" class="text-sm md:text-2xl font-bold text-primary-900">{{ selectedName }}</p>
+            <template v-else>
+              <p class="hidden md:block text-sm md:text-2xl font-bold text-primary-900">{{ selectedName }}</p>
+              <p class="block md:hidden text-sm font-bold text-primary-900" v-html="selectedNameMobile"></p>
+            </template>
           </div>
         </div>
       </div>

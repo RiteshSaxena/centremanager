@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SearchResult } from '@/types';
 
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 
 import { useLogBookStore } from '@/stores';
@@ -55,6 +55,11 @@ const clearSignature = () => {
 const closeModal = () => {
   emit('update:show', false);
 };
+
+const displayName = computed(() => {
+  if (!props.item) return '';
+  return `${props.item.firstName} ${props.item.lastName}`;
+});
 
 const onSubmit = async () => {
   if (!props.item) {
@@ -134,7 +139,7 @@ const onSubmit = async () => {
           <div>
             <p class="text-xs md:text-base text-primary-600 font-medium mb-0.5 md:mb-1">Signing In</p>
             <p class="text-sm md:text-2xl font-bold text-primary-900">
-              {{ item?.firstName }} {{ item?.lastName }}
+              {{ displayName }}
             </p>
           </div>
         </div>
