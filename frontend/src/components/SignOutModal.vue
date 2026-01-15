@@ -177,7 +177,7 @@ const onSubmit = async () => {
     emit('update:show', false);
     const audio = new Audio('../assets/sign-out.wav');
     await audio.play();
-    toast.success(`Successfully signed out - ${selectedName.value}`);
+    toast.success(`Successfully Signed Out`);
     logBookStore.fetchList().then();
   } finally {
     loading.value = false;
