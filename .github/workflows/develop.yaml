@@ -13,24 +13,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy to VM via SSH
+      - name: Deploy frontend app
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /home/app/centre-manager-stage/frontend
-            git pull origin develop
-            npm install
-            npm run build:app
-            rm -rf /var/www/app-stage/*
-            cp dist/* /var/www/app-stage/ -r
-            npm run build:kiosk
-            rm -rf /var/www/kiosk-stage/*
-            cp dist/* /var/www/kiosk-stage/ -r
-            cd /home/app/centre-manager-stage/backend
-            git pull origin develop
-            npm install
-            npm run build
-            pm2 restart 2
+            cd /home/app/centre-manager-stage/frontend && git pull origin develop && npm install && npm run build:app && rm -rf /var/www/app-stage/* && cp dist/* /var/www/app-stage/ -r
+
+      - name: Deploy kiosk
+        if: success()
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/app/centre-manager-stage/frontend && npm run build:kiosk && rm -rf /var/www/kiosk-stage/* && cp dist/* /var/www/kiosk-stage/ -r
+
+      - name: Deploy backend
+        if: success()
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/app/centre-manager-stage/backend && npm install && npm run build && pm2 restart 2

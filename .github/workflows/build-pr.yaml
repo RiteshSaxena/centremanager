@@ -1,0 +1,28 @@
+    name: PR Build Status Check
+
+    on:
+      pull_request:
+        branches:
+          - develop # Or your target branch, e.g., 'develop'
+
+    jobs:
+      build:
+        runs-on: ubuntu-latest # Or your preferred runner environment
+
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4
+
+          - name: Set up Node.js (example for a Node.js project)
+            uses: actions/setup-node@v4
+            with:
+              node-version: '22'
+
+          - name: Install dependencies
+            run: cd frontend && npm install
+
+          - name: Run build
+            run: cd frontend && npm run build:app
+
+          - name: Run lint
+            run: cd frontend && npm run lint
