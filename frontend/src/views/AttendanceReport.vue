@@ -170,7 +170,7 @@ const absentChildren = computed(() => {
   return allChildren.filter((child) => !presentChildren.includes(child.id));
 });
 
-const onRowClick = (recordId) => {
+const onRowClick = (recordId: number) => {
   const record = records.value.find((r) => r.id === recordId);
   if (!record) return;
 
@@ -181,9 +181,9 @@ const onRowClick = (recordId) => {
   }
 };
 
-const onAbsentStudentClick = (child) => {
+const onAbsentStudentClick = (child: any) => {
   // Create a mock LogRecord for absent student to work with FeedbackModal
-  const mockRecord = {
+  const mockRecord: any = {
     id: null,
     type: 'Student',
     student: child,
