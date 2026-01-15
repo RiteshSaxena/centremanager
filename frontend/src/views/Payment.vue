@@ -25,7 +25,7 @@ const showAddPaymentModal = ref(false);
 
 // Pagination state
 const currentPage = ref(1);
-const pageSize = 10; // Lowered from 25 to make pagination easier to test
+const pageSize = 50; // Lowered from 25 to make pagination easier to test
 
 // Table column definitions
 const dueColumns: TableColumn[] = [
@@ -250,30 +250,22 @@ onMounted(async () => {
 
             <!-- Mobile card view -->
             <template #mobile-card="{ row }">
-              <div class="space-y-2 mb-1 pt-3  border p-3.5 rounded-lg border-secondary-100">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-full bg-secondary-100 flex items-center justify-center flex-shrink-0"
-                  >
-                    <i class="fa-solid fa-user text-secondary-400"></i>
-                  </div>
-                  <div class="flex-1">
-                    <p class="font-semibold text-secondary-900">{{ row.name }}</p>
-                    <p class="text-xs text-secondary-500">Student</p>
-                  </div>
+              <div class=" grid grid-cols-7  border-b py-2  border-secondary-100">
+                <div class="col-span-4 flex items-center">
+                  <p class="font-semibold text-secondary-900">{{ row.name }}</p>
                 </div>
-                <div class="flex flex-row items-center justify-between">
+                <div class="col-span-3 gap-2 flex flex-row items-center justify-between">
                   <div class="flex items-center justify-between gap-2">
-                    <span class="text-sm text-secondary-600">Due:</span>
+                    <!-- <span class="text-sm text-secondary-600">Due:</span> -->
                     <span
                       class="inline-flex items-center px-3 py-1 rounded-lg bg-danger-100 font-bold text-danger-700 text-sm"
                     >
                       {{ row.dueAmountFormatted }}
                     </span>
                   </div>
-                  <Button class="" size="sm" @click="openPaymentModal(row)">
-                    <i class="fa-solid fa-plus mr-2"></i>
-                    Add Payment
+                  <Button class="!gap-1" size="sm" @click="openPaymentModal(row)">
+                    <i class="fa-solid fa-plus"></i>
+                    Add
                   </Button>
                 </div>
               </div>

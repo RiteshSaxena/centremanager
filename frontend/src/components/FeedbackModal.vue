@@ -79,9 +79,31 @@ const selectedName = computed(() => {
   if (!item) return '';
 
   if (['Student', 'StudentWithParent', 'Parent'].includes(item.type)) {
-    const parentName = `${item.parent?.firstName} ${item.parent?.lastName}`;
+    const parentName = `${item.parent?.firstName || ''} ${item.parent?.lastName || ''}`.trim();
     if (item.student) {
-      return `${item.student.firstName} ${item.student.lastName} (${parentName})`;
+      const studentName = `${item.student.firstName} ${item.student.lastName}`;
+      return parentName ? `${studentName} (${parentName})` : studentName;
+    }
+    return parentName;
+  }
+  if (item.type === 'Staff') {
+    return `${item.staff?.firstName} ${item.staff?.lastName}`;
+  }
+  if (item.type === 'Guest') {
+    return `${item.guest?.firstName} ${item.guest?.lastName}`;
+  }
+  return '';
+});
+
+const selectedNameMobile = computed(() => {
+  const item = props.item;
+  if (!item) return '';
+
+  if (['Student', 'StudentWithParent', 'Parent'].includes(item.type)) {
+    const parentName = `${item.parent?.firstName || ''} ${item.parent?.lastName || ''}`.trim();
+    if (item.student) {
+      const studentName = `${item.student.firstName} ${item.student.lastName}`;
+      return parentName ? `${studentName}<br>(${parentName})` : studentName;
     }
     return parentName;
   }
@@ -252,7 +274,8 @@ watch(
           </div>
           <div>
             <p class="text-xs md:text-base text-primary-600 font-medium mb-0.5 md:mb-1">Student</p>
-            <p class="text-sm md:text-2xl font-bold text-primary-900">{{ selectedName }}</p>
+            <p class="hidden md:block text-sm md:text-2xl font-bold text-primary-900">{{ selectedName }}</p>
+            <p class="block md:hidden text-sm font-bold text-primary-900" v-html="selectedNameMobile"></p>
           </div>
         </div>
       </div>
