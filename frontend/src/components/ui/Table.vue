@@ -101,11 +101,22 @@ const isEmpty = computed(() => !props.loading && props.data.length === 0);
       <div v-else-if="isEmpty" class="p-8 text-center text-secondary-400">
         {{ emptyText }}
       </div>
-      <div v-else class="divide-y divide-secondary-100">
+      <div v-else class="">
+        <div class=" grid grid-cols-7  border-b py-2  border-secondary-100">
+          <div class="col-span-4 flex items-center">
+            <p class=" text-secondary-500">Name</p>
+          </div>
+          <div class="col-span-3 gap-2 flex flex-row items-center justify-between">
+            <p class="text-secondary-500">Due</p>
+            <div class="col-span-4 flex items-center">
+              <p class="text-secondary-500">Action</p>
+            </div>
+          </div>
+        </div>
         <div
           v-for="(row, index) in data"
           :key="index"
-          class="p-5 hover:bg-secondary-50 transition-colors"
+          class="hover:bg-secondary-50 transition-colors"
         >
           <slot name="mobile-card" :row="row" :index="index">
             <div class="space-y-2">

@@ -62,10 +62,10 @@ const validateStep1 = () => {
     isValid = false;
   }
 
-  if (
-    guestData.phoneNumber &&
-    !/^\d{10,}$/.test(guestData.phoneNumber.toString().replace(/\D/g, ''))
-  ) {
+  if (!guestData.phoneNumber.trim()) {
+    errors.value.phoneNumber = 'Phone number is required';
+    isValid = false;
+  } else if (!/^\d{10,}$/.test(guestData.phoneNumber.toString().replace(/\D/g, ''))) {
     errors.value.phoneNumber = 'Please enter a valid phone number (at least 10 digits)';
     isValid = false;
   }
@@ -121,9 +121,7 @@ const onSubmit = async () => {
       payload.email = guestData.email.toLowerCase().trim();
     }
 
-    if (guestData.phoneNumber) {
-      payload.phoneNumber = guestData.phoneNumber.toString().trim();
-    }
+    payload.phoneNumber = guestData.phoneNumber.toString().trim();
 
     await logBookStore.guestSignIn(payload);
 
@@ -175,7 +173,7 @@ const emit = defineEmits(['update:show']);
         <Input
           v-model="guestData.phoneNumber"
           type="tel"
-          placeholder="Phone Number (Optional)"
+          placeholder="Phone Number"
           label="Phone Number"
           :error="errors.phoneNumber"
           @input="clearError('phoneNumber')"

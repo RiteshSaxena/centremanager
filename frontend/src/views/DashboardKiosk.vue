@@ -35,7 +35,7 @@
               required
               class="text-lg h-14"
             />
-            <Button size="lg" class="w-full text-lg" :disabled="isSearching">
+            <Button type="submit" size="lg" class="w-full text-lg" :disabled="isSearching">
               <i v-if="!isSearching" class="fa-solid fa-arrow-right-to-bracket mr-3 text-xl"></i>
               {{ isSearching ? 'Searching...' : 'Continue' }}
             </Button>

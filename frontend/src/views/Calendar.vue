@@ -103,7 +103,7 @@ const getDueAmount = (amount: number) => {
 
 const gridCols = computed(() => {
   const cols = days.value.length;
-  return `grid-template-columns: 100px repeat(${cols}, 1fr)`;
+  return `grid-template-columns: 60px repeat(${cols}, 1fr)`;
 });
 </script>
 
@@ -158,7 +158,7 @@ const gridCols = computed(() => {
               <i class="fa-solid fa-clock text-primary-600"></i>
             </div>
           </div>
-          <div v-for="day in days" :key="day" class="flex justify-center">
+          <div v-for="day in days" :key="day" class="flex min-w-[200px] justify-center">
             <div
               :class="[
                 'px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all',
@@ -183,7 +183,7 @@ const gridCols = computed(() => {
             <!-- Time Label -->
             <div class="flex items-center justify-center">
               <div
-                class="text-center bg-white rounded-lg border border-secondary-200 px-3 py-2 shadow-sm"
+                class="max-w-16 py-2"
               >
                 <div class="text-xs font-bold text-primary-600">{{ timing.text }}</div>
               </div>
@@ -193,7 +193,7 @@ const gridCols = computed(() => {
             <div
               v-for="day in days"
               :key="day"
-              class="bg-white border border-secondary-200 rounded-xl p-3 min-h-[80px] shadow-sm hover:shadow-md transition-shadow"
+              class="bg-white min-w-[200px] border border-secondary-200 rounded-xl p-3 min-h-[80px] shadow-sm hover:shadow-md transition-shadow"
             >
               <!-- Empty State -->
               <div
@@ -249,7 +249,7 @@ const gridCols = computed(() => {
                       <span
                         class="inline-flex items-center justify-center w-5 h-5 rounded bg-warning-100 text-warning-700 cursor-pointer hover:bg-warning-200 transition-colors"
                       >
-                        <i class="fa-solid fa-circle-dollar text-[9px]"></i>
+                        $
                       </span>
                       <div class="tooltip-content">
                         Amount Due: {{ getDueAmount(student.dueAmount) }}
@@ -259,7 +259,7 @@ const gridCols = computed(() => {
                       v-else-if="student.dueAmount === 0"
                       class="inline-flex items-center justify-center w-5 h-5 rounded bg-secondary-100 text-secondary-500"
                     >
-                      <i class="fa-solid fa-circle-dollar text-[9px]"></i>
+                      $
                     </span>
 
                     <!-- Early Learner Badge -->

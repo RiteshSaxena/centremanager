@@ -177,13 +177,28 @@ const iconColorClass = computed(() => {
   }
   return 'text-secondary-400';
 });
+
+const typeTagClass = computed(() => {
+  switch (type.value) {
+    case 'Student':
+      return 'bg-secondary-100 text-secondary-700';
+    case 'Staff':
+      return 'bg-red-100 text-red-700';
+    case 'Guest':
+      return 'bg-blue-100 text-blue-700';
+    case 'Parent':
+      return 'bg-green-100 text-green-700';
+    default:
+      return 'bg-secondary-100 text-secondary-700';
+  }
+});
 </script>
 
 <template>
   <div
-    class="group bg-white border border-secondary-200 rounded-xl p-4 mb-3 cursor-pointer flex justify-between items-center hover:border-primary-300 hover:shadow-md transition-all duration-200"
+    class="group bg-white border border-secondary-200 rounded-xl p-2 mb-3 md:p-4 cursor-pointer flex justify-between items-center hover:border-primary-300 hover:shadow-md transition-all duration-200"
   >
-    <div class="flex items-center gap-4 flex-1" @click.stop="$emit('onSelect')">
+    <div class="flex items-center gap-2 md:gap-4 flex-1" @click.stop="$emit('onSelect')">
       <!-- Icon -->
       <div class="flex-shrink-0">
         <div
@@ -195,10 +210,11 @@ const iconColorClass = computed(() => {
 
       <!-- Info -->
       <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 mb-1">
+        <div class="flex items-center gap-1 mb-1 flex-wrap">
           <span class="font-semibold text-secondary-900 text-sm truncate">{{ name }}</span>
           <span
-            class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-secondary-100 text-secondary-700"
+            v-if="type != 'Student'"
+            :class="['inline-flex items-center px-2 py-0.5 rounded-md  text-xs font-medium', typeTagClass]"
           >
             {{ type }}
           </span>

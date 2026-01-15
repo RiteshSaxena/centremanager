@@ -14,6 +14,7 @@ const searchStore = useSearchStore();
 const studentStore = useStudentStore();
 
 const search = ref<string>('');
+const dueSearch = ref<string>('');
 const searchedId = ref<number | null>(null);
 const studentId = ref<number | null>(null);
 const selectedName = ref<string>('');
@@ -24,8 +25,7 @@ const showAddPaymentModal = ref(false);
 
 // Pagination state
 const currentPage = ref(1);
-const dueCurrentPage = ref(1);
-const pageSize = 10; // Lowered from 25 to make pagination easier to test
+const pageSize = 50; // Lowered from 25 to make pagination easier to test
 
 // Table column definitions
 const dueColumns: TableColumn[] = [
@@ -51,19 +51,22 @@ const dueStudents = computed(() => {
   return studentStore.books.dueStudents as any[];
 });
 
-const paginatedDueStudents = computed(() => {
-  const start = (dueCurrentPage.value - 1) * pageSize;
-  const end = start + pageSize;
-  return dueStudents.value.slice(start, end);
-});
-
-const dueTotalPages = computed(() => Math.ceil(dueStudents.value.length / pageSize));
-
-// Transform due students for table display
+// Transform due students for table display with search filter
 const dueTableData = computed(() => {
-  return paginatedDueStudents.value.map((student, index) => ({
+  let filteredStudents = dueStudents.value;
+
+  // Apply search filter
+  if (dueSearch.value.trim()) {
+    const searchTerm = dueSearch.value.trim().toLowerCase();
+    filteredStudents = filteredStudents.filter((student) => {
+      const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
+      return fullName.includes(searchTerm);
+    });
+  }
+
+  return filteredStudents.map((student, index) => ({
     ...student,
-    index: (dueCurrentPage.value - 1) * pageSize + index + 1,
+    index: index + 1,
     name: `${student.firstName} ${student.lastName}`,
     dueAmountFormatted: student.dueAmount > 1 ? `€${student.dueAmount}` : '-'
   }));
@@ -193,6 +196,25 @@ onMounted(async () => {
         </div>
 
         <div class="p-5">
+          <!-- Search Filter -->
+          <div class="bg-secondary-50 rounded-xl border border-secondary-200 p-4 mb-4">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fa-solid fa-magnifying-glass text-danger-600"></i>
+              <label class="text-sm font-semibold text-secondary-700">Search by Student</label>
+            </div>
+            <div class="flex gap-2 items-center">
+              <Input
+                v-model="dueSearch"
+                type="search"
+                placeholder="Enter student name..."
+                class="flex-1"
+              />
+              <Button v-if="dueSearch.trim().length" variant="ghost" size="sm" @click="dueSearch = ''">
+                <i class="fa-solid fa-xmark"></i>
+              </Button>
+            </div>
+          </div>
+
           <Table
             :columns="dueColumns"
             :data="dueTableData"
@@ -228,42 +250,27 @@ onMounted(async () => {
 
             <!-- Mobile card view -->
             <template #mobile-card="{ row }">
-              <div class="space-y-3">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-full bg-danger-100 flex items-center justify-center flex-shrink-0"
-                  >
-                    <i class="fa-solid fa-user text-danger-600"></i>
-                  </div>
-                  <div class="flex-1">
-                    <p class="font-semibold text-secondary-900">{{ row.name }}</p>
-                    <p class="text-xs text-secondary-500">Student #{row.index}</p>
-                  </div>
+              <div class=" grid grid-cols-7  border-b py-2  border-secondary-100">
+                <div class="col-span-4 flex items-center">
+                  <p class="font-semibold text-secondary-900">{{ row.name }}</p>
                 </div>
-                <div class="flex items-center justify-between pt-2 border-t border-secondary-100">
-                  <span class="text-sm text-secondary-600">Amount Due:</span>
-                  <span
-                    class="inline-flex items-center px-3 py-1 rounded-lg bg-danger-100 font-bold text-danger-700 text-sm"
-                  >
-                    {{ row.dueAmountFormatted }}
-                  </span>
+                <div class="col-span-3 gap-2 flex flex-row items-center justify-between">
+                  <div class="flex items-center justify-between gap-2">
+                    <!-- <span class="text-sm text-secondary-600">Due:</span> -->
+                    <span
+                      class="inline-flex items-center px-3 py-1 rounded-lg bg-danger-100 font-bold text-danger-700 text-sm"
+                    >
+                      {{ row.dueAmountFormatted }}
+                    </span>
+                  </div>
+                  <Button class="!gap-1" size="sm" @click="openPaymentModal(row)">
+                    <i class="fa-solid fa-plus"></i>
+                    Add
+                  </Button>
                 </div>
-                <Button class="w-full" size="sm" @click="openPaymentModal(row)">
-                  <i class="fa-solid fa-plus mr-2"></i>
-                  Add Payment
-                </Button>
               </div>
             </template>
 
-            <!-- Pagination in footer -->
-            <template #footer>
-              <Pagination
-                v-model:currentPage="dueCurrentPage"
-                :totalPages="dueTotalPages"
-                :totalItems="dueStudents.length"
-                :pageSize="pageSize"
-              />
-            </template>
           </Table>
         </div>
       </div>
@@ -372,7 +379,7 @@ onMounted(async () => {
 
             <!-- Mobile card view -->
             <template #mobile-card="{ row }">
-              <div class="space-y-3">
+              <div class="space-y-2 mb-1 pt-3 border p-3.5 rounded-lg border-secondary-100">
                 <div class="flex items-center gap-3">
                   <div
                     class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0"

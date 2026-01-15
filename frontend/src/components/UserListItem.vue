@@ -23,7 +23,7 @@ const iconColorClass = computed(() => {
       }
     }
   }
-  return 'text-primary-800';
+  return 'text-secondary-400';
 });
 
 const isStudentDue = computed(() => {
@@ -42,7 +42,7 @@ const isStudentDue = computed(() => {
 
 <template>
   <div
-    class="group flex items-center gap-4 bg-white border border-secondary-200 rounded-xl p-3.5 mb-2 cursor-pointer hover:border-primary-400 hover:shadow-md hover:bg-primary-50/50 transition-all duration-200"
+    class="group flex items-center gap-4 bg-white border border-secondary-200 rounded-xl p-2 md:p-4 mb-2 cursor-pointer hover:border-primary-400 hover:shadow-md hover:bg-primary-50/50 transition-all duration-200"
     @click="$emit('click')"
   >
     <!-- Avatar -->
@@ -50,7 +50,7 @@ const isStudentDue = computed(() => {
       <div
         class="w-11 h-11 rounded-full bg-secondary-100 flex items-center justify-center group-hover:bg-primary-100 transition-colors"
       >
-        <i class="fa-solid fa-user text-lg" :class="iconColorClass"></i>
+        <i class="fa-solid fa-user text-lg " :class="iconColorClass"></i>
       </div>
     </div>
 
@@ -65,7 +65,7 @@ const isStudentDue = computed(() => {
           class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-warning-100 text-warning-700"
           title="Payment Due"
         >
-          <i class="fa-solid fa-circle-dollar text-[10px]"></i>
+          $
         </span>
       </div>
 
@@ -73,13 +73,13 @@ const isStudentDue = computed(() => {
       <div class="flex items-center gap-2">
         <span
           v-if="item?.type === 'student'"
-          class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-700"
+          class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-secondary-100 text-secondary-700"
         >
           Student
         </span>
         <span
           v-if="item?.type === 'staff'"
-          class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-purple-100 text-purple-700"
+          class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-red-100 text-red-700"
         >
           Staff
         </span>
@@ -90,10 +90,10 @@ const isStudentDue = computed(() => {
           Guardian
         </span>
 
-        <span v-if="item?.type === 'staff'" class="text-xs text-secondary-500 truncate">
+        <span v-if="item?.type === 'staff'" class="text-xs text-blue-500 truncate">
           {{ item?.email }}
         </span>
-        <span v-if="item?.type === 'parent'" class="text-xs text-secondary-500">
+        <span v-if="item?.type === 'parent'" class="text-xs text-blue-500">
           {{ (item as any)?.contactNumber }}
         </span>
       </div>
