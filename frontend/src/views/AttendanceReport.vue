@@ -7,7 +7,7 @@ import type { LogRecord, SearchResult } from '@/types';
 import { Input } from '@/components/ui';
 import SearchResults from '@/components/SearchResults.vue';
 import { Button, Spinner } from '@/components/ui';
-import FeedbackModal from '@/components/FeedbackModal.vue';
+import SignOutModal from '@/components/SignOutModal.vue';
 import { debounce } from 'lodash';
 
 const searchStore = useSearchStore();
@@ -23,7 +23,7 @@ const staffId = ref<number | null>(null);
 const records = ref<LogRecord[]>([]);
 const isSearched = ref(false);
 const loading = ref(false);
-const showFeedbackModal = ref(false);
+const showSignOutModal = ref(false);
 const selectedRecord = ref<LogRecord | null>(null);
 
 const todayDate = moment().format('YYYY-MM-DD');
@@ -174,15 +174,15 @@ const onRowClick = (recordId: number) => {
   const record = records.value.find((r) => r.id === recordId);
   if (!record) return;
 
-  // Only open feedback modal for Student records
+  // Only open sign out modal (review performance) for Student records
   if (record.type === 'Student' || record.type === 'StudentWithParent') {
     selectedRecord.value = record;
-    showFeedbackModal.value = true;
+    showSignOutModal.value = true;
   }
 };
 
 const onAbsentStudentClick = (child: any) => {
-  // Create a mock LogRecord for absent student to work with FeedbackModal
+  // Create a mock LogRecord for absent student to work with SignOutModal
   const mockRecord: any = {
     id: null,
     type: 'Student',
@@ -194,12 +194,12 @@ const onAbsentStudentClick = (child: any) => {
     signOutTime: null
   };
   selectedRecord.value = mockRecord;
-  showFeedbackModal.value = true;
+  showSignOutModal.value = true;
 };
 
-const onFeedbackSuccess = () => {
-  // Optionally refresh records after feedback is submitted
-  showFeedbackModal.value = false;
+const onModalSuccess = () => {
+  // Close modal after success
+  showSignOutModal.value = false;
 };
 
 onMounted(async () => {
@@ -458,7 +458,6 @@ onMounted(async () => {
                 v-for="(record, index) in absentChildren"
                 :key="record.id"
                 class="hover:bg-primary-50 cursor-pointer transition-colors"
-                @click="onAbsentStudentClick(record)"
               >
                 <td class="px-4 py-3 text-sm text-secondary-600">{{ index + 1 }}</td>
                 <td class="px-4 py-3">
@@ -480,12 +479,12 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- Feedback Modal -->
-    <FeedbackModal
-      :show="showFeedbackModal"
+    <!-- Sign Out Modal (Review Performance) -->
+    <SignOutModal
+      :show="showSignOutModal"
       :item="selectedRecord"
-      @update:show="showFeedbackModal = $event"
-      @onSuccess="onFeedbackSuccess"
+      @update:show="showSignOutModal = $event"
+      @onSuccess="onModalSuccess"
     />
   </div>
 </template>

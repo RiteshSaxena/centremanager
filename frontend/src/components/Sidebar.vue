@@ -51,14 +51,14 @@ onMounted(async () => {
     :class="[
       sidebarExpanded
         ? 'w-full md:w-64'
-        : 'max-h-16 md:max-h-none overflow-hidden md:overflow-visible md:w-20'
+        : 'max-h-16 md:max-h-none overflow-hidden md:w-20'
     ]"
     :style="{ transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }"
   >
     <!-- Mobile Header -->
     <div class="flex justify-between items-center md:hidden border-b border-secondary-700">
       <div class="p-4">
-        <h2 v-if="isHomePage" class="text-white text-sm font-bold leading-tight">
+        <h2 class="text-white text-sm font-bold leading-tight">
           {{ centre?.displayName || centre?.name }}
           <br />
           <small class="text-secondary-400 font-normal text-xs">{{ date }}</small>

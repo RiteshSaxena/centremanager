@@ -432,7 +432,7 @@ watch(
         </div>
         <Textarea
           v-model="feedbackForm.feedback"
-          :rows="2"
+          :rows="4"
           placeholder="Enter any additional feedback..."
           :tabindex="hasMaths && hasEnglish ? 6 : hasMaths || hasEnglish ? 4 : 2"
           class="mb-2 text-sm"
