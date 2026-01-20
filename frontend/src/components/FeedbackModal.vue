@@ -230,9 +230,9 @@ watch(
       } finally {
         loading.value = false;
         // Auto-focus first input after loading
-        setTimeout(() => {
-          mathScoreInput.value?.focus();
-        }, 100);
+        // setTimeout(() => {
+        //   mathScoreInput.value?.focus();
+        // }, 100);
       }
     }
   }

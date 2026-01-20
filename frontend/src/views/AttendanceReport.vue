@@ -483,6 +483,7 @@ onMounted(async () => {
     <SignOutModal
       :show="showSignOutModal"
       :item="selectedRecord"
+      :hide-footer="true"
       @update:show="showSignOutModal = $event"
       @onSuccess="onModalSuccess"
     />

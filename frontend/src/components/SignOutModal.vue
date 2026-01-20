@@ -16,11 +16,13 @@ const props = withDefaults(
     show: boolean;
     item: LogRecord | null;
     isQrMode?: boolean;
+    hideFooter?: boolean;
   }>(),
   {
     show: false,
     item: null,
-    isQrMode: false
+    isQrMode: false,
+    hideFooter: false
   }
 );
 
@@ -421,7 +423,7 @@ const modalTitle = computed(() => {
 
     <template #footer>
       <!-- Step 1 Footer (Review) -->
-      <div v-if="step === 1 && shouldShowFeedback" class="flex gap-2 md:gap-4 w-full">
+      <div v-if="!hideFooter && step === 1 && shouldShowFeedback" class="flex gap-2 md:gap-4 w-full">
         <Button
           v-if="!qrMode"
           variant="outline"
@@ -445,7 +447,7 @@ const modalTitle = computed(() => {
       </div>
 
       <!-- Step 2 Footer (Signature) -->
-      <div v-if="!qrMode && step === 2" class="flex gap-2 md:gap-3 w-full">
+      <div v-if="!hideFooter && !qrMode && step === 2" class="flex gap-2 md:gap-3 w-full">
         <Button
           v-if="shouldShowFeedback"
           variant="outline"

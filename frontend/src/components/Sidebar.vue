@@ -57,13 +57,13 @@ onMounted(async () => {
   >
     <!-- Mobile Header -->
     <div class="flex justify-between items-center md:hidden border-b border-secondary-700">
-      <div class="p-4">
+      <router-link to="/" class="p-4">
         <h2 class="text-white text-sm font-bold leading-tight">
           {{ centre?.displayName || centre?.name }}
           <br />
           <small class="text-secondary-400 font-normal text-xs">{{ date }}</small>
         </h2>
-      </div>
+      </router-link>
       <button
         class="p-5 text-white hover:bg-secondary-700/50 transition-colors duration-200"
         @click="sidebarExpanded = !sidebarExpanded"
