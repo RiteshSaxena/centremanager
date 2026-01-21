@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import VueToast, { POSITION } from 'vue-toastification';
 import * as Sentry from '@sentry/vue';
+import { AxiosError } from 'axios';
 
 import App from './App.vue';
 import router from './router';
@@ -60,7 +61,19 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
     tracePropagationTargets: ['localhost', regexApiUrl],
     tracesSampleRate: 1.0,
     replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0
+    replaysOnErrorSampleRate: 1.0,
+    beforeSend(event, hint) {
+      const error = hint.originalException;
+      if (error instanceof AxiosError && error.response?.data) {
+        const data = error.response.data;
+        const errorMessage =
+          data.error?.message || data.message || data.data?.message || error.message;
+        if (event.exception?.values?.[0]) {
+          event.exception.values[0].value = `${error.response.status}: ${errorMessage}`;
+        }
+      }
+      return event;
+    }
   });
 }
 
