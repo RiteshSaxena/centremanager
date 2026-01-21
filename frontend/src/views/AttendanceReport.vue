@@ -197,7 +197,7 @@ onMounted(async () => {
     <!-- Header -->
     <div class="mb-6">
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm">
+        <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-xs">
           <i class="fa-solid fa-chart-line text-white text-xl"></i>
         </div>
         <div>
@@ -208,7 +208,7 @@ onMounted(async () => {
     </div>
 
     <!-- Search Form -->
-    <div class="bg-white rounded-xl border border-secondary-200 shadow-sm p-5 mb-6">
+    <div class="bg-white rounded-xl border border-secondary-200 shadow-xs p-5 mb-6">
       <form @submit.prevent="searchFromDate">
         <!-- Side by Side Search -->
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-4 items-start">
@@ -284,9 +284,9 @@ onMounted(async () => {
     <!-- Attendance Records -->
     <div v-else-if="isSearched" class="space-y-6">
       <!-- Present Records -->
-      <div class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden">
+      <div class="bg-white rounded-xl border border-secondary-200 shadow-xs overflow-hidden">
         <div
-          class="bg-gradient-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200"
+          class="bg-linear-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200"
         >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center">
@@ -389,10 +389,10 @@ onMounted(async () => {
       <!-- Absent Students -->
       <div
         v-if="absentChildren.length && searchMode === 'date'"
-        class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden"
+        class="bg-white rounded-xl border border-secondary-200 shadow-xs overflow-hidden"
       >
         <div
-          class="bg-gradient-to-r from-danger-50 to-danger-100 px-5 py-4 border-b border-danger-200"
+          class="bg-linear-to-r from-danger-50 to-danger-100 px-5 py-4 border-b border-danger-200"
         >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-danger-500 flex items-center justify-center">

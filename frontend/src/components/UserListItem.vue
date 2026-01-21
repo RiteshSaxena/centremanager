@@ -46,11 +46,11 @@ const isStudentDue = computed(() => {
     @click="$emit('click')"
   >
     <!-- Avatar -->
-    <div class="flex-shrink-0">
+    <div class="shrink-0">
       <div
         class="w-11 h-11 rounded-full bg-secondary-100 flex items-center justify-center group-hover:bg-primary-100 transition-colors"
       >
-        <i class="fa-solid fa-user text-lg " :class="iconColorClass"></i>
+        <i class="fa-solid fa-user text-lg" :class="iconColorClass"></i>
       </div>
     </div>
 
@@ -100,7 +100,7 @@ const isStudentDue = computed(() => {
     </div>
 
     <!-- Arrow -->
-    <div class="flex-shrink-0">
+    <div class="shrink-0">
       <i
         class="fa-solid fa-chevron-right text-secondary-300 group-hover:text-primary-500 transition-colors"
       ></i>

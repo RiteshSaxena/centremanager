@@ -128,11 +128,11 @@ const onSubmit = async () => {
     <div v-else>
       <!-- Person Info Card -->
       <div
-        class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl md:rounded-2xl p-3 md:p-6 mb-4 md:mb-6 border border-primary-200"
+        class="bg-linear-to-r from-primary-50 to-primary-100 rounded-xl md:rounded-2xl p-3 md:p-6 mb-4 md:mb-6 border border-primary-200"
       >
         <div class="flex items-center gap-2 md:gap-4">
           <div
-            class="w-10 h-10 md:w-16 md:h-16 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0"
+            class="w-10 h-10 md:w-16 md:h-16 rounded-full bg-primary-500 flex items-center justify-center shrink-0"
           >
             <i class="fa-solid fa-user text-white text-base md:text-2xl"></i>
           </div>
@@ -149,7 +149,7 @@ const onSubmit = async () => {
       <div class="bg-white rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6">
         <div class="flex items-center justify-between mb-3 md:mb-4">
           <div class="flex items-center gap-2 md:gap-3">
-            <i class="fa-solid fa-signature text-primary-600 text-base md:text-2xl flex-shrink-0"></i>
+            <i class="fa-solid fa-signature text-primary-600 text-base md:text-2xl shrink-0"></i>
             <label class="text-base md:text-xl font-bold text-secondary-900">Signature Required</label>
           </div>
           <Button

@@ -29,7 +29,7 @@ const emit = defineEmits(['update:modelValue']);
 
 const classes = computed(() => {
   const base =
-    'w-full px-4 py-3 text-sm bg-secondary-50 border rounded-xl text-secondary-900 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:bg-white disabled:opacity-50 disabled:cursor-not-allowed appearance-none cursor-pointer pr-10';
+    'w-full px-4 py-3 text-sm bg-secondary-50 border rounded-xl text-secondary-900 transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-offset-0 focus:bg-white disabled:opacity-50 disabled:cursor-not-allowed appearance-none cursor-pointer pr-10';
 
   const states = props.error
     ? 'border-danger-300 focus:border-danger-500 focus:ring-danger-500/20'

@@ -192,7 +192,7 @@ const typeTagClass = computed(() => {
   >
     <div class="flex items-center gap-3 md:gap-4">
       <!-- Icon -->
-      <div class="flex-shrink-0" @click.stop="$emit('onSelect')">
+      <div class="shrink-0" @click.stop="$emit('onSelect')">
         <div
           class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-secondary-100 flex items-center justify-center group-hover:bg-primary-50 transition-colors"
         >
@@ -214,11 +214,11 @@ const typeTagClass = computed(() => {
             {{ type }}
           </span>
         </div>
-        <p class="text-xs md:text-sm text-secondary-500 break-words">{{ desc }}</p>
+        <p class="text-xs md:text-sm text-secondary-500 wrap-break-word">{{ desc }}</p>
       </div>
 
       <!-- Actions -->
-      <div class="flex gap-2 flex-shrink-0">
+      <div class="flex gap-2 shrink-0">
         <button
           v-if="props.item?.type === 'Student'"
           @click.stop.prevent="$emit('onFeedback', props.item)"

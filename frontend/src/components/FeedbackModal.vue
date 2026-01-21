@@ -530,7 +530,7 @@ watch(
           size="sm"
           @click="emit('update:show', false)"
           :disabled="loading"
-          class="flex-1 md:!px-4 md:!py-2"
+          class="flex-1 md:px-4! md:py-2!"
         >
           Cancel
         </Button>
@@ -538,7 +538,7 @@ watch(
           size="sm"
           @click="submitFeedback"
           :disabled="loading"
-          class="flex-1 md:!px-4 md:!py-2"
+          class="flex-1 md:px-4! md:py-2!"
         >
           <i v-if="!loading" class="fa-solid fa-check mr-1 md:mr-2"></i>
           {{ props.item?.feedback ? 'Update' : 'Submit' }}

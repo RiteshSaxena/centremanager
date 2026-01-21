@@ -116,12 +116,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden">
+  <div class="bg-white rounded-xl border border-secondary-200 shadow-xs overflow-hidden">
     <!-- Header with Student Info -->
-    <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-5 py-4">
+    <div class="bg-linear-to-r from-primary-500 to-primary-600 px-5 py-4">
       <div class="flex items-center gap-3">
         <div
-          class="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center"
+          class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center"
         >
           <i class="fa-solid fa-user-graduate text-2xl text-white"></i>
         </div>

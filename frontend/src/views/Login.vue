@@ -27,7 +27,7 @@ const login = async () => {
 
 <template>
   <div
-    class="min-h-screen w-full px-4 flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-accent-50"
+    class="min-h-screen w-full px-4 flex items-center justify-center bg-linear-to-br from-primary-50 via-white to-accent-50"
   >
     <div class="w-full max-w-md">
       <!-- Logo/Brand Section -->

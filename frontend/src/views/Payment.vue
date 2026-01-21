@@ -168,7 +168,7 @@ onMounted(async () => {
     <!-- Header -->
     <div class="mb-6">
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm">
+        <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-xs">
           <i class="fa-solid fa-sterling-sign text-white text-xl"></i>
         </div>
         <div>
@@ -180,9 +180,9 @@ onMounted(async () => {
 
     <div class="space-y-6">
       <!-- Payments Overdue Section -->
-      <div class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden">
+      <div class="bg-white rounded-xl border border-secondary-200 shadow-xs overflow-hidden">
         <div
-          class="bg-gradient-to-r from-danger-50 to-danger-100 px-5 py-4 border-b border-danger-200"
+          class="bg-linear-to-r from-danger-50 to-danger-100 px-5 py-4 border-b border-danger-200"
         >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-danger-500 flex items-center justify-center">
@@ -227,7 +227,7 @@ onMounted(async () => {
             <template #cell-name="{ row }">
               <div class="flex items-center gap-2">
                 <div
-                  class="w-8 h-8 rounded-full bg-danger-100 flex items-center justify-center flex-shrink-0"
+                  class="w-8 h-8 rounded-full bg-danger-100 flex items-center justify-center shrink-0"
                 >
                   <i class="fa-solid fa-user text-danger-600 text-xs"></i>
                 </div>
@@ -263,7 +263,7 @@ onMounted(async () => {
                       {{ row.dueAmountFormatted }}
                     </span>
                   </div>
-                  <Button class="!gap-1" size="sm" @click="openPaymentModal(row)">
+                  <Button class="gap-1!" size="sm" @click="openPaymentModal(row)">
                     <i class="fa-solid fa-plus"></i>
                     Add
                   </Button>
@@ -276,9 +276,9 @@ onMounted(async () => {
       </div>
 
       <!-- Payment History Section -->
-      <div class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden">
+      <div class="bg-white rounded-xl border border-secondary-200 shadow-xs overflow-hidden">
         <div
-          class="bg-gradient-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200"
+          class="bg-linear-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200"
         >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center">
@@ -318,11 +318,11 @@ onMounted(async () => {
 
           <!-- Selected filter indicator -->
           <div v-if="searchedId" class="mb-4">
-            <div class="p-4 bg-primary-50 border-2 border-primary-200 rounded-xl shadow-sm">
+            <div class="p-4 bg-primary-50 border-2 border-primary-200 rounded-xl shadow-xs">
               <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                   <div
-                    class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center flex-shrink-0"
+                    class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center shrink-0"
                   >
                     <i class="fa-solid fa-filter text-white text-sm"></i>
                   </div>
@@ -353,7 +353,7 @@ onMounted(async () => {
             <template #cell-name="{ row }">
               <div class="flex items-center gap-2">
                 <div
-                  class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0"
+                  class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center shrink-0"
                 >
                   <i class="fa-solid fa-user text-primary-600 text-xs"></i>
                 </div>
@@ -382,7 +382,7 @@ onMounted(async () => {
               <div class="space-y-2 mb-1 pt-3 border p-3.5 rounded-lg border-secondary-100">
                 <div class="flex items-center gap-3">
                   <div
-                    class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0"
+                    class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center shrink-0"
                   >
                     <i class="fa-solid fa-user text-primary-600"></i>
                   </div>

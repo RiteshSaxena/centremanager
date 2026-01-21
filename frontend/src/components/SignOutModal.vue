@@ -304,11 +304,11 @@ const modalTitle = computed(() => {
     <template v-else>
       <!-- Person Info Card (Always shown) -->
       <div
-        class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl md:rounded-2xl p-3 md:p-6 mb-4 md:mb-6 border border-primary-200"
+        class="bg-linear-to-r from-primary-50 to-primary-100 rounded-xl md:rounded-2xl p-3 md:p-6 mb-4 md:mb-6 border border-primary-200"
       >
         <div class="flex items-center gap-2 md:gap-4">
           <div
-            class="w-10 h-10 md:w-16 md:h-16 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0"
+            class="w-10 h-10 md:w-16 md:h-16 rounded-full bg-primary-500 flex items-center justify-center shrink-0"
           >
             <i class="fa-solid fa-user text-white text-base md:text-2xl"></i>
           </div>
@@ -343,11 +343,11 @@ const modalTitle = computed(() => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 mb-4 md:mb-5">
           <!-- Math Card -->
           <div
-            class="bg-white rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6 shadow-sm"
+            class="bg-white rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6 shadow-xs"
           >
             <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-5">
               <div
-                class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0"
+                class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-blue-100 flex items-center justify-center shrink-0"
               >
                 <i class="fa-solid fa-calculator text-blue-600 text-sm md:text-xl"></i>
               </div>
@@ -380,11 +380,11 @@ const modalTitle = computed(() => {
 
           <!-- English Card -->
           <div
-            class="bg-white rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6 shadow-sm"
+            class="bg-white rounded-xl md:rounded-2xl border-2 border-secondary-200 p-3 md:p-6 shadow-xs"
           >
             <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-5">
               <div
-                class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0"
+                class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-purple-100 flex items-center justify-center shrink-0"
               >
                 <i class="fa-solid fa-book-open text-purple-600 text-sm md:text-xl"></i>
               </div>
@@ -425,7 +425,7 @@ const modalTitle = computed(() => {
         >
           <div class="flex items-start gap-2 md:gap-3 mb-2 md:mb-3">
             <i
-              class="fa-solid fa-comment-dots text-secondary-500 text-base md:text-xl mt-0.5 md:mt-1 flex-shrink-0"
+              class="fa-solid fa-comment-dots text-secondary-500 text-base md:text-xl mt-0.5 md:mt-1 shrink-0"
             ></i>
             <div class="flex-1 min-h-24">
               <h4 class="font-bold text-secondary-900 text-sm md:text-lg mb-1.5 md:mb-2">
@@ -459,7 +459,7 @@ const modalTitle = computed(() => {
         <div class="flex items-center justify-between mb-3 md:mb-4">
           <div class="flex items-center gap-2 md:gap-3">
             <i
-              class="fa-solid fa-signature text-primary-600 text-base md:text-2xl flex-shrink-0"
+              class="fa-solid fa-signature text-primary-600 text-base md:text-2xl shrink-0"
             ></i>
             <label class="text-base md:text-xl font-bold text-secondary-900"
               >Signature Required</label

@@ -4,7 +4,7 @@
       <!-- Welcome Header -->
       <div class="text-center mb-8" v-if="!(isSearched || selectedStudent)">
         <div
-          class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-3xl mb-4 shadow-xl"
+          class="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-primary-500 to-primary-600 rounded-3xl mb-4 shadow-xl"
         >
           <i class="fa-solid fa-building text-4xl text-white"></i>
         </div>

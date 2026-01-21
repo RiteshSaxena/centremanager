@@ -137,7 +137,7 @@ const getDueAmount = (amount: number) => {
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div
-            class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm"
+            class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-xs"
           >
             <i class="fa-solid fa-clipboard-check text-white text-xl"></i>
           </div>
@@ -147,7 +147,7 @@ const getDueAmount = (amount: number) => {
           </div>
         </div>
         <div
-          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-xl shadow-sm"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-xl shadow-xs"
         >
           <i class="fa-solid fa-calendar-day"></i>
           <span>{{ day }}</span>
@@ -170,11 +170,11 @@ const getDueAmount = (amount: number) => {
       <div
         v-for="(timing, index) in timings"
         :key="index"
-        class="bg-white rounded-xl border border-secondary-200 shadow-sm overflow-hidden"
+        class="bg-white rounded-xl border border-secondary-200 shadow-xs overflow-hidden"
       >
         <!-- Time Header -->
         <div
-          class="bg-gradient-to-r from-primary-50 to-primary-100 px-5 py-3 border-b border-primary-200"
+          class="bg-linear-to-r from-primary-50 to-primary-100 px-5 py-3 border-b border-primary-200"
         >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center">
@@ -204,7 +204,7 @@ const getDueAmount = (amount: number) => {
               class="flex items-center gap-3 p-3 rounded-lg border border-secondary-200 hover:border-primary-300 hover:bg-primary-50/30 transition-all"
             >
               <!-- Avatar -->
-              <div class="flex-shrink-0">
+              <div class="shrink-0">
                 <div
                   :class="[
                     'w-9 h-9 rounded-full flex items-center justify-center',
@@ -311,6 +311,8 @@ const getDueAmount = (amount: number) => {
 </template>
 
 <style scoped>
+@reference "@/assets/main.css";
+
 .tooltip-content {
   @apply invisible opacity-0 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs text-white bg-secondary-800 rounded-lg whitespace-nowrap z-50 transition-all duration-200;
 }

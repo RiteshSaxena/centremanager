@@ -45,7 +45,7 @@ const sizeClasses = {
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
-        <div class="fixed inset-0 bg-secondary-900/60 backdrop-blur-sm" />
+        <div class="fixed inset-0 bg-secondary-900/60 backdrop-blur-xs" />
       </TransitionChild>
 
       <!-- Modal container -->

@@ -47,7 +47,7 @@ onMounted(async () => {
 
 <template>
   <aside
-    class="sidebar bg-gradient-to-b from-secondary-900 via-secondary-800 to-secondary-900 flex flex-col justify-between no-print shadow-xl"
+    class="sidebar bg-linear-to-b from-secondary-900 via-secondary-800 to-secondary-900 flex flex-col justify-between no-print shadow-xl"
     :class="[
       sidebarExpanded
         ? 'w-full md:w-64'

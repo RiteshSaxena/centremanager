@@ -120,7 +120,7 @@ const gridCols = computed(() => {
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div
-            class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm"
+            class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-xs"
           >
             <i class="fa-solid fa-calendar-week text-white text-xl"></i>
           </div>
@@ -130,7 +130,7 @@ const gridCols = computed(() => {
           </div>
         </div>
         <div
-          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-xl shadow-sm"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm font-semibold rounded-xl shadow-xs"
         >
           <i class="fa-solid fa-calendar-days"></i>
           <span>{{ moment().format('MMM YYYY') }}</span>
@@ -161,7 +161,7 @@ const gridCols = computed(() => {
           <div v-for="day in days" :key="day" class="flex min-w-[200px] justify-center">
             <div
               :class="[
-                'px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all',
+                'px-5 py-2.5 rounded-xl font-bold text-sm shadow-xs transition-all',
                 day === today
                   ? 'bg-primary-500 text-white'
                   : 'bg-white border border-secondary-200 text-secondary-700'
@@ -193,7 +193,7 @@ const gridCols = computed(() => {
             <div
               v-for="day in days"
               :key="day"
-              class="bg-white min-w-[200px] border border-secondary-200 rounded-xl p-3 min-h-[80px] shadow-sm hover:shadow-md transition-shadow"
+              class="bg-white min-w-[200px] border border-secondary-200 rounded-xl p-3 min-h-[80px] shadow-xs hover:shadow-md transition-shadow"
             >
               <!-- Empty State -->
               <div
@@ -211,7 +211,7 @@ const gridCols = computed(() => {
                   class="flex items-center gap-2 p-2 rounded-lg border border-secondary-100 hover:border-primary-300 hover:bg-primary-50/30 transition-all"
                 >
                   <!-- Avatar -->
-                  <div class="flex-shrink-0">
+                  <div class="shrink-0">
                     <div
                       :class="[
                         'w-7 h-7 rounded-full flex items-center justify-center',
@@ -247,7 +247,7 @@ const gridCols = computed(() => {
                     <!-- Payment Due Badge -->
                     <div class="relative group" v-if="student.dueAmount && student.dueAmount > 0">
                       <span
-                        class="inline-flex items-center justify-center w-5 h-5 rounded bg-warning-100 text-warning-700 cursor-pointer hover:bg-warning-200 transition-colors"
+                        class="inline-flex items-center justify-center w-5 h-5 rounded-sm bg-warning-100 text-warning-700 cursor-pointer hover:bg-warning-200 transition-colors"
                       >
                         $
                       </span>
@@ -257,7 +257,7 @@ const gridCols = computed(() => {
                     </div>
                     <span
                       v-else-if="student.dueAmount === 0"
-                      class="inline-flex items-center justify-center w-5 h-5 rounded bg-secondary-100 text-secondary-500"
+                      class="inline-flex items-center justify-center w-5 h-5 rounded-sm bg-secondary-100 text-secondary-500"
                     >
                       $
                     </span>
@@ -268,7 +268,7 @@ const gridCols = computed(() => {
                       v-if="student.isEarlyLearner || student.schoolYear?.includes('Reception')"
                     >
                       <span
-                        class="inline-flex items-center justify-center w-5 h-5 rounded bg-purple-100 text-purple-700 cursor-pointer hover:bg-purple-200 transition-colors text-[8px] font-bold"
+                        class="inline-flex items-center justify-center w-5 h-5 rounded-sm bg-purple-100 text-purple-700 cursor-pointer hover:bg-purple-200 transition-colors text-[8px] font-bold"
                       >
                         EL
                       </span>
@@ -286,6 +286,8 @@ const gridCols = computed(() => {
 </template>
 
 <style scoped>
+@reference "@/assets/main.css";
+
 .tooltip-content {
   @apply invisible opacity-0 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs text-white bg-secondary-800 rounded-lg whitespace-nowrap z-50 transition-all duration-200;
 }

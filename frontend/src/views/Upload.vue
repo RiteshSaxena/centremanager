@@ -45,7 +45,7 @@ const onSubmit = async () => {
         @change="onSelect"
         accept=".csv"
         required
-        class="w-full px-4 py-3 text-sm bg-secondary-50 border border-secondary-300 rounded-xl text-secondary-900 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-500 file:text-white hover:file:bg-primary-600 file:cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 focus:bg-white"
+        class="w-full px-4 py-3 text-sm bg-secondary-50 border border-secondary-300 rounded-xl text-secondary-900 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-500 file:text-white hover:file:bg-primary-600 file:cursor-pointer transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 focus:bg-white"
       />
     </div>
     <Button type="submit" :disabled="loading">

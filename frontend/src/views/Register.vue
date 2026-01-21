@@ -48,7 +48,7 @@ const register = async () => {
 
 <template>
   <div
-    class="min-h-screen w-full px-4 py-8 flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-accent-50"
+    class="min-h-screen w-full px-4 py-8 flex items-center justify-center bg-linear-to-br from-primary-50 via-white to-accent-50"
   >
     <div class="w-full max-w-3xl">
       <!-- Logo/Brand Section -->

@@ -15,7 +15,7 @@
       </div>
 
       <!-- Search Section -->
-      <div class="bg-white rounded-xl border border-secondary-200 p-4 shadow-sm">
+      <div class="bg-white rounded-xl border border-secondary-200 p-4 shadow-xs">
         <div class="flex gap-2">
           <Input v-model="search" placeholder="Search student or staff name..." class="flex-1" />
           <Button v-if="search.trim().length" variant="ghost" size="sm" @click="clearSearch">
@@ -80,7 +80,7 @@
 
       <!-- Filter Section -->
       <div class="relative">
-        <div class="bg-white rounded-xl border border-secondary-200 p-4 shadow-sm">
+        <div class="bg-white rounded-xl border border-secondary-200 p-4 shadow-xs">
           <div class="flex gap-2">
             <Input v-model="signedInFilter" placeholder="Filter signed in..." class="flex-1" />
             <Button

@@ -84,7 +84,7 @@ onMounted(async () => {
     <!-- Header -->
     <div class="mb-6">
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm">
+        <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-xs">
           <i class="fa-solid fa-qrcode text-white text-xl"></i>
         </div>
         <div>
@@ -101,7 +101,7 @@ onMounted(async () => {
 
     <div v-else>
       <!-- Search Section -->
-      <div class="bg-white rounded-xl border border-secondary-200 shadow-sm p-5 mb-6">
+      <div class="bg-white rounded-xl border border-secondary-200 shadow-xs p-5 mb-6">
         <label class="block text-sm font-medium text-secondary-700 mb-2"> Search Students </label>
         <div class="flex gap-2 max-w-md">
           <Input v-model="search" placeholder="Enter student name or year..." />
@@ -129,7 +129,7 @@ onMounted(async () => {
         <div
           v-for="(student, index) in students"
           :key="index"
-          class="bg-white rounded-xl border border-secondary-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+          class="bg-white rounded-xl border border-secondary-200 shadow-xs hover:shadow-md transition-shadow overflow-hidden"
         >
           <div class="p-4 flex flex-col items-center">
             <!-- QR Code -->
