@@ -22,7 +22,6 @@ const PERMISSIONS = [
   { action: 'api::feedback.feedback.getTodayFeedbackByChild', role: 'authenticated' },
   { action: 'api::feedback.feedback.createFeedback', role: 'authenticated' },
   { action: 'api::feedback.feedback.updateTodayFeedbackByChild', role: 'authenticated' },
-
 ];
 
 const syncPermissions = async (strapi: Strapi) => {
