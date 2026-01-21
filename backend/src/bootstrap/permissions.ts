@@ -19,7 +19,7 @@ const PERMISSIONS = [
   { action: 'api::center.center.find', role: 'authenticated' },
   { action: 'api::center.center.register', role: 'public' },
   { action: 'plugin::upload.content-api.upload', role: 'authenticated' },
-  { action: 'api::feedback.feedback.getTodayFeedbackByChild', role: 'authenticated' },
+  { action: 'api::feedback.feedback.getFeedbackByChild', role: 'authenticated' },
   { action: 'api::feedback.feedback.createFeedback', role: 'authenticated' },
   { action: 'api::feedback.feedback.updateTodayFeedbackByChild', role: 'authenticated' },
 ];

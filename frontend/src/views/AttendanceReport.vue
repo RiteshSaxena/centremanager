@@ -181,22 +181,6 @@ const onRowClick = (recordId: number) => {
   }
 };
 
-const onAbsentStudentClick = (child: any) => {
-  // Create a mock LogRecord for absent student to work with SignOutModal
-  const mockRecord: any = {
-    id: null,
-    type: 'Student',
-    student: child,
-    parent: null,
-    staff: null,
-    guest: null,
-    signInTime: null,
-    signOutTime: null
-  };
-  selectedRecord.value = mockRecord;
-  showSignOutModal.value = true;
-};
-
 const onModalSuccess = () => {
   // Close modal after success
   showSignOutModal.value = false;
@@ -483,7 +467,7 @@ onMounted(async () => {
     <SignOutModal
       :show="showSignOutModal"
       :item="selectedRecord"
-      :hide-footer="true"
+      :is-feedback-only="true"
       @update:show="showSignOutModal = $event"
       @onSuccess="onModalSuccess"
     />

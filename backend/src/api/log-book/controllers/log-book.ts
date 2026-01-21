@@ -319,8 +319,10 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     let sort = 'signInTime:desc';
 
     let date = new Date();
+    let feedbackDate = new Date().toISOString().split('T')[0];
 
     if (ctx.request.query.date) {
+      feedbackDate = ctx.request.query.date;
       date = moment.utc(ctx.request.query.date, 'YYYY-MM-DD').toDate();
       const minDate = moment.utc(date).hours(0).minutes(0).seconds(0).toDate();
 
@@ -365,43 +367,51 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       sort: sort as any,
     });
 
-    const today = new Date().toISOString().split('T')[0];
+    let feedbacks: any[] = [];
+    if (feedbackDate) {
+      console.log('feedbackDate', feedbackDate);
+      const studentIds: number[] = entries.filter((entry: any) => entry.student).map((entry: any) => entry.student.id);
 
-    const entriesWithFeedback = await Promise.all(
-      entries.map(async (entry: any) => {
-        if (entry.student) {
-          entry.student = sanitizeChild(entry.student);
-          const feedback = await strapi.entityService.findMany('api::feedback.feedback', {
-            filters: {
-              child: entry.student.id,
-              createdDate: today,
+      feedbacks = await strapi.entityService.findMany('api::feedback.feedback', {
+        filters: {
+          child: {
+            id: {
+              $in: studentIds,
             },
-            populate: {
-              createdByUser: true,
-            },
-            limit: 1,
-          });
-          if (feedback.length) {
-            entry.feedback = {
-              ...feedback[0],
-              createdByUser: sanitizeUser(feedback[0].createdByUser),
-            };
-          }
+          },
+          createdDate: feedbackDate,
+        },
+        populate: {
+          child: true,
+          createdByUser: true,
+        },
+      });
+
+      console.log(feedbacks);
+    }
+
+    return entries.map((entry: any) => {
+      if (entry.student) {
+        entry.student = sanitizeChild(entry.student);
+        const feedback = feedbacks.find((fb) => fb.child.id === entry.student.id);
+        if (feedback) {
+          entry.feedback = {
+            ...feedback,
+            createdByUser: sanitizeUser(feedback.createdByUser),
+          };
         }
-        if (entry.staff) {
-          entry.staff = sanitizeUser(entry.staff);
-        }
+      }
+      if (entry.staff) {
+        entry.staff = sanitizeUser(entry.staff);
+      }
 
-        if (entry.signatureIn) {
-          entry.signatureId = entry.signatureIn.id;
-        }
+      if (entry.signatureIn) {
+        entry.signatureId = entry.signatureIn.id;
+      }
 
-        delete entry.signatureIn;
+      delete entry.signatureIn;
 
-        return entry;
-      })
-    );
-
-    return entriesWithFeedback;
+      return entry;
+    });
   },
 }));

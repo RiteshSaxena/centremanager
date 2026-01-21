@@ -2,8 +2,8 @@ export default {
   routes: [
     {
       method: 'GET',
-      path: '/feedback/by-child/:childId/today',
-      handler: 'feedback.getTodayFeedbackByChild',
+      path: '/feedback/by-child/:childId/:date',
+      handler: 'feedback.getFeedbackByChild',
       config: {
         auth: {},
       },

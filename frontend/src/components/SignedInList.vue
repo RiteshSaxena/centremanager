@@ -93,7 +93,7 @@ onMounted(async () => {
 <template>
   <Card class="overflow-y-auto">
     <template #header> People Signed In </template>
-    <div class="text-center mb-3" v-if="loading">
+    <div class="flex justify-center mb-5" v-if="loading">
       <Spinner size="md" />
     </div>
     <p class="text-sm text-secondary-400" v-if="!loading && !signedIn.length">No results found.</p>

@@ -2,10 +2,12 @@
 import type { LogRecord } from '@/types';
 import { computed, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
-import { useFeedbackStore } from '@/stores/feedback';
+import { useFeedbackStore, useLogBookStore } from '@/stores';
 import { Modal } from '@/components/ui';
 import { Button, Spinner, Checkbox, Textarea } from '@/components/ui';
+import type { Feedback } from '@/types/log-book';
 
+const logBookStore = useLogBookStore();
 const feedbackStore = useFeedbackStore();
 const toast = useToast();
 
@@ -163,13 +165,14 @@ const submitFeedback = async () => {
       feedback: form.feedback
     };
 
-    if (feedbackStore.todayFeedback) {
+    if (props.item.feedback) {
       await feedbackStore.updateFeedback(props.item.student.id, payload);
       toast.success('Feedback updated successfully');
     } else {
       await feedbackStore.createFeedback(payload);
       toast.success('Feedback submitted successfully');
     }
+    await logBookStore.fetchList();
     emit('onSuccess');
     emit('update:show', false);
   } catch {
@@ -179,7 +182,7 @@ const submitFeedback = async () => {
   }
 };
 
-const populateFormFromFeedback = (feedback: any) => {
+const populateFormFromFeedback = (feedback: Feedback) => {
   const form = feedbackForm.value;
   form.isMathChecked = feedback.mathScore === 100;
   form.isEnglishChecked = feedback.englishScore === 100;
@@ -191,8 +194,8 @@ const populateFormFromFeedback = (feedback: any) => {
   form.englishScore = getScoreString(feedback.englishScore);
   previousScores.value.math = form.mathScore;
   previousScores.value.english = form.englishScore;
-  form.mathTime = feedback.mathTime || '';
-  form.englishTime = feedback.englishTime || '';
+  form.mathTime = feedback.mathTime?.toString() || '';
+  form.englishTime = feedback.englishTime?.toString() || '';
   form.feedback = feedback.feedback || '';
   form.isPercentFeedbackRequired = feedback.isPercentFeedbackRequired ?? false;
 
@@ -218,21 +221,15 @@ watch(
 
     resetForm();
     resetErrors();
-    feedbackStore.resetTodayFeedback();
 
     if (props.item?.student?.id) {
       try {
         loading.value = true;
-        const feedback = await feedbackStore.fetchTodayFeedbackByChild(props.item.student.id);
-        if (feedback) {
-          populateFormFromFeedback(feedback);
+        if (props.item.feedback) {
+          populateFormFromFeedback(props.item.feedback);
         }
       } finally {
         loading.value = false;
-        // Auto-focus first input after loading
-        // setTimeout(() => {
-        //   mathScoreInput.value?.focus();
-        // }, 100);
       }
     }
   }
@@ -273,10 +270,18 @@ watch(
 </script>
 
 <template>
-  <Modal size="lg" :open="show" :closable="true" @close="emit('update:show', false)" @keydown="handleKeyDown">
+  <Modal
+    size="lg"
+    :open="show"
+    :closable="true"
+    @close="emit('update:show', false)"
+    @keydown="handleKeyDown"
+  >
     <template #title>
       <div class="flex items-center gap-2">
-        <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-primary-500 flex items-center justify-center">
+        <div
+          class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-primary-500 flex items-center justify-center"
+        >
           <i class="fa-solid fa-chart-line text-white text-sm md:text-base"></i>
         </div>
         <div>
@@ -293,14 +298,27 @@ watch(
 
     <div v-else class="space-y-3 md:space-y-4">
       <!-- Performance Card -->
-      <div v-if="hasMaths || hasEnglish" class="bg-white rounded-lg md:rounded-xl border-2 border-secondary-200 p-3 md:p-4">
-        <h3 class="text-xs md:text-sm font-bold text-secondary-900 mb-2 md:mb-3 uppercase tracking-wide">Today's Performance</h3>
+      <div
+        v-if="hasMaths || hasEnglish"
+        class="bg-white rounded-lg md:rounded-xl border-2 border-secondary-200 p-3 md:p-4"
+      >
+        <h3
+          class="text-xs md:text-sm font-bold text-secondary-900 mb-2 md:mb-3 uppercase tracking-wide"
+        >
+          Today's Performance
+        </h3>
 
         <div class="space-y-3 md:space-y-4">
           <!-- Mathematics -->
-          <div v-if="hasMaths" class="pb-3 md:pb-4" :class="{ 'border-b-2 border-secondary-200': hasEnglish }">
+          <div
+            v-if="hasMaths"
+            class="pb-3 md:pb-4"
+            :class="{ 'border-b-2 border-secondary-200': hasEnglish }"
+          >
             <div class="flex items-center gap-2 mb-2 md:mb-3">
-              <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-blue-500 flex items-center justify-center">
+              <div
+                class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-blue-500 flex items-center justify-center"
+              >
                 <i class="fa-solid fa-calculator text-white text-xs md:text-sm"></i>
               </div>
               <h4 class="text-sm md:text-base font-bold text-secondary-900">Mathematics</h4>
@@ -308,14 +326,26 @@ watch(
 
             <div class="grid grid-cols-3 gap-2 md:gap-3">
               <div>
-                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">100%</label>
-                <div class="h-10 md:h-12 flex items-center justify-center bg-secondary-50 rounded-lg border-2 border-secondary-200">
-                  <Checkbox v-model="feedbackForm.isMathChecked" label="" class="scale-110 md:scale-125" />
+                <label
+                  class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5"
+                  >100%</label
+                >
+                <div
+                  class="h-10 md:h-12 flex items-center justify-center bg-secondary-50 rounded-lg border-2 border-secondary-200"
+                >
+                  <Checkbox
+                    v-model="feedbackForm.isMathChecked"
+                    label=""
+                    class="scale-110 md:scale-125"
+                  />
                 </div>
               </div>
 
               <div>
-                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">Wrong</label>
+                <label
+                  class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5"
+                  >Wrong</label
+                >
                 <input
                   ref="mathScoreInput"
                   type="text"
@@ -333,14 +363,24 @@ watch(
                   :class="[
                     'w-full h-10 md:h-12 px-2 md:px-3 text-base md:text-lg font-bold text-center rounded-lg border-2 focus:ring-4 focus:ring-primary-500 focus:border-primary-500 transition-all',
                     errors.mathScore ? 'border-danger-500 bg-danger-50' : 'border-secondary-300',
-                    feedbackForm.isMathChecked ? 'bg-secondary-100 text-secondary-400 cursor-not-allowed' : 'bg-white'
+                    feedbackForm.isMathChecked
+                      ? 'bg-secondary-100 text-secondary-400 cursor-not-allowed'
+                      : 'bg-white'
                   ]"
                 />
-                <p v-if="errors.mathScore" class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium">{{ errors.mathScore }}</p>
+                <p
+                  v-if="errors.mathScore"
+                  class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium"
+                >
+                  {{ errors.mathScore }}
+                </p>
               </div>
 
               <div>
-                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">Time</label>
+                <label
+                  class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5"
+                  >Time</label
+                >
                 <input
                   type="text"
                   v-model="feedbackForm.mathTime"
@@ -355,7 +395,12 @@ watch(
                     errors.mathTime ? 'border-danger-500 bg-danger-50' : 'border-secondary-300'
                   ]"
                 />
-                <p v-if="errors.mathTime" class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium">{{ errors.mathTime }}</p>
+                <p
+                  v-if="errors.mathTime"
+                  class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium"
+                >
+                  {{ errors.mathTime }}
+                </p>
               </div>
             </div>
           </div>
@@ -363,7 +408,9 @@ watch(
           <!-- English -->
           <div v-if="hasEnglish">
             <div class="flex items-center gap-2 mb-2 md:mb-3">
-              <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-purple-500 flex items-center justify-center">
+              <div
+                class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-purple-500 flex items-center justify-center"
+              >
                 <i class="fa-solid fa-book-open text-white text-xs md:text-sm"></i>
               </div>
               <h4 class="text-sm md:text-base font-bold text-secondary-900">English</h4>
@@ -371,14 +418,27 @@ watch(
 
             <div class="grid grid-cols-3 gap-2 md:gap-3">
               <div>
-                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">100%</label>
-                <div class="h-10 md:h-12 flex items-center justify-center bg-secondary-50 rounded-lg border-2 border-secondary-200">
-                  <Checkbox v-model="feedbackForm.isEnglishChecked" label="" class="scale-110 md:scale-125" :tabindex="hasMaths ? 3 : 1" />
+                <label
+                  class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5"
+                  >100%</label
+                >
+                <div
+                  class="h-10 md:h-12 flex items-center justify-center bg-secondary-50 rounded-lg border-2 border-secondary-200"
+                >
+                  <Checkbox
+                    v-model="feedbackForm.isEnglishChecked"
+                    label=""
+                    class="scale-110 md:scale-125"
+                    :tabindex="hasMaths ? 3 : 1"
+                  />
                 </div>
               </div>
 
               <div>
-                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">Wrong</label>
+                <label
+                  class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5"
+                  >Wrong</label
+                >
                 <input
                   type="text"
                   v-model="feedbackForm.englishScore"
@@ -395,14 +455,24 @@ watch(
                   :class="[
                     'w-full h-10 md:h-12 px-2 md:px-3 text-base md:text-lg font-bold text-center rounded-lg border-2 focus:ring-4 focus:ring-primary-500 focus:border-primary-500 transition-all',
                     errors.englishScore ? 'border-danger-500 bg-danger-50' : 'border-secondary-300',
-                    feedbackForm.isEnglishChecked ? 'bg-secondary-100 text-secondary-400 cursor-not-allowed' : 'bg-white'
+                    feedbackForm.isEnglishChecked
+                      ? 'bg-secondary-100 text-secondary-400 cursor-not-allowed'
+                      : 'bg-white'
                   ]"
                 />
-                <p v-if="errors.englishScore" class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium">{{ errors.englishScore }}</p>
+                <p
+                  v-if="errors.englishScore"
+                  class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium"
+                >
+                  {{ errors.englishScore }}
+                </p>
               </div>
 
               <div>
-                <label class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5">Time</label>
+                <label
+                  class="block text-[10px] md:text-xs font-semibold text-secondary-700 mb-1 md:mb-1.5"
+                  >Time</label
+                >
                 <input
                   type="text"
                   v-model="feedbackForm.englishTime"
@@ -417,7 +487,12 @@ watch(
                     errors.englishTime ? 'border-danger-500 bg-danger-50' : 'border-secondary-300'
                   ]"
                 />
-                <p v-if="errors.englishTime" class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium">{{ errors.englishTime }}</p>
+                <p
+                  v-if="errors.englishTime"
+                  class="text-[10px] md:text-xs text-danger-600 mt-0.5 md:mt-1 font-medium"
+                >
+                  {{ errors.englishTime }}
+                </p>
               </div>
             </div>
           </div>
@@ -425,14 +500,16 @@ watch(
       </div>
 
       <!-- Notes -->
-      <div class="bg-secondary-50 rounded-lg md:rounded-xl border-2 border-secondary-200 p-3 md:p-4">
+      <div
+        class="bg-secondary-50 rounded-lg md:rounded-xl border-2 border-secondary-200 p-3 md:p-4"
+      >
         <div class="flex items-center gap-2 mb-2">
           <i class="fa-solid fa-comment-dots text-secondary-600 text-sm md:text-base"></i>
           <label class="text-xs md:text-sm font-bold text-secondary-900">Notes (Optional)</label>
         </div>
         <Textarea
           v-model="feedbackForm.feedback"
-          :rows="4"
+          :rows="6"
           placeholder="Enter any additional feedback..."
           :tabindex="hasMaths && hasEnglish ? 6 : hasMaths || hasEnglish ? 4 : 2"
           class="mb-2 text-sm"
@@ -464,7 +541,7 @@ watch(
           class="flex-1 md:!px-4 md:!py-2"
         >
           <i v-if="!loading" class="fa-solid fa-check mr-1 md:mr-2"></i>
-          {{ feedbackStore.todayFeedback ? 'Update' : 'Submit' }}
+          {{ props.item?.feedback ? 'Update' : 'Submit' }}
         </Button>
       </div>
     </template>

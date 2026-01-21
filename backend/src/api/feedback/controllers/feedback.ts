@@ -5,20 +5,30 @@
 import { factories } from '@strapi/strapi';
 
 export default factories.createCoreController('api::feedback.feedback', ({ strapi }) => ({
-  async getTodayFeedbackByChild(ctx) {
+  async getFeedbackByChild(ctx) {
     try {
-      const { childId } = ctx.params;
+      const { childId, date } = ctx.params;
       if (!childId) {
         return ctx.badRequest('childId is required');
       }
 
-      // Get today's date (YYYY-MM-DD)
-      const today = new Date().toISOString().split('T')[0];
+      let feedbackDate;
+      if (date && date !== 'today') {
+        // check date format YYYY-MM-DD
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(date)) {
+          return ctx.badRequest('Invalid date format. Use YYYY-MM-DD');
+        }
+        feedbackDate = date;
+      } else {
+        // Default to today's date
+        feedbackDate = new Date().toISOString().split('T')[0];
+      }
 
       const feedback = await strapi.entityService.findMany('api::feedback.feedback', {
         filters: {
           child: childId,
-          createdDate: today,
+          createdDate: feedbackDate,
         },
         populate: {
           child: true,
