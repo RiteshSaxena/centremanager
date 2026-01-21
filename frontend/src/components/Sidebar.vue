@@ -48,12 +48,11 @@ onMounted(async () => {
 <template>
   <aside
     class="sidebar bg-linear-to-b from-secondary-900 via-secondary-800 to-secondary-900 flex flex-col justify-between no-print shadow-xl"
-    :class="[
-      sidebarExpanded
-        ? 'w-full md:w-64'
-        : 'max-h-16 md:max-h-none overflow-hidden md:w-20'
-    ]"
-    :style="{ transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }"
+    :class="[sidebarExpanded ? 'w-full md:w-64' : 'max-h-16 md:max-h-none overflow-hidden md:w-20']"
+    :style="{
+      transition:
+        'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    }"
   >
     <!-- Mobile Header -->
     <div class="flex justify-between items-center md:hidden border-b border-secondary-700">
@@ -74,7 +73,10 @@ onMounted(async () => {
     </div>
 
     <!-- Navigation -->
-    <nav class="flex flex-col flex-1 py-4 space-y-1" :class="sidebarExpanded ? 'px-3' : 'px-2 md:px-2'">
+    <nav
+      class="flex flex-col flex-1 py-4 space-y-1"
+      :class="sidebarExpanded ? 'px-3' : 'px-2 md:px-2'"
+    >
       <router-link
         v-for="item in navItems"
         :key="item.to"
@@ -84,7 +86,9 @@ onMounted(async () => {
           route.path === item.to
             ? 'bg-primary-500 text-white shadow-lg'
             : 'text-secondary-300 hover:bg-secondary-700/50 hover:text-white',
-          sidebarExpanded ? 'px-3 py-3 gap-3' : 'px-3 py-3 md:px-0 md:py-3 md:justify-center gap-3 md:gap-0'
+          sidebarExpanded
+            ? 'px-3 py-3 gap-3'
+            : 'px-3 py-3 md:px-0 md:py-3 md:justify-center gap-3 md:gap-0'
         ]"
         @click="handleSidebarLinkClick"
       >
@@ -122,13 +126,18 @@ onMounted(async () => {
           class="hidden md:block absolute left-full ml-2 px-3 py-2 bg-secondary-800 text-white text-sm font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50"
         >
           {{ item.label }}
-          <div class="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-secondary-800"></div>
+          <div
+            class="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-secondary-800"
+          ></div>
         </div>
       </router-link>
     </nav>
 
     <!-- Bottom actions -->
-    <div class="flex flex-col py-3 border-t border-secondary-700 space-y-1" :class="sidebarExpanded ? 'px-3' : 'px-2 md:px-2'">
+    <div
+      class="flex flex-col py-3 border-t border-secondary-700 space-y-1"
+      :class="sidebarExpanded ? 'px-3' : 'px-2 md:px-2'"
+    >
       <!-- Collapse button (desktop only) -->
       <button
         class="hidden md:flex group items-center rounded-xl text-secondary-300 hover:bg-secondary-700/50 hover:text-white transition-colors duration-200 w-full"
@@ -156,7 +165,11 @@ onMounted(async () => {
       <!-- Logout -->
       <button
         class="group flex items-center rounded-xl text-secondary-300 hover:bg-danger-600 hover:text-white transition-colors duration-200 w-full"
-        :class="sidebarExpanded ? 'px-3 py-3 gap-3' : 'px-3 py-3 md:px-0 md:py-3 md:justify-center gap-3 md:gap-0'"
+        :class="
+          sidebarExpanded
+            ? 'px-3 py-3 gap-3'
+            : 'px-3 py-3 md:px-0 md:py-3 md:justify-center gap-3 md:gap-0'
+        "
         @click="logout"
       >
         <i

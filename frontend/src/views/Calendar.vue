@@ -182,9 +182,7 @@ const gridCols = computed(() => {
           >
             <!-- Time Label -->
             <div class="flex items-center justify-center">
-              <div
-                class="max-w-16 py-2"
-              >
+              <div class="max-w-16 py-2">
                 <div class="text-xs font-bold text-primary-600">{{ timing.text }}</div>
               </div>
             </div>

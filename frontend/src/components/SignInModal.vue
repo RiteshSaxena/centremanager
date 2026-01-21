@@ -137,7 +137,9 @@ const onSubmit = async () => {
             <i class="fa-solid fa-user text-white text-base md:text-2xl"></i>
           </div>
           <div>
-            <p class="text-xs md:text-base text-primary-600 font-medium mb-0.5 md:mb-1">Signing In</p>
+            <p class="text-xs md:text-base text-primary-600 font-medium mb-0.5 md:mb-1">
+              Signing In
+            </p>
             <p class="text-sm md:text-2xl font-bold text-primary-900">
               {{ displayName }}
             </p>
@@ -150,7 +152,9 @@ const onSubmit = async () => {
         <div class="flex items-center justify-between mb-3 md:mb-4">
           <div class="flex items-center gap-2 md:gap-3">
             <i class="fa-solid fa-signature text-primary-600 text-base md:text-2xl shrink-0"></i>
-            <label class="text-base md:text-xl font-bold text-secondary-900">Signature Required</label>
+            <label class="text-base md:text-xl font-bold text-secondary-900"
+              >Signature Required</label
+            >
           </div>
           <Button
             variant="ghost"
@@ -163,7 +167,9 @@ const onSubmit = async () => {
             <span class="text-xs md:text-sm">Clear</span>
           </Button>
         </div>
-        <p class="text-sm md:text-base text-secondary-600 mb-3 md:mb-4">Please sign below to confirm sign in</p>
+        <p class="text-sm md:text-base text-secondary-600 mb-3 md:mb-4">
+          Please sign below to confirm sign in
+        </p>
         <signature-pad ref="signaturePad" />
         <div class="mt-3 md:mt-4" v-if="item?.type === 'parent'">
           <Checkbox v-model="isParentWithStudent" label="Is Parent coming with student?" />
@@ -182,7 +188,12 @@ const onSubmit = async () => {
         >
           Cancel
         </Button>
-        <Button size="md" @click.prevent="onSubmit" :disabled="loading" class="flex-1 text-sm md:text-base">
+        <Button
+          size="md"
+          @click.prevent="onSubmit"
+          :disabled="loading"
+          class="flex-1 text-sm md:text-base"
+        >
           <i v-if="!loading" class="fa-solid fa-check mr-1 md:mr-2 text-sm md:text-base"></i>
           {{ loading ? 'Processing...' : 'Confirm Sign In' }}
         </Button>

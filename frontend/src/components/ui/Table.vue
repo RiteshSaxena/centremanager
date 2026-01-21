@@ -102,9 +102,9 @@ const isEmpty = computed(() => !props.loading && props.data.length === 0);
         {{ emptyText }}
       </div>
       <div v-else class="">
-        <div class=" grid grid-cols-7  border-b py-2  border-secondary-100">
+        <div class="grid grid-cols-7 border-b py-2 border-secondary-100">
           <div class="col-span-4 flex items-center">
-            <p class=" text-secondary-500">Name</p>
+            <p class="text-secondary-500">Name</p>
           </div>
           <div class="col-span-3 gap-2 flex flex-row items-center justify-between">
             <p class="text-secondary-500">Due</p>

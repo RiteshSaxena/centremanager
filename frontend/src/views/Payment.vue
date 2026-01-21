@@ -209,7 +209,12 @@ onMounted(async () => {
                 placeholder="Enter student name..."
                 class="flex-1"
               />
-              <Button v-if="dueSearch.trim().length" variant="ghost" size="sm" @click="dueSearch = ''">
+              <Button
+                v-if="dueSearch.trim().length"
+                variant="ghost"
+                size="sm"
+                @click="dueSearch = ''"
+              >
                 <i class="fa-solid fa-xmark"></i>
               </Button>
             </div>
@@ -250,7 +255,7 @@ onMounted(async () => {
 
             <!-- Mobile card view -->
             <template #mobile-card="{ row }">
-              <div class=" grid grid-cols-7  border-b py-2  border-secondary-100">
+              <div class="grid grid-cols-7 border-b py-2 border-secondary-100">
                 <div class="col-span-4 flex items-center">
                   <p class="font-semibold text-secondary-900">{{ row.name }}</p>
                 </div>
@@ -270,7 +275,6 @@ onMounted(async () => {
                 </div>
               </div>
             </template>
-
           </Table>
         </div>
       </div>

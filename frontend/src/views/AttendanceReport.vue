@@ -343,7 +343,7 @@ onMounted(async () => {
                 :key="record.id"
                 :class="[
                   'transition-colors',
-                  (record.type === 'Student' || record.type === 'Student & Parent')
+                  record.type === 'Student' || record.type === 'Student & Parent'
                     ? 'hover:bg-primary-50 cursor-pointer'
                     : 'hover:bg-secondary-50'
                 ]"

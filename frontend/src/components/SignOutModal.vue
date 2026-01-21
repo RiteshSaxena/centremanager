@@ -458,9 +458,7 @@ const modalTitle = computed(() => {
       >
         <div class="flex items-center justify-between mb-3 md:mb-4">
           <div class="flex items-center gap-2 md:gap-3">
-            <i
-              class="fa-solid fa-signature text-primary-600 text-base md:text-2xl shrink-0"
-            ></i>
+            <i class="fa-solid fa-signature text-primary-600 text-base md:text-2xl shrink-0"></i>
             <label class="text-base md:text-xl font-bold text-secondary-900"
               >Signature Required</label
             >
@@ -491,10 +489,7 @@ const modalTitle = computed(() => {
 
     <template #footer>
       <!-- Step 1 Footer (Review) -->
-      <div
-        v-if="step === 1 && shouldShowFeedback"
-        class="flex gap-2 md:gap-4 w-full"
-      >
+      <div v-if="step === 1 && shouldShowFeedback" class="flex gap-2 md:gap-4 w-full">
         <Button
           v-if="!qrMode"
           variant="outline"
