@@ -9,7 +9,7 @@
           <i class="fa-solid fa-building text-4xl text-white"></i>
         </div>
         <h1 class="text-4xl font-bold text-secondary-900 mb-2">
-          Welcome to Kumon {{ centre?.displayName || centre?.name }}
+          Welcome to <br>Kumon {{ centre?.displayName || centre?.name }}
         </h1>
         <p class="text-lg text-secondary-600">Please sign in or sign out</p>
       </div>
@@ -24,7 +24,7 @@
             </div>
             <div>
               <h2 class="text-xl font-bold text-secondary-900">Student Sign In/Out</h2>
-              <p class="text-sm text-secondary-500">Enter your last name to continue</p>
+              <p class="text-sm md:text-lg text-secondary-500">Enter your last name to continue</p>
             </div>
           </div>
 
@@ -33,7 +33,7 @@
               v-model="studentLastName"
               placeholder="Enter your last name..."
               required
-              class="text-lg h-14"
+              class="text-sm md:[&>input]:text-lg h-14"
             />
             <Button type="submit" size="lg" class="w-full text-lg" :disabled="isSearching">
               <i v-if="!isSearching" class="fa-solid fa-arrow-right-to-bracket mr-3 text-xl"></i>

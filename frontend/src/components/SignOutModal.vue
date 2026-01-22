@@ -38,6 +38,7 @@ const feedbackData = ref<{
   englishTime: number | null;
   feedback: string;
   createdByName?: string;
+  createdDate?: string;
 } | null>(null);
 
 const shouldShowFeedback = computed(() => {
@@ -89,7 +90,8 @@ watch(
             feedback: feedback.feedback || '',
             createdByName: feedback?.createdByUser
               ? `${feedback?.createdByUser?.firstName} ${feedback.createdByUser?.lastName}`
-              : ''
+              : '',
+            createdDate: feedback?.createdDate
           };
 
           // Check if at least one of the 5 feedback fields has actual data
@@ -293,6 +295,17 @@ const modalTitle = computed(() => {
   }
   return 'Sign Below to Confirm';
 });
+
+const formattedFeedbackDate = computed(() => {
+  if (!feedbackData.value?.createdDate) return '';
+
+  const date = new Date(feedbackData.value.createdDate);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+});
 </script>
 
 <template>
@@ -334,11 +347,19 @@ const modalTitle = computed(() => {
 
       <!-- Step 1: Performance Review -->
       <div v-if="step === 1 && shouldShowFeedback">
-        <h3
-          class="text-sm md:text-base font-semibold text-secondary-700 uppercase tracking-wide mb-3 md:mb-4"
-        >
-          Today's Performance
-        </h3>
+        <div class="flex items-center mb-3 md:mb-4">
+          <h3
+            class="text-sm md:text-base font-semibold text-secondary-700 uppercase tracking-wide"
+          >
+            Performance Date - 
+          </h3>
+          <span
+            v-if="formattedFeedbackDate"
+            class="text-xs ml-2 md:text-lg text-secondary-500 font-medium"
+          >
+            {{ formattedFeedbackDate }}
+          </span>
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 mb-4 md:mb-5">
           <!-- Math Card -->
@@ -357,7 +378,7 @@ const modalTitle = computed(() => {
               <div
                 class="flex justify-between items-center py-1.5 md:py-2 border-b border-secondary-100"
               >
-                <span class="text-sm md:text-base text-secondary-600 font-medium">Score:</span>
+                <span class="text-sm md:text-lg text-secondary-600 font-medium">Score:</span>
                 <span
                   :class="['text-xl md:text-3xl font-bold', getScoreClass(feedbackData?.mathScore)]"
                 >
@@ -365,7 +386,7 @@ const modalTitle = computed(() => {
                 </span>
               </div>
               <div class="flex justify-between items-center py-1.5 md:py-2">
-                <span class="text-sm md:text-base text-secondary-600 font-medium">Time:</span>
+                <span class="text-sm md:text-lg text-secondary-600 font-medium">Time:</span>
                 <span
                   :class="[
                     'text-lg md:text-2xl font-semibold',
@@ -394,7 +415,7 @@ const modalTitle = computed(() => {
               <div
                 class="flex justify-between items-center py-1.5 md:py-2 border-b border-secondary-100"
               >
-                <span class="text-sm md:text-base text-secondary-600 font-medium">Score:</span>
+                <span class="text-sm md:text-lg text-secondary-600 font-medium">Score:</span>
                 <span
                   :class="[
                     'text-xl md:text-3xl font-bold',
@@ -405,7 +426,7 @@ const modalTitle = computed(() => {
                 </span>
               </div>
               <div class="flex justify-between items-center py-1.5 md:py-2">
-                <span class="text-sm md:text-base text-secondary-600 font-medium">Time:</span>
+                <span class="text-sm md:text-lg text-secondary-600 font-medium">Time:</span>
                 <span
                   :class="[
                     'text-lg md:text-2xl font-semibold',
@@ -432,14 +453,14 @@ const modalTitle = computed(() => {
                 Instructor Feedback
                 <span
                   v-if="feedbackData?.createdByName"
-                  class="font-normal text-secondary-600 text-xs md:text-sm ml-1 md:ml-2"
+                  class="font-normal text-secondary-600 text-xs md:text-lg ml-1 md:ml-2"
                 >
                   by {{ feedbackData.createdByName }}
                 </span>
               </h4>
               <p
                 v-if="feedbackData?.feedback"
-                class="text-sm md:text-base text-secondary-700 leading-relaxed"
+                class="text-sm md:text-lg text-secondary-700 leading-relaxed"
               >
                 {{ feedbackData.feedback }}
               </p>
@@ -460,8 +481,7 @@ const modalTitle = computed(() => {
           <div class="flex items-center gap-2 md:gap-3">
             <i class="fa-solid fa-signature text-primary-600 text-base md:text-2xl shrink-0"></i>
             <label class="text-base md:text-xl font-bold text-secondary-900"
-              >Signature Required</label
-            >
+              >Signature Required</label>
           </div>
           <Button
             variant="ghost"
