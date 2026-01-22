@@ -68,7 +68,7 @@ const dueTableData = computed(() => {
     ...student,
     index: index + 1,
     name: `${student.firstName} ${student.lastName}`,
-    dueAmountFormatted: student.dueAmount > 1 ? `€${student.dueAmount}` : '-'
+    dueAmountFormatted: student.dueAmount > 1 ? `£${student.dueAmount}` : '-'
   }));
 });
 
@@ -84,7 +84,7 @@ const historyTableData = computed(() => {
     ...payment,
     index: (currentPage.value - 1) * pageSize + index + 1,
     name: `${payment.child?.firstName || ''} ${payment.child?.lastName || ''}`,
-    amountFormatted: `€${payment.amount}`,
+    amountFormatted: `£${payment.amount}`,
     date: payment.paymentDate,
     notesDisplay: payment.notes || '-'
   }));

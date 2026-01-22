@@ -98,7 +98,7 @@ onMounted(async () => {
 });
 
 const getDueAmount = (amount: number) => {
-  return amount > 1 ? `€${amount}` : 'NA';
+  return amount > 1 ? `£${amount}` : 'NA';
 };
 
 const gridCols = computed(() => {
