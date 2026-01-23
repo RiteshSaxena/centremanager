@@ -36,7 +36,7 @@ const handleItemSelect = (item: any) => {
     <div class="px-4 py-3 bg-secondary-50 border-b border-secondary-200">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-magnifying-glass text-secondary-400"></i>
-        <h3 class="text-sm font-semibold text-secondary-700">
+        <h3 class="text-sm md:text-lg font-semibold text-secondary-700">
           {{ isKioskApp ? 'Select Student to Sign In/Out' : 'Search Results' }}
         </h3>
       </div>
@@ -59,7 +59,7 @@ const handleItemSelect = (item: any) => {
 
       <!-- Results List -->
       <div v-else>
-        <p class="text-xs text-secondary-500 mb-3">
+        <p class="text-xs md:text-lg  text-secondary-500 mb-3">
           Found {{ results.length }} result{{ results.length !== 1 ? 's' : '' }}
         </p>
         <UserListItem
