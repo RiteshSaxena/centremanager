@@ -145,10 +145,10 @@ onMounted(() => {
           v-if="studentDueAmount > 0"
           class="flex items-center gap-3 p-3 bg-warning-50 border border-warning-200 rounded-lg"
         >
-          <i class="fa-solid fa-circle-exclamation text-warning-600"></i>
+          <i class="fa-solid fa-circle-exclamation text-warning-600 md:text-lg"></i>
           <div class="flex-1">
-            <p class="text-sm font-medium text-warning-900">Payment Due</p>
-            <p class="text-xs text-warning-700">{{ getDueAmount(studentDueAmount) }}</p>
+            <p class="text-sm md:text-lg font-medium text-warning-900">Payment Due</p>
+            <p class="text-xs md:text-sm text-warning-700">{{ getDueAmount(studentDueAmount) }}</p>
           </div>
         </div>
 
@@ -184,10 +184,10 @@ onMounted(() => {
         <!-- Header -->
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h4 class="text-sm font-semibold text-secondary-900">
+            <h4 class="text-sm md:text-lg font-semibold text-secondary-900">
               {{ isKioskApp ? 'Select Your Name' : 'Select Guardian' }}
             </h4>
-            <p class="text-xs text-secondary-500 mt-0.5">Choose who is signing in the student</p>
+            <p class="text-xs md:text-sm text-secondary-500 mt-0.5">Choose who is signing in the student</p>
           </div>
         </div>
 
