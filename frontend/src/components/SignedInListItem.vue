@@ -220,7 +220,7 @@ const typeTagClass = computed(() => {
       <!-- Actions -->
       <div class="flex gap-2 shrink-0">
         <button
-          v-if="props.item?.type === 'Student'"
+          v-if="['Student', 'StudentWithParent'].includes(props.item?.type)"
           @click.stop.prevent="$emit('onFeedback', props.item)"
           :class="[
             'flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-lg text-white transition-transform hover:scale-110',

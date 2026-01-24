@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Ref } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue';
 
 const props = withDefaults(
@@ -7,6 +8,7 @@ const props = withDefaults(
     title?: string;
     size?: 'sm' | 'md' | 'lg' | 'xl';
     closable?: boolean;
+    initialFocus?: Ref<HTMLElement | null>;
   }>(),
   {
     title: '',
@@ -34,7 +36,7 @@ const sizeClasses = {
 
 <template>
   <TransitionRoot appear :show="open" as="template">
-    <Dialog as="div" class="relative z-50" @close="close">
+    <Dialog as="div" class="relative z-50" :initial-focus="initialFocus as any" @close="close">
       <!-- Backdrop -->
       <TransitionChild
         as="template"

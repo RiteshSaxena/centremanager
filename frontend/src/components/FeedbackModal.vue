@@ -24,6 +24,7 @@ const emit = defineEmits(['update:show', 'onSuccess']);
 const loading = ref(false);
 const originalFeedback = ref<any>(null);
 const previousScores = ref({ math: '', english: '' });
+const modalRef = ref<HTMLElement | null>(null);
 
 const getInitialForm = () => ({
   mathScore: '',
@@ -209,8 +210,6 @@ const populateFormFromFeedback = (feedback: Feedback) => {
   };
 };
 
-const mathScoreInput = ref<HTMLInputElement | null>(null);
-
 watch(
   () => props.show,
   async (val) => {
@@ -234,14 +233,6 @@ watch(
     }
   }
 );
-
-const handleKeyDown = (event: KeyboardEvent) => {
-  // Ctrl/Cmd + Enter to submit
-  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-    event.preventDefault();
-    submitFeedback();
-  }
-};
 
 const createCheckedWatcher = (
   subject: 'math' | 'english',
@@ -274,11 +265,11 @@ watch(
     size="lg"
     :open="show"
     :closable="true"
+    :initial-focus="modalRef as any"
     @close="emit('update:show', false)"
-    @keydown="handleKeyDown"
   >
     <template #title>
-      <div class="flex items-center gap-2">
+      <div ref="modalRef" tabindex="-1" class="flex items-center gap-2 outline-none">
         <div
           class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-primary-500 flex items-center justify-center"
         >
@@ -347,7 +338,6 @@ watch(
                   >Wrong</label
                 >
                 <input
-                  ref="mathScoreInput"
                   type="text"
                   v-model="feedbackForm.mathScore"
                   inputmode="numeric"
