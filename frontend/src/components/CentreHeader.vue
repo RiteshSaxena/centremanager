@@ -35,12 +35,12 @@ const logout = async () => {
         <span>{{ date }}</span>
       </div>
     </div>
-    <div v-else class="hidden md:block">
+    <!-- <div v-else class="hidden md:block">
       <h1 class="text-xl font-bold text-primary-800 leading-tight">
         {{ centre?.displayName || centre?.name }}
       </h1>
       <span class="text-sm text-secondary-500">{{ date }}</span>
-    </div>
+    </div> -->
     <div v-if="isKioskApp">
       <Button variant="secondary" size="sm" @click="logout">
         <i class="fa-solid fa-right-from-bracket"></i>

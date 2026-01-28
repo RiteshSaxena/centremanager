@@ -16,7 +16,7 @@ const type = ref('');
 const desc = ref('');
 
 const fetchFeedbackStatus = async () => {
-  if (props.item.type !== 'Student' || !props.item.student?.id) return;
+  if (!['Student', 'StudentWithParent'].includes(props.item.type) || !props.item.student?.id) return;
   feedbackData.value = props.item.feedback;
   updateFeedbackIcon();
 };
