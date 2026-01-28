@@ -21,6 +21,15 @@ const logout = async () => {
 };
 
 const date = moment().format('DD MMMM, YYYY');
+const shortDate = moment().format('DD MMM');
+
+const centreInitials = computed(() => {
+  const name = centre.value?.displayName || centre.value?.name || '';
+  return name
+    .split(' ')
+    .map((word: string) => word.charAt(0).toUpperCase())
+    .join('');
+});
 
 const handleSidebarLinkClick = () => {
   sidebarExpanded.value = false;
@@ -77,6 +86,18 @@ onMounted(async () => {
       class="flex flex-col flex-1 py-4 space-y-1"
       :class="sidebarExpanded ? 'px-3' : 'px-2 md:px-2'"
     >
+      <div v-if="!sidebarExpanded" class="hidden border-2 rounded-lg py-2 mb-2 md:block text-center">
+        <h1 class="text-xl font-bold text-white leading-tight">
+          {{ centreInitials }}
+        </h1>
+        <span class="text-xs text-white/40">{{ shortDate }}</span>
+      </div>
+      <div v-else class="hidden md:block w-30 py-2 mb-3">
+        <h1 class="text-xl font-bold text-white leading-tight fade-in">
+          {{ centre?.displayName || centre?.name }}
+        </h1>
+        <span class="text-sm text-white/40 fade-in">{{ date }}</span>
+      </div>
       <router-link
         v-for="item in navItems"
         :key="item.to"
@@ -201,6 +222,7 @@ onMounted(async () => {
     left: 0;
     height: 100vh;
     overflow-y: auto;
+    overflow: hidden;
     z-index: 30;
   }
 }
@@ -212,6 +234,22 @@ onMounted(async () => {
     position: sticky;
     top: 0;
     z-index: 40;
+  }
+}
+
+/* Fade-in animation */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 </style>
