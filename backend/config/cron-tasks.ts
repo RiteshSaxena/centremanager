@@ -1,7 +1,128 @@
 import { Strapi } from '@strapi/strapi';
 import moment from 'moment';
+import { sendEmail, generateFeedbackEmailHtml, generateFeedbackEmailText } from '../src/utils/email';
 
 export default {
+  dailyFeedbackEmail: {
+    task: async ({ strapi }: { strapi: Strapi }) => {
+      console.log('Running daily feedback email cron task', new Date().toISOString());
+
+      const today = moment().format('YYYY-MM-DD');
+
+      // Get all feedbacks created today with child and center relations
+      const feedbacks = await strapi.entityService.findMany('api::feedback.feedback', {
+        filters: {
+          createdDate: today,
+        },
+        populate: {
+          child: {
+            populate: {
+              parents: true,
+              center: true,
+            },
+          },
+        },
+      });
+
+      if (!feedbacks.length) {
+        console.log('No feedbacks found for today, skipping email send');
+        return;
+      }
+
+      console.log(`Found ${feedbacks.length} feedbacks for today`);
+
+      // Group feedbacks by parent email
+      const parentFeedbacks: Map<
+        string,
+        {
+          parentName: string;
+          email: string;
+          feedbacks: Array<{
+            childName: string;
+            mathScore?: number;
+            englishScore?: number;
+            mathTime?: string;
+            englishTime?: string;
+            feedback?: string;
+            date: string;
+            centerName: string;
+          }>;
+        }
+      > = new Map();
+
+      for (const feedback of feedbacks) {
+        const child = feedback.child;
+        if (!child) continue;
+
+        const parents = child.parents || [];
+        const center = child.center;
+        const centerName = center?.displayName || center?.name || 'Kumon Centre';
+
+        for (const parent of parents) {
+          if (!parent.email) continue;
+
+          const existingEntry = parentFeedbacks.get(parent.email);
+          const feedbackData = {
+            childName: `${child.firstName} ${child.lastName || ''}`.trim(),
+            mathScore: feedback.mathScore,
+            englishScore: feedback.englishScore,
+            mathTime: feedback.mathTime,
+            englishTime: feedback.englishTime,
+            feedback: feedback.feedback,
+            date: today,
+            centerName,
+          };
+
+          if (existingEntry) {
+            // Check if we already have feedback for this child (avoid duplicates)
+            const existingChild = existingEntry.feedbacks.find((f) => f.childName === feedbackData.childName);
+            if (!existingChild) {
+              existingEntry.feedbacks.push(feedbackData);
+            }
+          } else {
+            parentFeedbacks.set(parent.email, {
+              parentName: `${parent.firstName} ${parent.lastName || ''}`.trim(),
+              email: parent.email,
+              feedbacks: [feedbackData],
+            });
+          }
+        }
+      }
+
+      console.log(`Sending feedback emails to ${parentFeedbacks.size} parents`);
+
+      // Send emails to each parent
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const [email, data] of parentFeedbacks) {
+        const subject = `Daily Learning Update - ${moment().format('MMMM D, YYYY')}`;
+        const html = generateFeedbackEmailHtml(data.parentName, data.feedbacks);
+        const text = generateFeedbackEmailText(data.parentName, data.feedbacks);
+
+        const success = await sendEmail({
+          to: email,
+          subject,
+          html,
+          text,
+        });
+
+        if (success) {
+          successCount++;
+          console.log(`Email sent successfully to ${email}`);
+        } else {
+          failCount++;
+          console.log(`Failed to send email to ${email}`);
+        }
+      }
+
+      console.log(`Daily feedback email task completed: ${successCount} sent, ${failCount} failed`);
+    },
+    options: {
+      // Run at 6:00 PM every day
+      rule: '0 18 * * *',
+    },
+  },
   trialChecker: {
     task: async ({ strapi }: { strapi: Strapi }) => {
       console.log('Running trial checker cron task');
