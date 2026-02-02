@@ -1,17 +1,14 @@
-import utils from '@strapi/utils';
+import { z, validateSchema } from '../../utils/validate';
 
-const { yup, validateYupSchema } = utils;
-
-const generateTokenSchema = yup
-  .object()
-  .shape({
-    code: yup.string().trim().required().min(2).max(250).label('Code'),
-    clientId: yup.string().trim().required().min(2).max(250).label('Client ID'),
-    clientSecret: yup.string().trim().max(250).label('Client Secret'),
-    domain: yup.string().trim().required().min(2).max(10).label('Domain'),
+const generateTokenSchema = z
+  .object({
+    code: z.string().trim().min(2).max(250),
+    clientId: z.string().trim().min(2).max(250),
+    clientSecret: z.string().trim().max(250).optional(),
+    domain: z.string().trim().min(2).max(10),
   })
-  .noUnknown();
+  .strict();
 
 export default {
-  generateToken: validateYupSchema(generateTokenSchema),
+  generateToken: validateSchema(generateTokenSchema),
 };

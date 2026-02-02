@@ -1,55 +1,48 @@
-import utils from '@strapi/utils';
+import { z, validateSchema } from '../../utils/validate';
 
-const { yup, validateYupSchema } = utils;
-
-const searchSchema = yup
-  .object()
-  .shape({
-    text: yup.string().trim().required().min(1).max(250).label('Search Text'),
+const searchSchema = z
+  .object({
+    text: z.string().trim().min(1).max(250),
   })
-  .noUnknown();
+  .strict();
 
-const searchByLastNameSchema = yup
-  .object()
-  .shape({
-    lastName: yup.string().trim().required().min(1).max(250).label('Last Name'),
+const searchByLastNameSchema = z
+  .object({
+    lastName: z.string().trim().min(1).max(250),
   })
-  .noUnknown();
+  .strict();
 
-const guestSignInSchema = yup
-  .object()
-  .shape({
-    firstName: yup.string().trim().required().min(2).max(250).label('First Name'),
-    lastName: yup.string().trim().required().min(2).max(250).label('Last Name'),
-    email: yup.string().trim().max(250).label('Email'),
-    phoneNumber: yup.string().trim().max(250).label('Phone Number'),
-    signature: yup.number().required().label('Signature'),
+const guestSignInSchema = z
+  .object({
+    firstName: z.string().trim().min(2).max(250),
+    lastName: z.string().trim().min(2).max(250),
+    email: z.string().trim().max(250).optional(),
+    phoneNumber: z.string().trim().max(250).optional(),
+    signature: z.number(),
   })
-  .noUnknown();
+  .strict();
 
-const signInSchema = yup
-  .object()
-  .shape({
-    signature: yup.number().required().label('Signature'),
-    type: yup.mixed().oneOf(['Staff', 'Student', 'StudentWithParent', 'Parent']).required().label('Type'),
-    student: yup.number().label('Student'),
-    parent: yup.number().label('Parent'),
-    staff: yup.number().label('Staff'),
+const signInSchema = z
+  .object({
+    signature: z.number(),
+    type: z.enum(['Staff', 'Student', 'StudentWithParent', 'Parent']),
+    student: z.number().optional(),
+    parent: z.number().optional(),
+    staff: z.number().optional(),
   })
-  .noUnknown();
+  .strict();
 
-const signOutSchema = yup
-  .object()
-  .shape({
-    signIn: yup.number().required().label('Sign In'),
-    signature: yup.number().required().label('Signature'),
+const signOutSchema = z
+  .object({
+    signIn: z.number(),
+    signature: z.number(),
   })
-  .noUnknown();
+  .strict();
 
 export default {
-  search: validateYupSchema(searchSchema),
-  guestSignIn: validateYupSchema(guestSignInSchema),
-  signIn: validateYupSchema(signInSchema),
-  signOut: validateYupSchema(signOutSchema),
-  searchByLastName: validateYupSchema(searchByLastNameSchema),
+  search: validateSchema(searchSchema),
+  guestSignIn: validateSchema(guestSignInSchema),
+  signIn: validateSchema(signInSchema),
+  signOut: validateSchema(signOutSchema),
+  searchByLastName: validateSchema(searchByLastNameSchema),
 };

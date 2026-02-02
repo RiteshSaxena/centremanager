@@ -2,6 +2,7 @@
  * `error-handler` middleware
  */
 
+import { ZodError } from 'zod';
 import type { Context, Next } from '../../types';
 import errorHandler from '../utils/error';
 
@@ -10,10 +11,12 @@ export default () => {
     try {
       await next();
     } catch (err) {
-      if (err instanceof Error && err.name !== 'ValidationError') {
-        console.log(err);
+      const isValidationError = err instanceof ZodError || (err instanceof Error && err.name === 'ValidationError');
+
+      if (!isValidationError) {
+        console.error(err);
       }
-      console.log(err);
+
       errorHandler(err as Error);
     }
   };
