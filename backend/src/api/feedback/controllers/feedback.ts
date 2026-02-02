@@ -25,9 +25,11 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
         feedbackDate = new Date().toISOString().split('T')[0];
       }
 
-      const feedback = await strapi.entityService.findMany('api::feedback.feedback', {
+      const feedback = await strapi.documents('api::feedback.feedback').findMany({
         filters: {
-          child: childId,
+          child: {
+            id: childId,
+          },
           createdDate: feedbackDate,
         },
         populate: {
@@ -61,13 +63,17 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
 
       // validate child relation
       if (child) {
-        const childExists = await strapi.entityService.findOne('api::child.child', child);
+        const childExists = await strapi.documents('api::child.child').findFirst({
+          filters: {
+            id: child,
+          },
+        });
 
         if (!childExists) {
           return ctx.badRequest(`Child with id ${child} does not exist`);
         }
       }
-      const createdFeedback = await strapi.entityService.create('api::feedback.feedback', {
+      const createdFeedback = await strapi.documents('api::feedback.feedback').create({
         data: {
           mathScore: mathScore ?? null,
           englishScore: englishScore ?? null,
@@ -101,9 +107,11 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
       const today = new Date().toISOString().split('T')[0];
 
       // Find today's feedback for this child
-      const existingFeedback = await strapi.entityService.findMany('api::feedback.feedback', {
+      const existingFeedback = await strapi.documents('api::feedback.feedback').findMany({
         filters: {
-          child: childId,
+          child: {
+            id: childId,
+          },
           createdDate: today,
         },
         limit: 1,
@@ -113,9 +121,10 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
         return ctx.notFound('Feedback not found for today');
       }
 
-      const feedbackId = existingFeedback[0].id;
+      const feedbackEntry = existingFeedback[0];
 
-      const updatedFeedback = await strapi.entityService.update('api::feedback.feedback', feedbackId, {
+      const updatedFeedback = await strapi.documents('api::feedback.feedback').update({
+        documentId: feedbackEntry.documentId,
         data: {
           mathScore: mathScore ?? null,
           englishScore: englishScore ?? null,

@@ -1,4 +1,4 @@
-import { Strapi } from '@strapi/strapi';
+import { Strapi } from '../types';
 import moment from 'moment';
 import { sendEmail, generateFeedbackEmailHtml, generateFeedbackEmailText } from '../src/utils/email';
 
@@ -10,7 +10,7 @@ export default {
       const today = moment().format('YYYY-MM-DD');
 
       // Get all feedbacks created today with child and center relations
-      const feedbacks = await strapi.entityService.findMany('api::feedback.feedback', {
+      const feedbacks = await strapi.documents('api::feedback.feedback').findMany({
         filters: {
           createdDate: today,
         },
@@ -126,7 +126,7 @@ export default {
   trialChecker: {
     task: async ({ strapi }: { strapi: Strapi }) => {
       console.log('Running trial checker cron task');
-      const centers = await strapi.entityService.findMany('api::center.center', {
+      const centers = await strapi.documents('api::center.center').findMany({
         filters: {
           subscription: {
             status: 'trial',
@@ -135,19 +135,24 @@ export default {
             },
           },
         },
-        populate: ['subscription'],
+        populate: {
+          subscription: true,
+        },
       });
 
       for (const center of centers) {
-        const isInvited = await strapi.entityService.findMany('api::invite-code.invite-code', {
+        const isInvited = await strapi.documents('api::invite-code.invite-code').findMany({
           filters: {
-            usedBy: center,
+            usedBy: {
+              id: center.id,
+            },
           },
         });
 
         if (isInvited.length) {
           console.log(`Center ${center.name} trial is expired, setting to free plan`);
-          await strapi.entityService.update('api::center.center', center.id, {
+          await strapi.documents('api::center.center').update({
+            documentId: center.documentId,
             data: {
               subscription: {
                 status: 'free',
@@ -157,7 +162,8 @@ export default {
           });
         } else {
           console.log(`Center ${center.name} trial is expired, marking as inactive`);
-          await strapi.entityService.update('api::center.center', center.id, {
+          await strapi.documents('api::center.center').update({
+            documentId: center.documentId,
             data: {
               subscription: {
                 status: 'inactive',
@@ -174,7 +180,7 @@ export default {
   dueStudents: {
     task: async ({ strapi }: { strapi: Strapi }) => {
       console.log('Running due students cron task', new Date().toISOString());
-      const centers = await strapi.entityService.findMany('api::center.center', {
+      const centers = await strapi.documents('api::center.center').findMany({
         filters: {
           subscription: {
             status: {
@@ -193,7 +199,9 @@ export default {
         const day = new Date().getDate();
 
         const filters: any = {
-          center: center.id,
+          center: {
+            id: center.id,
+          },
         };
 
         const defaultPaymentDate = center.defaultPaymentDate || 1;
@@ -216,7 +224,7 @@ export default {
         const monthFirstDay = moment().startOf('month').format('YYYY-MM-DD');
         const today = moment().format('YYYY-MM-DD');
 
-        const children = await strapi.entityService.findMany('api::child.child', {
+        const children = await strapi.documents('api::child.child').findMany({
           filters,
         });
 
@@ -224,10 +232,14 @@ export default {
           if (child.status === 'Exited') {
             continue;
           }
-          const payments = await strapi.entityService.findMany('api::payment.payment', {
+          const payments = await strapi.documents('api::payment.payment').findMany({
             filters: {
-              center: center,
-              child: child,
+              center: {
+                id: center.id,
+              },
+              child: {
+                id: child.id,
+              },
               paymentDate: {
                 $gte: monthFirstDay,
                 $lte: today,
@@ -240,7 +252,8 @@ export default {
           // if no payments are made
           if (!payments.length) {
             console.log(`Child ${child.firstName} ${child.lastName} has not paid for the month`);
-            await strapi.entityService.update('api::child.child', child.id, {
+            await strapi.documents('api::child.child').update({
+              documentId: child.documentId,
               data: {
                 isDue: true,
                 dueAmount: child.paymentAmount ? currentDueAmount + child.paymentAmount : null,
@@ -253,7 +266,8 @@ export default {
           if (!child.paymentAmount) {
             if (child.isDue) {
               console.log(`Child ${child.firstName} ${child.lastName} has paid full amount for the month`);
-              await strapi.entityService.update('api::child.child', child.id, {
+              await strapi.documents('api::child.child').update({
+                documentId: child.documentId,
                 data: {
                   isDue: false,
                   dueAmount: null,
@@ -268,7 +282,8 @@ export default {
           // if partial payments are made
           if (totalAmountPaid < child.paymentAmount) {
             console.log(`Child ${child.firstName} ${child.lastName} has not paid full amount for the month`);
-            await strapi.entityService.update('api::child.child', child.id, {
+            await strapi.documents('api::child.child').update({
+              documentId: child.documentId,
               data: {
                 isDue: true,
                 dueAmount: currentDueAmount + (child.paymentAmount - totalAmountPaid),
@@ -284,7 +299,8 @@ export default {
           // if full payment is made
           if (child.isDue) {
             console.log(`Child ${child.firstName} ${child.lastName} has paid full amount for the month`);
-            await strapi.entityService.update('api::child.child', child.id, {
+            await strapi.documents('api::child.child').update({
+              documentId: child.documentId,
               data: {
                 isDue: false,
                 dueAmount: null,

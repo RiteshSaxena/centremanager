@@ -2,17 +2,23 @@
  * log-book controller
  */
 
-import { factories, Strapi } from '@strapi/strapi';
+import { factories } from '@strapi/strapi';
 import schema from '../schema';
 import utils from '@strapi/utils';
 import { sanitizeChild, sanitizeUser } from '../../../utils/sanitize';
 import moment from 'moment';
+import type { Strapi } from '../../../../types';
 
 const { ValidationError } = utils.errors;
 
 const checkSubscription = async (strapi: Strapi, centerId: number) => {
-  const center = await strapi.entityService.findOne('api::center.center', centerId, {
-    populate: ['subscription'],
+  const center = await strapi.documents('api::center.center').findFirst({
+    filters: {
+      id: centerId,
+    },
+    populate: {
+      subscription: true,
+    },
   });
 
   if (!center) {
@@ -26,9 +32,11 @@ const checkSubscription = async (strapi: Strapi, centerId: number) => {
   if (center.subscription.status === 'free') {
     const startOfMonth = moment().utc().startOf('week').toDate();
 
-    const entries = await strapi.entityService.count('api::log-book.log-book', {
+    const entries = await strapi.documents('api::log-book.log-book').count({
       filters: {
-        center: centerId as any,
+        center: {
+          id: centerId,
+        },
         signInTime: {
           $gte: startOfMonth,
         },
@@ -47,8 +55,8 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
 
     const childOnly = ctx.query.childOnly === 'true';
 
-    const students = await strapi.entityService.findMany('api::child.child', {
-      fields: ['firstName', 'lastName', 'gender', 'schoolYear'] as any[],
+    const students = await strapi.documents('api::child.child').findMany({
+      fields: ['firstName', 'lastName', 'gender', 'schoolYear'],
       filters: {
         $and: [
           {
@@ -82,8 +90,8 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       });
     }
 
-    const staff = await strapi.entityService.findMany('plugin::users-permissions.user', {
-      fields: ['firstName', 'lastName', 'email'] as any[],
+    const staff = await strapi.documents('plugin::users-permissions.user').findMany({
+      fields: ['firstName', 'lastName', 'email'],
       filters: {
         $and: [
           {
@@ -131,8 +139,8 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
   async searchByLastName(ctx) {
     const { lastName } = await schema.searchByLastName(ctx.request.body);
 
-    const students = await strapi.entityService.findMany('api::child.child', {
-      fields: ['firstName', 'lastName', 'gender', 'schoolYear'] as any[],
+    const students = await strapi.documents('api::child.child').findMany({
+      fields: ['firstName', 'lastName', 'gender', 'schoolYear'],
       filters: {
         center: ctx.state.center.id,
         lastName: {
@@ -146,7 +154,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       students.map(async (student) => {
         const parents = await Promise.all(
           student.parents.map(async (parent) => {
-            const hasLogBook = await strapi.entityService.findMany('api::log-book.log-book', {
+            const hasLogBook = await strapi.documents('api::log-book.log-book').findMany({
               filters: {
                 type: {
                   $in: ['Student', 'StudentWithParent'],
@@ -166,7 +174,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
             if (hasLogBook.length) {
               return {
                 ...parent,
-                signatureId: (hasLogBook[0] as any).signatureIn.id,
+                signatureId: hasLogBook[0].signatureIn.id,
               };
             }
 
@@ -182,8 +190,8 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       })
     );
 
-    const staff = await strapi.entityService.findMany('plugin::users-permissions.user', {
-      fields: ['firstName', 'lastName', 'email'] as any[],
+    const staff = await strapi.documents('plugin::users-permissions.user').findMany({
+      fields: ['firstName', 'lastName', 'email'],
       filters: {
         center: ctx.state.center.id,
         lastName: {
@@ -206,7 +214,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
 
     await checkSubscription(strapi, ctx.state.center.id as number);
 
-    return await strapi.entityService.create('api::log-book.log-book', {
+    return await strapi.documents('api::log-book.log-book').create({
       data: {
         type: 'Guest',
         signatureIn: payload.signature,
@@ -252,10 +260,12 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     const date = new Date();
     date.setHours(0, 0, 0, 0);
 
-    const alreadySignedIn = await strapi.entityService.findMany('api::log-book.log-book', {
+    const alreadySignedIn = await strapi.documents('api::log-book.log-book').findMany({
       filters: {
         type: payload.type,
-        center: ctx.state.center.id as any,
+        center: {
+          id: ctx.state.center.id,
+        },
         ...data,
         signInTime: {
           $gte: date,
@@ -269,7 +279,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       throw new ValidationError('Already signed in');
     }
 
-    return await strapi.entityService.create('api::log-book.log-book', {
+    return await strapi.documents('api::log-book.log-book').create({
       data: {
         type: payload.type,
         signatureIn: payload.signature,
@@ -282,7 +292,11 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
   async signOut(ctx) {
     const payload = await schema.signOut(ctx.request.body);
 
-    const entry = await strapi.entityService.findOne('api::log-book.log-book', payload.signIn);
+    const entry = await strapi.documents('api::log-book.log-book').findFirst({
+      filters: {
+        id: payload.signIn,
+      },
+    });
 
     if (!entry) {
       throw new ValidationError('Entry not found');
@@ -292,7 +306,8 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       throw new ValidationError('Already signed out');
     }
 
-    await strapi.entityService.update('api::log-book.log-book', entry.id, {
+    await strapi.documents('api::log-book.log-book').update({
+      documentId: entry.documentId,
       data: {
         signOutTime: new Date(),
         signatureOut: payload.signature,
@@ -302,18 +317,12 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     return true;
   },
   async list(ctx) {
-    // const populate = ['student', 'parent', 'staff', 'guest'];
-    const populate: any = {
-      student: {
-        populate: ['subjects'],
-      },
-      parent: true,
-      staff: true,
-      guest: true,
-    };
+    const populate = [];
     const andFilters: any[] = [
       {
-        center: ctx.state.center.id as any,
+        center: {
+          id: ctx.state.center.id,
+        },
       },
     ];
     let sort = 'signInTime:desc';
@@ -322,7 +331,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
     let feedbackDate = new Date().toISOString().split('T')[0];
 
     if (ctx.request.query.date) {
-      feedbackDate = ctx.request.query.date;
+      feedbackDate = ctx.request.query.date as string;
       date = moment.utc(ctx.request.query.date, 'YYYY-MM-DD').toDate();
       const minDate = moment.utc(date).hours(0).minutes(0).seconds(0).toDate();
 
@@ -341,12 +350,12 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
       });
     } else if (ctx.request.query.student) {
       andFilters.push({
-        student: parseInt(ctx.request.query.student),
+        student: parseInt(ctx.request.query.student as string),
       });
       sort = 'signInTime:desc';
     } else if (ctx.request.query.staff) {
       andFilters.push({
-        staff: parseInt(ctx.request.query.staff),
+        staff: parseInt(ctx.request.query.staff as string),
       });
       sort = 'signInTime:desc';
     } else {
@@ -355,24 +364,22 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
           $null: true,
         },
       });
-      // populate.push('signatureIn');
-      populate.signatureIn = true;
+      populate.push('signatureIn');
     }
 
-    const entries = await strapi.entityService.findMany('api::log-book.log-book', {
+    const entries = await strapi.documents('api::log-book.log-book').findMany({
       filters: {
         $and: [...andFilters],
       },
-      populate: populate as any,
-      sort: sort as any,
+      populate: ['student', 'student.subjects', 'parent', 'staff', 'guest', ...populate],
+      sort: sort as 'signInTime:desc' | 'signInTime:asc',
     });
 
-    let feedbacks: any[] = [];
+    let feedbacks = [];
     if (feedbackDate) {
-      console.log('feedbackDate', feedbackDate);
-      const studentIds: number[] = entries.filter((entry: any) => entry.student).map((entry: any) => entry.student.id);
+      const studentIds: number[] = entries.filter((entry) => entry.student).map((entry) => entry.student.id as number);
 
-      feedbacks = await strapi.entityService.findMany('api::feedback.feedback', {
+      feedbacks = await strapi.documents('api::feedback.feedback').findMany({
         filters: {
           child: {
             id: {
@@ -386,8 +393,6 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
           createdByUser: true,
         },
       });
-
-      console.log(feedbacks);
     }
 
     return entries.map((entry: any) => {

@@ -1,6 +1,6 @@
-import type { Attribute, Schema } from '@strapi/strapi';
+import type { Schema, Struct } from '@strapi/strapi';
 
-export interface AccountingZohoBooks extends Schema.Component {
+export interface AccountingZohoBooks extends Struct.ComponentSchema {
   collectionName: 'components_accounting_zoho_books';
   info: {
     description: '';
@@ -8,71 +8,71 @@ export interface AccountingZohoBooks extends Schema.Component {
     icon: 'book';
   };
   attributes: {
-    accessToken: Attribute.String & Attribute.Required;
-    clientId: Attribute.String & Attribute.Required;
-    clientSecret: Attribute.String & Attribute.Required;
-    domain: Attribute.String & Attribute.Required;
-    organizationId: Attribute.String & Attribute.Required;
-    refreshToken: Attribute.String & Attribute.Required;
+    accessToken: Schema.Attribute.String & Schema.Attribute.Required;
+    clientId: Schema.Attribute.String & Schema.Attribute.Required;
+    clientSecret: Schema.Attribute.String & Schema.Attribute.Required;
+    domain: Schema.Attribute.String & Schema.Attribute.Required;
+    organizationId: Schema.Attribute.String & Schema.Attribute.Required;
+    refreshToken: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
-export interface GuestGuest extends Schema.Component {
+export interface GuestGuest extends Struct.ComponentSchema {
   collectionName: 'components_guest_guests';
   info: {
     displayName: 'Guest';
   };
   attributes: {
-    email: Attribute.Email;
-    firstName: Attribute.String & Attribute.Required;
-    lastName: Attribute.String;
-    phoneNumber: Attribute.String;
+    email: Schema.Attribute.Email;
+    firstName: Schema.Attribute.String & Schema.Attribute.Required;
+    lastName: Schema.Attribute.String;
+    phoneNumber: Schema.Attribute.String;
   };
 }
 
-export interface StatusStatusChange extends Schema.Component {
+export interface StatusStatusChange extends Struct.ComponentSchema {
   collectionName: 'components_status_status_changes';
   info: {
     description: '';
     displayName: 'StatusChange';
   };
   attributes: {
-    date: Attribute.DateTime;
-    from: Attribute.String;
-    to: Attribute.String & Attribute.Required;
+    date: Schema.Attribute.DateTime;
+    from: Schema.Attribute.String;
+    to: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
-export interface SubscriptionSubscription extends Schema.Component {
+export interface SubscriptionSubscription extends Struct.ComponentSchema {
   collectionName: 'components_subscription_subscriptions';
   info: {
     description: '';
     displayName: 'Subscription';
   };
   attributes: {
-    freePlanLimit: Attribute.Integer & Attribute.DefaultTo<10>;
-    status: Attribute.Enumeration<['paid', 'trial', 'free', 'inactive']>;
-    transactions: Attribute.Component<'subscription.transaction', true>;
-    trialExpiryDate: Attribute.DateTime;
+    freePlanLimit: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<10>;
+    status: Schema.Attribute.Enumeration<['paid', 'trial', 'free', 'inactive']>;
+    transactions: Schema.Attribute.Component<'subscription.transaction', true>;
+    trialExpiryDate: Schema.Attribute.DateTime;
   };
 }
 
-export interface SubscriptionTransaction extends Schema.Component {
+export interface SubscriptionTransaction extends Struct.ComponentSchema {
   collectionName: 'components_subscription_transactions';
   info: {
     displayName: 'Transaction';
   };
   attributes: {
-    customerId: Attribute.String & Attribute.Required;
-    sessionId: Attribute.String & Attribute.Required;
-    status: Attribute.Enumeration<['pending', 'completed', 'expired']>;
-    updatedDate: Attribute.DateTime;
+    customerId: Schema.Attribute.String & Schema.Attribute.Required;
+    sessionId: Schema.Attribute.String & Schema.Attribute.Required;
+    status: Schema.Attribute.Enumeration<['pending', 'completed', 'expired']>;
+    updatedDate: Schema.Attribute.DateTime;
   };
 }
 
-declare module '@strapi/types' {
-  export module Shared {
-    export interface Components {
+declare module '@strapi/strapi' {
+  export module Public {
+    export interface ComponentSchemas {
       'accounting.zoho-books': AccountingZohoBooks;
       'guest.guest': GuestGuest;
       'status.status-change': StatusStatusChange;

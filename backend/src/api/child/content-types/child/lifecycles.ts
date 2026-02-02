@@ -10,7 +10,7 @@ export default {
     }
   },
   async afterUpdate(event) {
-    if (event.result && event.result.id) {
+    if (event.result && event.result.documentId) {
       if (event.result.statusLog && event.result.statusLog.length > 0) {
         const lastStatusLog = event.result.statusLog[event.result.statusLog.length - 1];
         if (lastStatusLog.to !== event.result.status) {
@@ -19,7 +19,8 @@ export default {
             to: event.result.status,
             date: new Date(),
           });
-          await strapi.entityService.update('api::child.child', event.result.id, {
+          await strapi.documents('api::child.child').update({
+            documentId: event.result.documentId,
             data: {
               statusLog: event.result.statusLog,
             },

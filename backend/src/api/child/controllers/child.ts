@@ -10,18 +10,23 @@ const { ValidationError } = utils.errors;
 
 export default factories.createCoreController('api::child.child', ({ strapi }) => ({
   async find(ctx) {
-    const entries = await strapi.entityService.findMany('api::child.child', {
+    const entries = await strapi.documents('api::child.child').findMany({
       filters: {
-        center: ctx.state.center,
+        center: {
+          id: ctx.state.center.id,
+        },
       },
       populate: ['center'],
-      sort: { firstName: 'asc' },
+      sort: 'firstName:asc',
     });
 
     return entries.map((entry) => sanitizeChild(entry));
   },
   async findOne(ctx) {
-    const entry = await strapi.entityService.findOne('api::child.child', ctx.params.id, {
+    const entry = await strapi.documents('api::child.child').findFirst({
+      filters: {
+        id: ctx.params.id,
+      },
       populate: ['parents', 'center'],
     });
 
@@ -35,7 +40,7 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
 
     const parents = await Promise.all(
       entry.parents.map(async (parent) => {
-        const hasLogBook = await strapi.entityService.findMany('api::log-book.log-book', {
+        const hasLogBook = await strapi.documents('api::log-book.log-book').findMany({
           filters: {
             type: {
               $in: ['Student', 'StudentWithParent'],
@@ -55,7 +60,7 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
         if (hasLogBook.length) {
           return {
             ...parent,
-            signatureId: (hasLogBook[0] as any).signatureIn.id,
+            signatureId: hasLogBook[0].signatureIn.id,
           };
         }
 
@@ -69,8 +74,13 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
     });
   },
   async dueStudents(ctx) {
-    const center = await strapi.entityService.findOne('api::center.center', ctx.state.center.id, {
-      populate: ['zohobooks'],
+    const center = await strapi.documents('api::center.center').findFirst({
+      filters: {
+        id: ctx.state.center.id,
+      },
+      populate: {
+        zohobooks: true,
+      },
     });
 
     let dueStudents = [];
@@ -96,9 +106,11 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
         });
     } else if (center.paymentHandler === 'inbuilt') {
       booksEnabled = true;
-      dueStudents = await strapi.entityService.findMany('api::child.child', {
+      dueStudents = await strapi.documents('api::child.child').findMany({
         filters: {
-          center: ctx.state.center.id,
+          center: {
+            id: ctx.state.center.id,
+          },
           status: {
             $notIn: ['New', 'Exited'],
           },

@@ -2,16 +2,19 @@
  * `centre` middleware
  */
 
-import { Strapi } from '@strapi/strapi';
+import { Strapi, Context, Next } from '../../types';
 import utils from '@strapi/utils';
 
 const { ValidationError } = utils.errors;
 
 export default (config, { strapi }: { strapi: Strapi }) => {
   // Add your own logic here.
-  return async (ctx, next) => {
+  return async (ctx: Context, next: Next) => {
     if (ctx.state.user) {
-      const user = await strapi.entityService.findOne('plugin::users-permissions.user', ctx.state.user.id, {
+      const user = await strapi.documents('plugin::users-permissions.user').findFirst({
+        filters: {
+          id: ctx.state.user.id,
+        },
         populate: ['center'],
       });
 

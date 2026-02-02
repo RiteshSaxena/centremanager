@@ -2,7 +2,13 @@ import utils from '@strapi/utils';
 
 const { ValidationError } = utils.errors;
 
-const errorHandler = (error: any) => {
+interface ErrorWithDetails extends Error {
+  details?: {
+    errors?: Array<{ message: string }>;
+  };
+}
+
+const errorHandler = (error: ErrorWithDetails) => {
   if (error.name === 'ValidationError') {
     let errorMessage = '';
     if (error.details && error.details.errors && error.details.errors.length) {

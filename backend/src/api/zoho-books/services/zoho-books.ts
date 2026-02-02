@@ -14,18 +14,42 @@ interface ZohoBooks {
   organizationId: string;
 }
 
+interface ZohoBooksContactPersonResponse {
+  contact_persons: {
+    contact_person_id: string;
+    contact_id: string;
+    first_name: string;
+    last_name: string;
+    designation: string;
+  }[];
+}
+
+interface ZohoBooksContactsResponse {
+  contacts: {
+    contact_id: string;
+    company_name: string;
+    contact_name: string;
+    email: string;
+    phone: string;
+    mobile: string;
+  }[];
+}
+
 export default () => ({
   async fetchContacts(centerId: number, zohoBooks: ZohoBooks, attempt = 1) {
     try {
       const baseApiUrl = `https://www.zohoapis.${zohoBooks.domain}/books/v3`;
 
-      const contactsRes = await axios.get(`${baseApiUrl}/contacts?organization_id=${zohoBooks.organizationId}`, {
-        headers: {
-          Authorization: `Bearer ${zohoBooks.accessToken}`,
-        },
-      });
+      const contactsRes = await axios.get<ZohoBooksContactsResponse>(
+        `${baseApiUrl}/contacts?organization_id=${zohoBooks.organizationId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${zohoBooks.accessToken}`,
+          },
+        }
+      );
 
-      const contactPersonsRes = await axios.get(
+      const contactPersonsRes = await axios.get<ZohoBooksContactPersonResponse>(
         `${baseApiUrl}/contacts/contactpersons?organization_id=${zohoBooks.organizationId}`,
         {
           headers: {
@@ -34,9 +58,9 @@ export default () => ({
         }
       );
 
-      const students = contactPersonsRes.data.contact_persons.filter((contact: any) => contact.designation !== '');
-      return students.map((student: any) => {
-        const parent = contactsRes.data.contacts.find((contact: any) => contact.contact_id === student.contact_id);
+      const students = contactPersonsRes.data.contact_persons.filter((contact) => contact.designation !== '');
+      return students.map((student) => {
+        const parent = contactsRes.data.contacts.find((contact) => contact.contact_id === student.contact_id);
         return {
           ...student,
           parent,
@@ -92,14 +116,23 @@ export default () => ({
       throw new ValidationError(`ZohoBooks: Error generating access token - ${error}`);
     }
 
-    await strapi.entityService.update('api::center.center', centerId, {
-      data: {
-        zohobooks: {
-          ...zohoBooks,
-          accessToken: access_token,
-        },
+    const center = await strapi.documents('api::center.center').findFirst({
+      filters: {
+        id: centerId,
       },
     });
+
+    if (center) {
+      await strapi.documents('api::center.center').update({
+        documentId: center.documentId,
+        data: {
+          zohobooks: {
+            ...zohoBooks,
+            accessToken: access_token,
+          },
+        },
+      });
+    }
 
     return access_token;
   },

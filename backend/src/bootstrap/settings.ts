@@ -1,4 +1,4 @@
-import { Strapi } from '@strapi/strapi';
+import { Strapi } from '../../types';
 
 export default async (strapi: Strapi) => {
   const pluginStore = strapi.store({ type: 'plugin', name: 'users-permissions' });

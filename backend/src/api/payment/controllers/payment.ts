@@ -12,17 +12,21 @@ const { ValidationError } = utils.errors;
 
 export default factories.createCoreController('api::payment.payment', ({ strapi }) => ({
   async find(ctx) {
-    const childId = parseInt(ctx.query.child);
+    const childId = parseInt(ctx.query.child as string);
 
     const filters: any = {
-      center: ctx.state.center.id,
+      center: {
+        id: ctx.state.center.id,
+      },
     };
 
     if (childId) {
-      const child = await strapi.entityService.findMany('api::child.child', {
+      const child = await strapi.documents('api::child.child').findMany({
         filters: {
           id: childId,
-          center: ctx.state.center.id,
+          center: {
+            id: ctx.state.center.id,
+          },
         },
         limit: 1,
       });
@@ -30,11 +34,12 @@ export default factories.createCoreController('api::payment.payment', ({ strapi 
       if (!child.length) {
         throw new ValidationError('Child not found');
       }
-      filters.child = childId;
-      console.log('child', filters);
+      filters.child = {
+        id: childId,
+      };
     }
 
-    return await strapi.entityService.findMany('api::payment.payment', {
+    return await strapi.documents('api::payment.payment').findMany({
       filters,
       populate: ['child'],
       sort: 'paymentDate:desc',
@@ -49,10 +54,12 @@ export default factories.createCoreController('api::payment.payment', ({ strapi 
       throw new ValidationError('Invalid payment date');
     }
 
-    const child = await strapi.entityService.findMany('api::child.child', {
+    const child = await strapi.documents('api::child.child').findMany({
       filters: {
         id: payload.child,
-        center: ctx.state.center.id,
+        center: {
+          id: ctx.state.center.id,
+        },
       },
       limit: 1,
     });
@@ -61,7 +68,7 @@ export default factories.createCoreController('api::payment.payment', ({ strapi 
       throw new ValidationError('Child not found');
     }
 
-    await strapi.entityService.create('api::payment.payment', {
+    await strapi.documents('api::payment.payment').create({
       data: {
         center: ctx.state.center.id,
         amount: payload.amount,
@@ -74,7 +81,8 @@ export default factories.createCoreController('api::payment.payment', ({ strapi 
     const c = child[0];
 
     if (c.isDue && !c.dueAmount) {
-      await strapi.entityService.update('api::child.child', c.id, {
+      await strapi.documents('api::child.child').update({
+        documentId: c.documentId,
         data: {
           isDue: false,
           dueAmount: null,
@@ -82,14 +90,16 @@ export default factories.createCoreController('api::payment.payment', ({ strapi 
       });
     } else if (c.dueAmount && c.dueAmount > 0) {
       if (payload.amount >= c.dueAmount) {
-        await strapi.entityService.update('api::child.child', c.id, {
+        await strapi.documents('api::child.child').update({
+          documentId: c.documentId,
           data: {
             isDue: false,
             dueAmount: null,
           },
         });
       } else {
-        await strapi.entityService.update('api::child.child', c.id, {
+        await strapi.documents('api::child.child').update({
+          documentId: c.documentId,
           data: {
             isDue: true,
             dueAmount: c.dueAmount - payload.amount,

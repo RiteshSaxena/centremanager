@@ -18,7 +18,7 @@ export default factories.createCoreController('api::center.center', () => ({
 
     payload.email = payload.email.toLowerCase();
 
-    const inviteCode = await strapi.entityService.findMany('api::invite-code.invite-code', {
+    const inviteCode = await strapi.documents('api::invite-code.invite-code').findMany({
       filters: {
         code: payload.inviteCode,
       },
@@ -38,13 +38,13 @@ export default factories.createCoreController('api::center.center', () => ({
       throw new ValidationError('Invite code already used');
     }
 
-    const adminUserAlreadyExists = await strapi.entityService.count('admin::user', {
+    const adminUserAlreadyExists = await strapi.documents('admin::user').count({
       filters: {
         email: payload.email,
       },
     });
 
-    const appUserAlreadyExists = await strapi.entityService.count('plugin::users-permissions.user', {
+    const appUserAlreadyExists = await strapi.documents('plugin::users-permissions.user').count({
       filters: {
         email: payload.email,
       },
@@ -54,18 +54,18 @@ export default factories.createCoreController('api::center.center', () => ({
       throw new ValidationError('Email already taken');
     }
 
-    const roles = (await strapi.entityService.findMany('plugin::users-permissions.role', {
+    const roles = await strapi.documents('plugin::users-permissions.role').findMany({
       filters: {
         type: 'authenticated',
       },
       limit: 1,
-    })) as any[];
+    });
 
     if (!roles.length) {
       throw new ValidationError('Authenticated role not found');
     }
 
-    const centerAlreadyExists = await strapi.entityService.count('api::center.center', {
+    const centerAlreadyExists = await strapi.documents('api::center.center').count({
       filters: {
         name: payload.centerName,
       },
@@ -75,7 +75,7 @@ export default factories.createCoreController('api::center.center', () => ({
       throw new ValidationError('Centre with this name already exists');
     }
 
-    const newCenter = await strapi.entityService.create('api::center.center', {
+    const newCenter = await strapi.documents('api::center.center').create({
       data: {
         name: payload.centerName,
         subscription: {
@@ -103,7 +103,7 @@ export default factories.createCoreController('api::center.center', () => ({
       roles: [newRole.id],
     });
 
-    await strapi.entityService.create('plugin::users-permissions.user', {
+    await strapi.documents('plugin::users-permissions.user').create({
       data: {
         firstName: payload.firstName,
         lastName: payload.lastName,
@@ -119,7 +119,8 @@ export default factories.createCoreController('api::center.center', () => ({
       },
     });
 
-    await strapi.entityService.update('api::invite-code.invite-code', currentInviteCode.id, {
+    await strapi.documents('api::invite-code.invite-code').update({
+      documentId: currentInviteCode.documentId,
       data: {
         isUsed: true,
         usedBy: newCenter.id,

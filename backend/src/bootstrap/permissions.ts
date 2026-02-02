@@ -1,4 +1,4 @@
-import { Strapi } from '@strapi/strapi';
+import { Strapi } from '../../types';
 
 const PERMISSIONS = [
   { action: 'api::import-data.import-data.importData', role: 'authenticated' },

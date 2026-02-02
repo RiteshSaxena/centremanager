@@ -2,55 +2,61 @@
   "name": "centre-manager-backend",
   "private": true,
   "version": "1.0.0",
+  "license": "MIT",
   "description": "Centre Manager Admin",
   "scripts": {
     "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi",
-    "lint": "eslint src config --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "lint": "eslint src config --fix",
     "format": "prettier --write src/ config/"
-  },
-  "author": {
-    "name": "Techcurl"
   },
   "strapi": {
     "uuid": "ceba34ea-3a9e-4e5e-a6f5-eee05fd666e7",
     "telemetryDisabled": true
   },
   "engines": {
-    "node": ">=18.0.0 <=20.x.x",
+    "node": ">=18.0.0 <=24.x.x",
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "^4.25.22",
-    "@strapi/plugin-sentry": "^4.25.22",
-    "@strapi/plugin-users-permissions": "^4.25.22",
-    "@strapi/provider-upload-aws-s3": "^4.25.22",
-    "@strapi/strapi": "^4.25.22",
-    "@strapi/utils": "^4.25.22",
+    "@strapi/plugin-sentry": "^5.34.0",
+    "@strapi/plugin-users-permissions": "^5.34.0",
+    "@strapi/provider-email-nodemailer": "^5.34.0",
+    "@strapi/provider-upload-aws-s3": "^5.34.0",
+    "@strapi/strapi": "^5.34.0",
+    "@strapi/utils": "^5.34.0",
+    "axios": "^1.13.4",
+    "better-sqlite3": "^12.6.2",
     "csv-parse": "^5.6.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "moment": "^2.30.1",
     "mysql2": "^3.11.4",
     "nodemailer": "^7.0.13",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^5.3.4",
-    "strapi-advanced-uuid": "^1.4.2",
-    "styled-components": "^5.3.11"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "strapi-advanced-uuid": "^2.1.1",
+    "styled-components": "^6.0.0"
   },
   "devDependencies": {
-    "@types/nodemailer": "^7.0.9",
-    "@typescript-eslint/eslint-plugin": "^6.9.0",
-    "@typescript-eslint/parser": "^6.9.0",
-    "eslint": "^8.52.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^5.0.1",
-    "prettier": "^3.0.3",
-    "typescript": "^5.3.3"
+    "@eslint/js": "^9.39.2",
+    "esbuild": "^0.27.2",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "prettier": "^3.8.1",
+    "tar": "^7.5.7",
+    "tmp": "^0.2.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0"
   },
-  "license": "MIT"
+  "overrides": {
+    "lodash": "^4.17.23",
+    "nodemailer": "^7.0.13",
+    "tar": "^7.5.7",
+    "esbuild": "^0.27.2",
+    "tmp": "^0.2.5"
+  }
 }

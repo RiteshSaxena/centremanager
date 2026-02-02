@@ -99,7 +99,7 @@ export default {
         const schoolPostcode = records[i]['School: Postcode'].trim();
         let schoolId: null | number | string = null;
         if (schoolName) {
-          const existingSchool = await strapi.entityService.findMany('api::school.school', {
+          const existingSchool = await strapi.documents('api::school.school').findMany({
             filters: { name: schoolName, city: schoolTownCity, postcode: schoolPostcode },
             limit: 1,
           });
@@ -108,7 +108,7 @@ export default {
             schoolId = existingSchool[0].id;
           } else {
             console.log('Creating School');
-            const entry = await strapi.entityService.create('api::school.school', {
+            const entry = await strapi.documents('api::school.school').create({
               data: { name: schoolName, city: schoolTownCity, postcode: schoolPostcode },
             });
             schoolId = entry.id;
@@ -122,7 +122,7 @@ export default {
         for (let j = 0; j < subjectNameArr.length; j++) {
           const subjectName = subjectNameArr[j].trim();
           if (subjectName) {
-            const existingSubject = await strapi.entityService.findMany('api::subject.subject', {
+            const existingSubject = await strapi.documents('api::subject.subject').findMany({
               filters: {
                 name: {
                   $eqi: subjectName,
@@ -135,7 +135,7 @@ export default {
               childSubjects.push(existingSubject[0].id);
             } else {
               console.log('Creating Subject');
-              const entry = await strapi.entityService.create('api::subject.subject', {
+              const entry = await strapi.documents('api::subject.subject').create({
                 data: { name: subjectName },
               });
               childSubjects.push(entry.id);
@@ -164,12 +164,14 @@ export default {
 
         let parentId: null | number | string = null;
 
-        const existingParent = await strapi.entityService.findMany('api::parent.parent', {
+        const existingParent = await strapi.documents('api::parent.parent').findMany({
           filters: {
             firstName: parentFirstName,
             email: parentEmail,
             contactNumber: parentNumber,
-            center: center,
+            center: {
+              id: center.id,
+            },
           },
           limit: 1,
         });
@@ -177,7 +179,7 @@ export default {
           parentId = existingParent[0].id;
         } else {
           console.log('Creating Parent');
-          const entry = await strapi.entityService.create('api::parent.parent', {
+          const entry = await strapi.documents('api::parent.parent').create({
             data: {
               firstName: parentFirstName,
               lastName: parentLastName,
@@ -193,15 +195,10 @@ export default {
         const referralCode = records[i]['Referral Code'].trim();
         const notes = records[i]['Notes'].trim();
 
-        // const childFirstNameTrimmed = childFirstName.split(' ')[0];
-        //
-        // const hashString = childFirstNameTrimmed + parentFirstName + parentEmail;
-        // const md5hash = createHash('md5').update(hashString.toLowerCase()).digest('hex');
-
         const hashString = childFirstName + parentFirstName + parentEmail + parentNumber;
         const md5hash = createHash('md5').update(hashString).digest('hex');
 
-        const existingChild = await strapi.entityService.findMany('api::child.child', {
+        const existingChild = await strapi.documents('api::child.child').findMany({
           filters: { childHash: md5hash },
           limit: 1,
         });
@@ -255,7 +252,8 @@ export default {
           }
 
           console.log('Updating Child');
-          await strapi.entityService.update('api::child.child', existingChild[0].id, {
+          await strapi.documents('api::child.child').update({
+            documentId: existingChild[0].documentId,
             data: {
               ...child,
             },
@@ -282,7 +280,7 @@ export default {
           });
 
           console.log('Creating Child');
-          await strapi.entityService.create('api::child.child', {
+          await strapi.documents('api::child.child').create({
             data: {
               ...child,
             },
@@ -297,7 +295,8 @@ export default {
       }
     }
 
-    await strapi.entityService.update('api::center.center', center.id, {
+    await strapi.documents('api::center.center').update({
+      documentId: center.documentId,
       data: {
         lastImportDate: newLatestDate,
       },

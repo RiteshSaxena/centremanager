@@ -1,4 +1,4 @@
-import { Strapi } from '@strapi/strapi';
+import { Strapi } from '../../types';
 
 import initSettings from './settings';
 import syncPermissions from './permissions';
