@@ -159,7 +159,7 @@ onMounted(() => {
             <Input
               v-model="formData.address"
               type="text"
-              placeholder="Address"
+              placeholder="Region"
               label="Address"
               :error="errors.address"
               @input="clearError('address')"
@@ -183,13 +183,13 @@ onMounted(() => {
               />
             </div>
 
-            <div class="pt-4 border-t border-secondary-100">
+            <!-- <div class="pt-4 border-t border-secondary-100">
               <h4 class="text-sm font-semibold text-secondary-700 mb-3">Features</h4>
               <Checkbox
                 v-model="formData.booksEnabled"
                 label="Enable Books/Payments Tracking"
               />
-            </div>
+            </div> -->
 
             <div class="pt-4 flex justify-end">
               <Button type="submit" :disabled="saving || centerStore.loading">

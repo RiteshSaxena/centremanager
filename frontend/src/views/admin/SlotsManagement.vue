@@ -26,8 +26,27 @@ const columns: TableColumn[] = [
   { key: 'actions', header: 'Actions', hideOnMobile: true }
 ];
 
+const dayOrder: Record<string, number> = {
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+  Sunday: 7
+};
+
 const filteredSlots = computed(() => {
-  let slots = slotStore.slots;
+  let slots = [...slotStore.slots];
+
+  // Sort by day order, then by name
+  slots.sort((a, b) => {
+    const dayA = dayOrder[a.day] || 8;
+    const dayB = dayOrder[b.day] || 8;
+    if (dayA !== dayB) return dayA - dayB;
+    return (a.name || '').localeCompare(b.name || '');
+  });
+
   if (search.value.trim()) {
     const term = search.value.toLowerCase();
     slots = slots.filter(

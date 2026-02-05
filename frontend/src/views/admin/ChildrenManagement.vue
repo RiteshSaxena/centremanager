@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { Input, Button, Table, Badge } from '@/components/ui';
+import { computed, onMounted, ref, watch } from 'vue';
+import { Input, Button, Table, Badge, Pagination } from '@/components/ui';
 import type { TableColumn } from '@/components/ui/Table.vue';
 import type { Student } from '@/types';
 
@@ -16,6 +16,10 @@ const showDeleteModal = ref(false);
 const selectedChild = ref<Student | null>(null);
 const saving = ref(false);
 const deleting = ref(false);
+
+// Pagination
+const currentPage = ref(1);
+const pageSize = 50;
 
 const columns: TableColumn[] = [
   { key: 'index', header: '#', width: '60px' },
@@ -40,12 +44,26 @@ const filteredChildren = computed(() => {
   return children;
 });
 
+const totalPages = computed(() => Math.ceil(filteredChildren.value.length / pageSize));
+
+const paginatedChildren = computed(() => {
+  const start = (currentPage.value - 1) * pageSize;
+  const end = start + pageSize;
+  return filteredChildren.value.slice(start, end);
+});
+
 const tableData = computed(() => {
-  return filteredChildren.value.map((child, index) => ({
+  const startIndex = (currentPage.value - 1) * pageSize;
+  return paginatedChildren.value.map((child, index) => ({
     ...child,
-    index: index + 1,
+    index: startIndex + index + 1,
     name: `${child.firstName || ''} ${child.lastName || ''}`.trim() || '-'
   }));
+});
+
+// Reset page when search changes
+watch(search, () => {
+  currentPage.value = 1;
 });
 
 const getStatusVariant = (status: string): 'success' | 'danger' | 'warning' | 'info' | 'neutral' => {
@@ -240,6 +258,16 @@ onMounted(() => {
                 </Button>
               </div>
             </div>
+          </template>
+
+          <!-- Pagination -->
+          <template #footer>
+            <Pagination
+              v-model:currentPage="currentPage"
+              :totalPages="totalPages"
+              :totalItems="filteredChildren.length"
+              :pageSize="pageSize"
+            />
           </template>
         </Table>
       </div>
