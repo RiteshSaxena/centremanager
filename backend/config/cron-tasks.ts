@@ -96,7 +96,10 @@ const sendFeedbackEmails = async (strapi: Strapi) => {
     const recipientEmails = testModeEmail || parentEmails.join(', ');
 
     try {
+      const fromEmail = process.env.FEEDBACK_EMAIL_FROM;
+      const fromAddress = fromEmail ? `${centerName} <${fromEmail}>` : undefined;
       await strapi.plugins['email'].services.email.send({
+        from: fromAddress,
         to: recipientEmails,
         subject: testModeEmail ? `[TEST - ${parentEmails.join(', ')}] ${subject}` : subject,
         html,
