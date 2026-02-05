@@ -51,11 +51,11 @@ const navItems = computed(() => {
 const adminNavItems = computed(() => {
   if (!isAdmin.value || !isMainApp) return [];
   return [
-    { to: '/admin/users', icon: 'fa-users', label: 'Users' },
     { to: '/admin/children', icon: 'fa-children', label: 'Children' },
     { to: '/admin/slots', icon: 'fa-clock', label: 'Slots' },
-    { to: '/admin/upload', icon: 'fa-upload', label: 'Upload' },
-    { to: '/admin/settings', icon: 'fa-gear', label: 'Settings' }
+    { to: '/admin/users', icon: 'fa-users', label: 'Users' },
+    { to: '/admin/settings', icon: 'fa-gear', label: 'Settings' },
+    { to: '/admin/upload', icon: 'fa-upload', label: 'Upload' }
   ];
 });
 
@@ -94,7 +94,7 @@ onMounted(async () => {
 
     <!-- Navigation -->
     <nav
-      class="flex flex-col flex-1 py-4 space-y-1"
+      class="flex flex-col flex-1 py-4 space-y-1 overflow-y-auto"
       :class="sidebarExpanded ? 'px-3' : 'px-2 md:px-2'"
     >
       <div
@@ -300,8 +300,7 @@ onMounted(async () => {
     top: 0;
     left: 0;
     height: 100vh;
-    overflow-y: auto;
-    overflow: hidden;
+    overflow-x: hidden;
     z-index: 30;
   }
 }
