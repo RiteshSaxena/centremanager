@@ -59,7 +59,7 @@ const handleItemSelect = (item: any) => {
 
       <!-- Results List -->
       <div v-else>
-        <p class="text-xs md:text-lg  text-secondary-500 mb-3">
+        <p class="text-xs md:text-lg text-secondary-500 mb-3">
           Found {{ results.length }} result{{ results.length !== 1 ? 's' : '' }}
         </p>
         <UserListItem

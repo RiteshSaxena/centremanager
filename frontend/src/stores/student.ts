@@ -1,7 +1,14 @@
 import { defineStore } from 'pinia';
 import QRCode from 'qrcode';
 import axios from '@/axios';
-import type { Student, CreateChildPayload, UpdateChildPayload, Subject, Parent, School } from '@/types';
+import type {
+  Student,
+  CreateChildPayload,
+  UpdateChildPayload,
+  Subject,
+  Parent,
+  School
+} from '@/types';
 import type { Slot } from '@/types/slot';
 
 interface Books {

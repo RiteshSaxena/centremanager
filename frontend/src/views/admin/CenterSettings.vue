@@ -113,8 +113,12 @@ onMounted(() => {
     </div>
 
     <!-- Content Card -->
-    <div class="bg-white rounded-xl border border-secondary-200 shadow-xs overflow-hidden max-w-2xl">
-      <div class="bg-linear-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200">
+    <div
+      class="bg-white rounded-xl border border-secondary-200 shadow-xs overflow-hidden max-w-2xl"
+    >
+      <div
+        class="bg-linear-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200"
+      >
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center">
             <i class="fa-solid fa-building text-white text-lg"></i>

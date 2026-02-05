@@ -187,7 +187,9 @@ onMounted(() => {
             <h4 class="text-sm md:text-lg font-semibold text-secondary-900">
               {{ isKioskApp ? 'Select Your Name' : 'Select Guardian' }}
             </h4>
-            <p class="text-xs md:text-sm text-secondary-500 mt-0.5">Choose who is signing in the student</p>
+            <p class="text-xs md:text-sm text-secondary-500 mt-0.5">
+              Choose who is signing in the student
+            </p>
           </div>
         </div>
 

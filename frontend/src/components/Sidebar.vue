@@ -97,7 +97,10 @@ onMounted(async () => {
       class="flex flex-col flex-1 py-4 space-y-1"
       :class="sidebarExpanded ? 'px-3' : 'px-2 md:px-2'"
     >
-      <div v-if="!sidebarExpanded" class="hidden border-2 rounded-lg py-2 mb-2 md:block text-center">
+      <div
+        v-if="!sidebarExpanded"
+        class="hidden border-2 rounded-lg py-2 mb-2 md:block text-center"
+      >
         <h1 class="text-xl font-bold text-white leading-tight">
           {{ centreInitials }}
         </h1>

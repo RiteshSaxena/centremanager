@@ -61,7 +61,7 @@ export type ChildStatus =
   | 'No Further Contact'
   | 'Future Follow Up'
   | 'Enrolment meeting no show'
-  | 'Attended enrolment meeting but didn\'t enrol'
+  | "Attended enrolment meeting but didn't enrol"
   | 'Send to KSiS'
   | 'Send to KSiS (Free Trial)'
   | 'Exited';

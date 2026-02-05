@@ -9,7 +9,7 @@
           <i class="fa-solid fa-building text-4xl text-white"></i>
         </div>
         <h1 class="text-4xl font-bold text-secondary-900 mb-2">
-          Welcome to <br>Kumon {{ centre?.displayName || centre?.name }}
+          Welcome to <br />Kumon {{ centre?.displayName || centre?.name }}
         </h1>
         <p class="text-lg text-secondary-600">Please sign in or sign out</p>
       </div>

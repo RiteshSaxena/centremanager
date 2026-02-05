@@ -40,9 +40,7 @@ const confirm = () => {
       <p class="text-secondary-600">
         {{ message }}
       </p>
-      <p v-if="itemName" class="mt-2 font-semibold text-secondary-900">
-        "{{ itemName }}"
-      </p>
+      <p v-if="itemName" class="mt-2 font-semibold text-secondary-900">"{{ itemName }}"</p>
     </div>
     <template #footer>
       <Button variant="outline" @click="close">Cancel</Button>

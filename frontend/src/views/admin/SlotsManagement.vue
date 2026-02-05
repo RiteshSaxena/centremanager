@@ -151,7 +151,9 @@ onMounted(() => {
 
     <!-- Content Card -->
     <div class="bg-white rounded-xl border border-secondary-200 shadow-xs overflow-hidden">
-      <div class="bg-linear-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200">
+      <div
+        class="bg-linear-to-r from-primary-50 to-primary-100 px-5 py-4 border-b border-primary-200"
+      >
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center">
@@ -192,7 +194,9 @@ onMounted(() => {
           </template>
           <template #cell-name="{ row }">
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
+              <div
+                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center shrink-0"
+              >
                 <i class="fa-solid fa-clock text-primary-600 text-xs"></i>
               </div>
               <span class="font-semibold text-secondary-900">{{ row.name }}</span>
@@ -247,7 +251,7 @@ onMounted(() => {
     <!-- Slot Modal -->
     <SlotModal
       v-model:show="showSlotModal"
-      :slot="selectedSlot"
+      :slot-data="selectedSlot"
       :loading="saving"
       @submit="handleSubmit"
       @refresh="handleRefresh"

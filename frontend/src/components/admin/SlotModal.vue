@@ -10,12 +10,12 @@ const props = withDefaults(
   defineProps<{
     show: boolean;
     loading?: boolean;
-    slot?: Slot | null;
+    slotData?: Slot | null;
   }>(),
   {
     show: false,
     loading: false,
-    slot: null
+    slotData: null
   }
 );
 
@@ -29,6 +29,10 @@ const activeTab = ref<'details' | 'students'>('details');
 const allStudents = ref<Student[]>([]);
 const searchQuery = ref('');
 const savingStudents = ref(false);
+
+// Track pending student changes (not yet saved)
+const pendingAdditions = ref<Student[]>([]);
+const pendingRemovals = ref<Set<number>>(new Set());
 
 const formData = reactive({
   name: '',
@@ -59,8 +63,13 @@ const tabs = [
   { id: 'students', label: 'Students', icon: 'fa-users' }
 ];
 
-// Current students in the slot
-const currentStudents = computed(() => props.slot?.children || []);
+// Current students in the slot (including pending additions, excluding pending removals)
+const currentStudents = computed(() => {
+  const original = props.slotData?.children || [];
+  // Filter out pending removals and add pending additions
+  const filtered = original.filter((s) => !pendingRemovals.value.has(s.id));
+  return [...filtered, ...pendingAdditions.value];
+});
 
 // Students not in this slot (available to add)
 const availableStudents = computed(() => {
@@ -70,13 +79,16 @@ const availableStudents = computed(() => {
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase();
     available = available.filter(
-      (s) =>
-        s.firstName?.toLowerCase().includes(query) ||
-        s.lastName?.toLowerCase().includes(query)
+      (s) => s.firstName?.toLowerCase().includes(query) || s.lastName?.toLowerCase().includes(query)
     );
   }
 
   return available;
+});
+
+// Check if there are pending changes
+const hasStudentChanges = computed(() => {
+  return pendingAdditions.value.length > 0 || pendingRemovals.value.size > 0;
 });
 
 const resetForm = () => {
@@ -92,18 +104,20 @@ const resetForm = () => {
   };
   activeTab.value = 'details';
   searchQuery.value = '';
+  pendingAdditions.value = [];
+  pendingRemovals.value = new Set();
 };
 
 watch(
   () => props.show,
   async (newVal) => {
     if (newVal) {
-      if (props.slot) {
+      if (props.slotData) {
         isEdit.value = true;
-        formData.name = props.slot.name || '';
-        formData.day = props.slot.day || '';
-        formData.startTime = props.slot.startTime || '';
-        formData.endTime = props.slot.endTime || '';
+        formData.name = props.slotData.name || '';
+        formData.day = props.slotData.day || '';
+        formData.startTime = props.slotData.startTime || '';
+        formData.endTime = props.slotData.endTime || '';
         // Fetch all students for the add student feature
         if (studentStore.students.length === 0) {
           await studentStore.fetchStudents();
@@ -173,36 +187,61 @@ const onSubmit = () => {
   emit('submit', payload);
 };
 
-const addStudent = async (student: Student) => {
-  if (!props.slot) return;
-
-  try {
-    savingStudents.value = true;
-    // Fetch fresh student data to get current slots
-    const freshStudent = await studentStore.fetchStudent(student.id);
-    const currentSlotIds = freshStudent.slots?.map((s) => s.id) || [];
-    await studentStore.updateChild(student.id, { slots: [...currentSlotIds, props.slot.id] });
-    emit('refresh');
-  } catch (error: any) {
-    alert(error?.response?.data?.error?.message || 'Failed to add student');
-  } finally {
-    savingStudents.value = false;
+const addStudent = (student: Student) => {
+  // If this student was previously marked for removal, just unmark them
+  if (pendingRemovals.value.has(student.id)) {
+    pendingRemovals.value.delete(student.id);
+    pendingRemovals.value = new Set(pendingRemovals.value); // Trigger reactivity
+  } else {
+    // Add to pending additions
+    pendingAdditions.value = [...pendingAdditions.value, student];
   }
 };
 
-const removeStudent = async (student: Student) => {
-  if (!props.slot) return;
-  if (!confirm(`Remove ${student.firstName} ${student.lastName} from this slot?`)) return;
+const removeStudent = (student: Student) => {
+  // If this student was pending addition, just remove from pending
+  const pendingIndex = pendingAdditions.value.findIndex((s) => s.id === student.id);
+  if (pendingIndex !== -1) {
+    pendingAdditions.value = pendingAdditions.value.filter((s) => s.id !== student.id);
+  } else {
+    // Mark for removal
+    pendingRemovals.value.add(student.id);
+    pendingRemovals.value = new Set(pendingRemovals.value); // Trigger reactivity
+  }
+};
+
+const saveStudentChanges = async () => {
+  if (!props.slotData || !hasStudentChanges.value) return;
 
   try {
     savingStudents.value = true;
-    // Fetch fresh student data to get current slots
-    const freshStudent = await studentStore.fetchStudent(student.id);
-    const currentSlotIds = freshStudent.slots?.map((s) => s.id).filter((id) => id !== props.slot!.id) || [];
-    await studentStore.updateChild(student.id, { slots: currentSlotIds });
+
+    // Process additions
+    for (const student of pendingAdditions.value) {
+      const freshStudent = await studentStore.fetchStudent(student.id);
+      const currentSlotIds = freshStudent.slots?.map((s) => s.id) || [];
+      if (!currentSlotIds.includes(props.slotData.id)) {
+        await studentStore.updateChild(student.id, {
+          slots: [...currentSlotIds, props.slotData.id]
+        });
+      }
+    }
+
+    // Process removals
+    for (const studentId of pendingRemovals.value) {
+      const freshStudent = await studentStore.fetchStudent(studentId);
+      const currentSlotIds =
+        freshStudent.slots?.map((s) => s.id).filter((id) => id !== props.slotData!.id) || [];
+      await studentStore.updateChild(studentId, { slots: currentSlotIds });
+    }
+
+    // Clear pending changes
+    pendingAdditions.value = [];
+    pendingRemovals.value = new Set();
+
     emit('refresh');
   } catch (error: any) {
-    alert(error?.response?.data?.error?.message || 'Failed to remove student');
+    alert(error?.response?.data?.error?.message || 'Failed to save student changes');
   } finally {
     savingStudents.value = false;
   }
@@ -214,7 +253,12 @@ const close = () => {
 </script>
 
 <template>
-  <Modal :open="show" :title="isEdit ? 'Edit Slot' : 'Add Slot'" :size="isEdit ? 'lg' : 'md'" @close="close">
+  <Modal
+    :open="show"
+    :title="isEdit ? 'Edit Slot' : 'Add Slot'"
+    :size="isEdit ? 'lg' : 'md'"
+    @close="close"
+  >
     <!-- Tabs (only show when editing) -->
     <div v-if="isEdit" class="flex border-b border-secondary-200 -mx-6 -mt-5 px-6 mb-4">
       <button
@@ -234,7 +278,11 @@ const close = () => {
         <span
           v-if="tab.id === 'students'"
           class="ml-1 px-1.5 py-0.5 text-xs rounded-full"
-          :class="activeTab === 'students' ? 'bg-primary-100 text-primary-700' : 'bg-secondary-100 text-secondary-600'"
+          :class="
+            activeTab === 'students'
+              ? 'bg-primary-100 text-primary-700'
+              : 'bg-secondary-100 text-secondary-600'
+          "
         >
           {{ currentStudents.length }}
         </span>
@@ -281,12 +329,30 @@ const close = () => {
 
     <!-- Students Tab -->
     <div v-if="isEdit" v-show="activeTab === 'students'" class="space-y-4">
+      <!-- Pending Changes Banner -->
+      <div
+        v-if="hasStudentChanges"
+        class="flex items-center justify-between p-3 bg-warning-50 border border-warning-200 rounded-lg"
+      >
+        <div class="flex items-center gap-2 text-warning-700">
+          <i class="fa-solid fa-circle-info"></i>
+          <span class="text-sm font-medium">You have unsaved changes</span>
+        </div>
+        <Button size="sm" :disabled="savingStudents" @click="saveStudentChanges">
+          <i v-if="savingStudents" class="fa-solid fa-spinner fa-spin mr-1"></i>
+          {{ savingStudents ? 'Saving...' : 'Save Changes' }}
+        </Button>
+      </div>
+
       <!-- Current Students -->
       <div>
         <h4 class="text-sm font-semibold text-secondary-700 mb-3">
           Students in this Slot ({{ currentStudents.length }})
         </h4>
-        <div v-if="currentStudents.length === 0" class="text-sm text-secondary-500 py-6 text-center bg-secondary-50 rounded-lg">
+        <div
+          v-if="currentStudents.length === 0"
+          class="text-sm text-secondary-500 py-6 text-center bg-secondary-50 rounded-lg"
+        >
           <i class="fa-solid fa-users text-2xl mb-2 text-secondary-300"></i>
           <p>No students assigned to this slot yet</p>
         </div>
@@ -294,7 +360,12 @@ const close = () => {
           <div
             v-for="student in currentStudents"
             :key="student.id"
-            class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg"
+            class="flex items-center justify-between p-3 rounded-lg"
+            :class="
+              pendingAdditions.some((s) => s.id === student.id)
+                ? 'bg-success-50 border border-success-200'
+                : 'bg-secondary-50'
+            "
           >
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
@@ -303,6 +374,11 @@ const close = () => {
               <div>
                 <p class="font-medium text-secondary-900 text-sm">
                   {{ student.firstName }} {{ student.lastName }}
+                  <span
+                    v-if="pendingAdditions.some((s) => s.id === student.id)"
+                    class="text-success-600 text-xs ml-1"
+                    >(new)</span
+                  >
                 </p>
                 <p v-if="student.schoolYear" class="text-xs text-secondary-500">
                   {{ student.schoolYear }}
@@ -334,7 +410,10 @@ const close = () => {
         />
 
         <!-- Available Students List -->
-        <div v-if="availableStudents.length === 0" class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg">
+        <div
+          v-if="availableStudents.length === 0"
+          class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg"
+        >
           {{ searchQuery ? 'No matching students found' : 'All students are already in this slot' }}
         </div>
         <div v-else class="space-y-2 max-h-48 overflow-y-auto">

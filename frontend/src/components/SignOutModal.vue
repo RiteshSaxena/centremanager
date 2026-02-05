@@ -348,10 +348,8 @@ const formattedFeedbackDate = computed(() => {
       <!-- Step 1: Performance Review -->
       <div v-if="step === 1 && shouldShowFeedback">
         <div class="flex items-center mb-3 md:mb-4">
-          <h3
-            class="text-sm md:text-base font-semibold text-secondary-700 uppercase tracking-wide"
-          >
-            Performance Date - 
+          <h3 class="text-sm md:text-base font-semibold text-secondary-700 uppercase tracking-wide">
+            Performance Date -
           </h3>
           <span
             v-if="formattedFeedbackDate"
@@ -481,7 +479,8 @@ const formattedFeedbackDate = computed(() => {
           <div class="flex items-center gap-2 md:gap-3">
             <i class="fa-solid fa-signature text-primary-600 text-base md:text-2xl shrink-0"></i>
             <label class="text-base md:text-xl font-bold text-secondary-900"
-              >Signature Required</label>
+              >Signature Required</label
+            >
           </div>
           <Button
             variant="ghost"

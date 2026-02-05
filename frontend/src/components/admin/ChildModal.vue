@@ -83,7 +83,10 @@ const statusOptions: SelectOption[] = [
   { value: 'No Further Contact', label: 'No Further Contact' },
   { value: 'Future Follow Up', label: 'Future Follow Up' },
   { value: 'Enrolment meeting no show', label: 'Enrolment meeting no show' },
-  { value: "Attended enrolment meeting but didn't enrol", label: "Attended enrolment meeting but didn't enrol" },
+  {
+    value: "Attended enrolment meeting but didn't enrol",
+    label: "Attended enrolment meeting but didn't enrol"
+  },
   { value: 'Send to KSiS', label: 'Send to KSiS' },
   { value: 'Send to KSiS (Free Trial)', label: 'Send to KSiS (Free Trial)' },
   { value: 'Exited', label: 'Exited' }
@@ -94,7 +97,6 @@ const genderOptions: SelectOption[] = [
   { value: 'Female', label: 'Female' },
   { value: 'Others', label: 'Others' }
 ];
-
 
 const paymentDateOptions: SelectOption[] = Array.from({ length: 31 }, (_, i) => ({
   value: i + 1,
@@ -107,6 +109,25 @@ const schoolOptions = computed<SelectOption[]>(() =>
     label: s.city ? `${s.name} (${s.city})` : s.name
   }))
 );
+
+const dayOrder: Record<string, number> = {
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+  Sunday: 7
+};
+
+const sortedSlots = computed(() => {
+  return [...availableSlots.value].sort((a, b) => {
+    const dayA = dayOrder[a.day] || 8;
+    const dayB = dayOrder[b.day] || 8;
+    if (dayA !== dayB) return dayA - dayB;
+    return (a.name || '').localeCompare(b.name || '');
+  });
+});
 
 const tabs = [
   { id: 'basic', label: 'Basic Info', icon: 'fa-user' },
@@ -428,28 +449,15 @@ const close = () => {
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input v-model="formData.city" type="text" placeholder="City" label="City" />
-          <Input
-            v-model="formData.postcode"
-            type="text"
-            placeholder="Postcode"
-            label="Postcode"
-          />
+          <Input v-model="formData.postcode" type="text" placeholder="Postcode" label="Postcode" />
         </div>
       </div>
 
       <!-- Enrollment Tab -->
       <div v-show="activeTab === 'enrollment'" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            v-model="formData.enquiryDate"
-            type="date"
-            label="Enquiry Date"
-          />
-          <Input
-            v-model="formData.enrollmentDate"
-            type="date"
-            label="Enrollment Date"
-          />
+          <Input v-model="formData.enquiryDate" type="date" label="Enquiry Date" />
+          <Input v-model="formData.enrollmentDate" type="date" label="Enrollment Date" />
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
@@ -501,7 +509,10 @@ const close = () => {
           <!-- Current Parents List -->
           <div class="space-y-2">
             <h4 class="text-sm font-semibold text-secondary-700">Current Parents/Guardians</h4>
-            <div v-if="currentParents.length === 0" class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg">
+            <div
+              v-if="currentParents.length === 0"
+              class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg"
+            >
               No parents added yet
             </div>
             <div
@@ -576,9 +587,7 @@ const close = () => {
                 />
               </div>
               <div class="flex justify-end gap-2">
-                <Button size="sm" variant="ghost" @click="resetParentForm">
-                  Cancel
-                </Button>
+                <Button size="sm" variant="ghost" @click="resetParentForm"> Cancel </Button>
                 <Button size="sm" :disabled="addingParent" @click="addParent">
                   {{ addingParent ? 'Adding...' : 'Add Parent' }}
                 </Button>
@@ -593,7 +602,10 @@ const close = () => {
         <!-- Subjects -->
         <div>
           <h4 class="text-sm font-semibold text-secondary-700 mb-3">Subjects</h4>
-          <div v-if="subjects.length === 0" class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg">
+          <div
+            v-if="subjects.length === 0"
+            class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg"
+          >
             No subjects available
           </div>
           <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -621,12 +633,15 @@ const close = () => {
         <!-- Slots -->
         <div class="border-t border-secondary-200 pt-4">
           <h4 class="text-sm font-semibold text-secondary-700 mb-3">Class Slots</h4>
-          <div v-if="availableSlots.length === 0" class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg">
+          <div
+            v-if="sortedSlots.length === 0"
+            class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg"
+          >
             No slots available
           </div>
           <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div
-              v-for="slot in availableSlots"
+              v-for="slot in sortedSlots"
               :key="slot.id"
               class="flex items-center p-3 rounded-lg border cursor-pointer transition-colors"
               :class="
