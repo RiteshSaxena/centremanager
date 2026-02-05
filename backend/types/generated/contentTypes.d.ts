@@ -400,12 +400,14 @@ export interface ApiCenterCenter extends Struct.CollectionTypeSchema {
       > &
       Schema.Attribute.DefaultTo<1>;
     displayName: Schema.Attribute.String;
+    email: Schema.Attribute.Email;
     lastImportDate: Schema.Attribute.DateTime;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::center.center'> & Schema.Attribute.Private;
     logo: Schema.Attribute.Media<'images'>;
     name: Schema.Attribute.String & Schema.Attribute.Required & Schema.Attribute.Unique;
     paymentHandler: Schema.Attribute.Enumeration<['none', 'inbuilt', 'zohobooks']>;
+    phoneNumber: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     region: Schema.Attribute.String;
     subscription: Schema.Attribute.Component<'subscription.subscription', false>;

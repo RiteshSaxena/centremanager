@@ -2,32 +2,40 @@ export default {
   routes: [
     {
       method: 'GET',
-      path: '/children/due-students',
-      handler: 'child.dueStudents',
+      path: '/center-users',
+      handler: 'center-user.find',
+      config: {
+        middlewares: ['global::centre'],
+      },
+    },
+    {
+      method: 'GET',
+      path: '/center-users/:id',
+      handler: 'center-user.findOne',
       config: {
         middlewares: ['global::centre'],
       },
     },
     {
       method: 'POST',
-      path: '/children',
-      handler: 'child.create',
+      path: '/center-users',
+      handler: 'center-user.create',
       config: {
         middlewares: ['global::centre'],
       },
     },
     {
       method: 'PUT',
-      path: '/children/:id',
-      handler: 'child.update',
+      path: '/center-users/:id',
+      handler: 'center-user.update',
       config: {
         middlewares: ['global::centre'],
       },
     },
     {
       method: 'DELETE',
-      path: '/children/:id',
-      handler: 'child.delete',
+      path: '/center-users/:id',
+      handler: 'center-user.delete',
       config: {
         middlewares: ['global::centre'],
       },

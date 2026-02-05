@@ -15,6 +15,12 @@ import AttendanceReport from '@/views/AttendanceReport.vue';
 import DashboardKiosk from '@/views/DashboardKiosk.vue';
 import Payment from '@/views/Payment.vue';
 
+// Admin views
+import UsersManagement from '@/views/admin/UsersManagement.vue';
+import ChildrenManagement from '@/views/admin/ChildrenManagement.vue';
+import SlotsManagement from '@/views/admin/SlotsManagement.vue';
+import CenterSettings from '@/views/admin/CenterSettings.vue';
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/login',
@@ -131,6 +137,55 @@ const routes: RouteRecordRaw[] = [
       title: 'Zoho Books',
       app: ['app-main']
     }
+  },
+  // Admin routes
+  {
+    path: '/admin/users',
+    name: 'AdminUsers',
+    component: UsersManagement,
+    meta: {
+      auth: true,
+      admin: true,
+      layout: DashboardLayout,
+      title: 'Users Management',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/admin/children',
+    name: 'AdminChildren',
+    component: ChildrenManagement,
+    meta: {
+      auth: true,
+      admin: true,
+      layout: DashboardLayout,
+      title: 'Children Management',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/admin/slots',
+    name: 'AdminSlots',
+    component: SlotsManagement,
+    meta: {
+      auth: true,
+      admin: true,
+      layout: DashboardLayout,
+      title: 'Slots Management',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/admin/settings',
+    name: 'AdminSettings',
+    component: CenterSettings,
+    meta: {
+      auth: true,
+      admin: true,
+      layout: DashboardLayout,
+      title: 'Center Settings',
+      app: ['app-main']
+    }
   }
 ];
 
@@ -151,6 +206,23 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.auth)) {
     if (!isLoggedIn) {
       next({ name: 'Login' });
+    } else if (to.matched.some((record) => record.meta.admin)) {
+      // Admin route - check user type
+      // Import store dynamically to avoid circular dependencies
+      const { userStore } = await import('@/stores/user');
+      const store = userStore();
+
+      // Ensure user is loaded
+      if (!store.user) {
+        await store.fetchMe();
+      }
+
+      if (store.user?.type === 'admin') {
+        next();
+      } else {
+        // Redirect non-admin users to dashboard
+        next({ name: 'Dashboard' });
+      }
     } else {
       next();
     }

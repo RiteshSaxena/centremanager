@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from '@/axios';
-import type { Slot } from '@/types';
+import type { Slot, CreateSlotPayload, UpdateSlotPayload } from '@/types';
 
 export const slotStore = defineStore('slot', {
   state: () => ({
@@ -16,6 +16,23 @@ export const slotStore = defineStore('slot', {
       } finally {
         this.loading = false;
       }
+    },
+    async createSlot(payload: CreateSlotPayload) {
+      const res = await axios.post<Slot>('/slots', payload);
+      this.slots.push(res.data);
+      return res.data;
+    },
+    async updateSlot(id: number, payload: UpdateSlotPayload) {
+      const res = await axios.put<Slot>(`/slots/${id}`, payload);
+      const index = this.slots.findIndex((s) => s.id === id);
+      if (index !== -1) {
+        this.slots[index] = res.data;
+      }
+      return res.data;
+    },
+    async deleteSlot(id: number) {
+      await axios.delete(`/slots/${id}`);
+      this.slots = this.slots.filter((s) => s.id !== id);
     }
   }
 });

@@ -1,6 +1,7 @@
-export type { Student, Parent } from './student';
+export type { Student, Parent, Subject, ChildStatus, CreateChildPayload, UpdateChildPayload } from './student';
 export type { Staff } from './staff';
 export type { SearchResult } from './search';
 export type { LogRecord } from './log-book';
-export type { Slot } from './slot';
+export type { Slot, DayOfWeek, CreateSlotPayload, UpdateSlotPayload } from './slot';
 export type { User } from './user';
+export type { Center, UpdateCenterPayload } from './center';

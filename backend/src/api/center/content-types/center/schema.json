@@ -54,6 +54,12 @@
       "max": 31,
       "min": 1,
       "default": 1
+    },
+    "email": {
+      "type": "email"
+    },
+    "phoneNumber": {
+      "type": "string"
     }
   }
 }

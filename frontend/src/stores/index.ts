@@ -4,3 +4,5 @@ export { slotStore as useSlotStore } from './slot';
 export { studentStore as useStudentStore } from './student';
 export { userStore as useUserStore } from './user';
 export { useFeedbackStore } from './feedback';
+export { useCenterStore } from './center';
+export { useAdminUserStore } from './admin-user';

@@ -1,11 +1,8 @@
 export interface User {
-  id: string;
-  firstname: string;
-  lastname: string;
-  username: string;
+  id: number;
+  firstName: string;
+  lastName: string;
   email: string;
   phoneNumber: string;
-  blocked: boolean;
-  confirmed: boolean;
   type: 'admin' | 'staff';
 }

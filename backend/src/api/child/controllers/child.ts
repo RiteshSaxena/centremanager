@@ -5,6 +5,7 @@
 import { factories } from '@strapi/strapi';
 import utils from '@strapi/utils';
 import { sanitizeChild } from '../../../utils/sanitize';
+import schema from '../schema';
 
 const { ValidationError } = utils.errors;
 
@@ -16,18 +17,19 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
           id: ctx.state.center.id,
         },
       },
-      populate: ['center'],
+      populate: ['center', 'subjects', 'parents', 'school', 'slots'],
       sort: 'firstName:asc',
     });
 
     return entries.map((entry) => sanitizeChild(entry));
   },
+
   async findOne(ctx) {
     const entry = await strapi.documents('api::child.child').findFirst({
       filters: {
         id: ctx.params.id,
       },
-      populate: ['parents', 'center'],
+      populate: ['parents', 'center', 'subjects', 'school', 'slots'],
     });
 
     if (!entry) {
@@ -73,6 +75,89 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
       parents,
     });
   },
+
+  async create(ctx) {
+    const payload = await schema.createChild(ctx.request.body);
+    const center = ctx.state.center;
+
+    const newChild = await strapi.documents('api::child.child').create({
+      data: {
+        ...payload,
+        center: center.id,
+      },
+    });
+
+    return sanitizeChild(newChild);
+  },
+
+  async update(ctx) {
+    const { id } = ctx.params;
+    const payload = await schema.updateChild(ctx.request.body);
+    const center = ctx.state.center;
+
+    // Verify child exists and belongs to center
+    const existingChild = await strapi.documents('api::child.child').findFirst({
+      filters: { id },
+      populate: ['center', 'statusLog'],
+    });
+
+    if (!existingChild) {
+      throw new ValidationError('Child not found');
+    }
+
+    if (existingChild.center.id !== center.id) {
+      throw new ValidationError('Child not found');
+    }
+
+    // Track status change if status is being updated
+    let statusLog = (existingChild as any).statusLog || [];
+    if (payload.status && payload.status !== existingChild.status) {
+      statusLog = [
+        ...statusLog,
+        {
+          from: existingChild.status,
+          to: payload.status,
+          date: new Date().toISOString(),
+        },
+      ];
+    }
+
+    const updatedChild = await strapi.documents('api::child.child').update({
+      documentId: existingChild.documentId,
+      data: {
+        ...payload,
+        statusLog,
+      },
+    });
+
+    return sanitizeChild(updatedChild);
+  },
+
+  async delete(ctx) {
+    const { id } = ctx.params;
+    const center = ctx.state.center;
+
+    // Verify child exists and belongs to center
+    const existingChild = await strapi.documents('api::child.child').findFirst({
+      filters: { id },
+      populate: ['center'],
+    });
+
+    if (!existingChild) {
+      throw new ValidationError('Child not found');
+    }
+
+    if (existingChild.center.id !== center.id) {
+      throw new ValidationError('Child not found');
+    }
+
+    await strapi.documents('api::child.child').delete({
+      documentId: existingChild.documentId,
+    });
+
+    return { success: true };
+  },
+
   async dueStudents(ctx) {
     const center = await strapi.documents('api::center.center').findFirst({
       filters: {

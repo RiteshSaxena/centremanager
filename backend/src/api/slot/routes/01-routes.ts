@@ -2,32 +2,32 @@ export default {
   routes: [
     {
       method: 'GET',
-      path: '/children/due-students',
-      handler: 'child.dueStudents',
+      path: '/slots/:id',
+      handler: 'slot.findOne',
       config: {
         middlewares: ['global::centre'],
       },
     },
     {
       method: 'POST',
-      path: '/children',
-      handler: 'child.create',
+      path: '/slots',
+      handler: 'slot.create',
       config: {
         middlewares: ['global::centre'],
       },
     },
     {
       method: 'PUT',
-      path: '/children/:id',
-      handler: 'child.update',
+      path: '/slots/:id',
+      handler: 'slot.update',
       config: {
         middlewares: ['global::centre'],
       },
     },
     {
       method: 'DELETE',
-      path: '/children/:id',
-      handler: 'child.delete',
+      path: '/slots/:id',
+      handler: 'slot.delete',
       config: {
         middlewares: ['global::centre'],
       },

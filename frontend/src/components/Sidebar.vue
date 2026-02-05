@@ -12,6 +12,7 @@ const userStore = useUserStore();
 const route = useRoute();
 const isHomePage = computed(() => route.path === '/');
 const isMainApp = APP_TYPE === 'app-main';
+const isAdmin = computed(() => userStore.isAdmin);
 
 const logout = async () => {
   const confirmed = window.confirm('Are you sure you want to logout?');
@@ -46,6 +47,16 @@ const navItems = computed(() => {
     { to: '/upload', icon: 'fa-upload', label: 'Upload', show: isMainApp }
   ];
   return items.filter((item) => item.show);
+});
+
+const adminNavItems = computed(() => {
+  if (!isAdmin.value || !isMainApp) return [];
+  return [
+    { to: '/admin/users', icon: 'fa-users', label: 'Users' },
+    { to: '/admin/children', icon: 'fa-children', label: 'Children' },
+    { to: '/admin/slots', icon: 'fa-clock', label: 'Slots' },
+    { to: '/admin/settings', icon: 'fa-gear', label: 'Settings' }
+  ];
 });
 
 onMounted(async () => {
@@ -152,6 +163,71 @@ onMounted(async () => {
           ></div>
         </div>
       </router-link>
+
+      <!-- Admin Section -->
+      <template v-if="adminNavItems.length > 0">
+        <div class="my-3 border-t border-secondary-700"></div>
+        <div
+          v-if="sidebarExpanded"
+          class="px-1 py-1 text-xs font-semibold text-secondary-500 uppercase tracking-wider"
+        >
+          Admin
+        </div>
+        <router-link
+          v-for="item in adminNavItems"
+          :key="item.to"
+          :to="item.to"
+          class="sidebar-item group relative flex items-center rounded-xl transition-colors duration-200"
+          :class="[
+            route.path === item.to
+              ? 'bg-primary-500 text-white shadow-lg'
+              : 'text-secondary-300 hover:bg-secondary-700/50 hover:text-white',
+            sidebarExpanded
+              ? 'px-3 py-3 gap-3'
+              : 'px-3 py-3 md:px-0 md:py-3 md:justify-center gap-3 md:gap-0'
+          ]"
+          @click="handleSidebarLinkClick"
+        >
+          <!-- Active indicator -->
+          <div
+            v-if="route.path === item.to"
+            class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full transition-opacity duration-200"
+          ></div>
+
+          <!-- Icon -->
+          <i
+            :class="[
+              'fa-solid',
+              item.icon,
+              'text-lg transition-transform duration-200',
+              route.path === item.to ? 'scale-110' : 'group-hover:scale-110',
+              sidebarExpanded ? '' : 'md:mx-auto'
+            ]"
+          ></i>
+
+          <!-- Label -->
+          <span
+            class="whitespace-nowrap text-sm font-semibold overflow-hidden transition-all duration-300"
+            :style="{
+              maxWidth: sidebarExpanded ? '200px' : '0px',
+              opacity: sidebarExpanded ? '1' : '0'
+            }"
+          >
+            {{ item.label }}
+          </span>
+
+          <!-- Tooltip for collapsed state (desktop) -->
+          <div
+            v-if="!sidebarExpanded"
+            class="hidden md:block absolute left-full ml-2 px-3 py-2 bg-secondary-800 text-white text-sm font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50"
+          >
+            {{ item.label }}
+            <div
+              class="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-secondary-800"
+            ></div>
+          </div>
+        </router-link>
+      </template>
     </nav>
 
     <!-- Bottom actions -->

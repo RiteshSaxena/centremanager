@@ -5,5 +5,13 @@ export default {
       path: '/center/register',
       handler: 'center.register',
     },
+    {
+      method: 'PUT',
+      path: '/center',
+      handler: 'center.update',
+      config: {
+        middlewares: ['global::centre'],
+      },
+    },
   ],
 };

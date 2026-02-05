@@ -9,9 +9,26 @@ import newCenterPermissions from '../new-center-permissions';
 
 const { ValidationError } = utils.errors;
 
-export default factories.createCoreController('api::center.center', () => ({
+export default factories.createCoreController('api::center.center', ({ strapi }) => ({
   async find(ctx) {
     return ctx.state.center;
+  },
+  async update(ctx) {
+    const payload = await schema.centreUpdate(ctx.request.body);
+    const center = ctx.state.center;
+
+    const updatedCenter = await strapi.documents('api::center.center').update({
+      documentId: center.documentId,
+      data: {
+        name: payload.name,
+        displayName: payload.displayName,
+        region: payload.region,
+        email: payload.email,
+        phoneNumber: payload.phoneNumber,
+      },
+    });
+
+    return updatedCenter;
   },
   async register(ctx) {
     const payload = await schema.centreRegister(ctx.request.body);
