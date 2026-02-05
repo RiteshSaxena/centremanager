@@ -495,6 +495,8 @@ export interface ApiFeedbackFeedback extends Struct.CollectionTypeSchema {
     englishScore: Schema.Attribute.Decimal;
     englishTime: Schema.Attribute.BigInteger;
     feedback: Schema.Attribute.Text;
+    isFeedbackCompleted: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    isMailSent: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     isPercentFeedbackRequired: Schema.Attribute.Boolean;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::feedback.feedback'> & Schema.Attribute.Private;

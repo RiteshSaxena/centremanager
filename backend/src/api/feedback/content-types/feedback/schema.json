@@ -52,6 +52,14 @@
     },
     "feedback": {
       "type": "text"
+    },
+    "isFeedbackCompleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "isMailSent": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

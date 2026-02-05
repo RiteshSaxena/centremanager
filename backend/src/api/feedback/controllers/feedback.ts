@@ -4,6 +4,41 @@
 
 import { factories } from '@strapi/strapi';
 
+interface Subject {
+  name: string;
+}
+
+interface FeedbackInput {
+  mathScore?: number | null;
+  englishScore?: number | null;
+  mathTime?: string | null;
+  englishTime?: string | null;
+  feedback?: string | null;
+}
+
+const checkFeedbackComplete = (feedbackData: FeedbackInput, subjects: Subject[]): boolean => {
+  const hasFeedbackText = !!feedbackData.feedback?.trim();
+  const hasMaths = subjects.some((subj) => subj.name === 'Maths');
+  const hasEnglish = subjects.some((subj) => subj.name === 'English');
+  const mathFilled = feedbackData.mathScore !== null && feedbackData.mathScore !== undefined && feedbackData.mathTime;
+  const englishFilled =
+    feedbackData.englishScore !== null && feedbackData.englishScore !== undefined && feedbackData.englishTime;
+
+  if (!hasFeedbackText) {
+    return false;
+  }
+
+  if (hasMaths && hasEnglish) {
+    return !!(mathFilled && englishFilled);
+  } else if (hasMaths && !hasEnglish) {
+    return !!mathFilled;
+  } else if (!hasMaths && hasEnglish) {
+    return !!englishFilled;
+  }
+
+  return true;
+};
+
 export default factories.createCoreController('api::feedback.feedback', ({ strapi }) => ({
   async getFeedbackByChild(ctx) {
     try {
@@ -61,30 +96,48 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
 
       const user = ctx.state.user; // logged-in user
 
-      // validate child relation
+      // validate child relation and get subjects
+      let childSubjects: Subject[] = [];
       if (child) {
-        const childExists = await strapi.documents('api::child.child').findFirst({
+        const childData = await strapi.documents('api::child.child').findFirst({
           filters: {
             id: child,
           },
+          populate: {
+            subjects: true,
+          },
         });
 
-        if (!childExists) {
+        if (!childData) {
           return ctx.badRequest(`Child with id ${child} does not exist`);
         }
+
+        childSubjects = (childData.subjects as Subject[]) || [];
       }
+
+      const feedbackData: FeedbackInput = {
+        mathScore: mathScore ?? null,
+        englishScore: englishScore ?? null,
+        mathTime: mathTime ?? null,
+        englishTime: englishTime ?? null,
+        feedback: feedback ?? null,
+      };
+
+      const isFeedbackCompleted = checkFeedbackComplete(feedbackData, childSubjects);
+
       const createdFeedback = await strapi.documents('api::feedback.feedback').create({
         data: {
-          mathScore: mathScore ?? null,
-          englishScore: englishScore ?? null,
-          mathTime: mathTime ?? null,
-          englishTime: englishTime ?? null,
+          mathScore: feedbackData.mathScore,
+          englishScore: feedbackData.englishScore,
+          mathTime: feedbackData.mathTime,
+          englishTime: feedbackData.englishTime,
           isPercentFeedbackRequired: isPercentFeedbackRequired ?? false,
           createdDate,
           child,
           feedback: feedback ?? '',
           createdByUser: user?.id,
           updatedByUser: user?.id,
+          isFeedbackCompleted,
         },
       });
       return ctx.created(createdFeedback);
@@ -93,6 +146,7 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
       return ctx.internalServerError('Something went wrong');
     }
   },
+
   async updateTodayFeedbackByChild(ctx) {
     try {
       const { childId } = ctx.params;
@@ -123,16 +177,39 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
 
       const feedbackEntry = existingFeedback[0];
 
+      // Get child's subjects
+      const childData = await strapi.documents('api::child.child').findFirst({
+        filters: {
+          id: childId,
+        },
+        populate: {
+          subjects: true,
+        },
+      });
+
+      const childSubjects: Subject[] = (childData?.subjects as Subject[]) || [];
+
+      const feedbackData: FeedbackInput = {
+        mathScore: mathScore ?? null,
+        englishScore: englishScore ?? null,
+        mathTime: mathTime ?? null,
+        englishTime: englishTime ?? null,
+        feedback: feedback ?? null,
+      };
+
+      const isFeedbackCompleted = checkFeedbackComplete(feedbackData, childSubjects);
+
       const updatedFeedback = await strapi.documents('api::feedback.feedback').update({
         documentId: feedbackEntry.documentId,
         data: {
-          mathScore: mathScore ?? null,
-          englishScore: englishScore ?? null,
-          mathTime: mathTime ?? null,
-          englishTime: englishTime ?? null,
+          mathScore: feedbackData.mathScore,
+          englishScore: feedbackData.englishScore,
+          mathTime: feedbackData.mathTime,
+          englishTime: feedbackData.englishTime,
           isPercentFeedbackRequired: isPercentFeedbackRequired ?? false,
           feedback: feedback ?? '',
           updatedByUser: ctx.state.user?.id,
+          isFeedbackCompleted,
         },
       });
 

@@ -1,126 +1,142 @@
 import { Strapi } from '../types';
 import moment from 'moment';
-import { sendEmail, generateFeedbackEmailHtml, generateFeedbackEmailText } from '../src/utils/email';
+import { generateFeedbackEmailHtml, generateFeedbackEmailText } from '../src/utils/email';
+
+const sendFeedbackEmails = async (strapi: Strapi) => {
+  console.log('Running feedback email cron task', new Date().toISOString());
+
+  const testModeEmail = process.env.TEST_MODE_FEEDBACK_EMAIL;
+  if (testModeEmail) {
+    console.log(`Test mode enabled - all emails will be sent to: ${testModeEmail}`);
+  }
+
+  // Get feedbacks where isFeedbackCompleted is true and isMailSent is not true
+  const feedbacks = await strapi.documents('api::feedback.feedback').findMany({
+    filters: {
+      isFeedbackCompleted: true,
+      isMailSent: {
+        $ne: true,
+      },
+    },
+    populate: {
+      child: {
+        populate: {
+          parents: true,
+          center: true,
+        },
+      },
+      createdByUser: true,
+    },
+  });
+
+  if (!feedbacks.length) {
+    console.log('No completed feedbacks pending email, skipping');
+    return;
+  }
+
+  console.log(`Found ${feedbacks.length} feedbacks to send`);
+
+  let successCount = 0;
+  let failCount = 0;
+
+  for (const feedback of feedbacks) {
+    const child = feedback.child;
+    if (!child) {
+      console.log(`Feedback ${feedback.documentId} has no child, skipping`);
+      continue;
+    }
+
+    const parents = child.parents || [];
+    const center = child.center;
+    const centerName = center?.displayName || center?.name || 'Kumon Centre';
+    const childName = `${child.firstName} ${child.lastName || ''}`.trim();
+    const feedbackAuthor = feedback.createdByUser
+      ? `${feedback.createdByUser.firstName || ''} ${feedback.createdByUser.lastName || ''}`.trim()
+      : undefined;
+
+    // Get all parent emails
+    const parentEmails = parents.filter((p) => p.email).map((p) => p.email);
+
+    if (!parentEmails.length) {
+      console.log(`No parents with email for child ${childName}, marking as sent`);
+      await strapi.documents('api::feedback.feedback').update({
+        documentId: feedback.documentId,
+        data: { isMailSent: true },
+      });
+      continue;
+    }
+
+    // Use first parent's name for the email template
+    const firstParent = parents.find((p) => p.email);
+    const parentName = firstParent ? `${firstParent.firstName} ${firstParent.lastName || ''}`.trim() : 'Parent';
+
+    const feedbackDate = feedback.createdDate
+      ? moment(feedback.createdDate).format('YYYY-MM-DD')
+      : moment().format('YYYY-MM-DD');
+
+    const feedbackData = {
+      childName,
+      parentName,
+      schoolYear: child.schoolYear,
+      mathScore: feedback.mathScore,
+      englishScore: feedback.englishScore,
+      mathTime: feedback.mathTime,
+      englishTime: feedback.englishTime,
+      feedback: feedback.feedback,
+      feedbackAuthor,
+      date: feedbackDate,
+      centerName,
+      isFollowUpRequired: feedback.isPercentFeedbackRequired,
+    };
+
+    const subject = `Performance Report for ${childName} - ${moment(feedbackData.date).format('MMMM D, YYYY')}`;
+    const html = generateFeedbackEmailHtml(feedbackData);
+    const text = generateFeedbackEmailText(feedbackData);
+
+    const recipientEmails = testModeEmail || parentEmails.join(', ');
+
+    try {
+      await strapi.plugins['email'].services.email.send({
+        to: recipientEmails,
+        subject: testModeEmail ? `[TEST - ${parentEmails.join(', ')}] ${subject}` : subject,
+        html,
+        text,
+      });
+      console.log(
+        `Email sent to ${recipientEmails} for ${childName}${testModeEmail ? ` (original: ${parentEmails.join(', ')})` : ''}`
+      );
+      successCount++;
+
+      await strapi.documents('api::feedback.feedback').update({
+        documentId: feedback.documentId,
+        data: { isMailSent: true },
+      });
+    } catch (error) {
+      console.error(`Failed to send email to ${parentEmails.join(', ')}:`, error);
+      failCount++;
+    }
+  }
+
+  console.log(`Feedback email task completed: ${successCount} sent, ${failCount} failed`);
+};
 
 export default {
-  dailyFeedbackEmail: {
+  feedbackEmail1pm: {
     task: async ({ strapi }: { strapi: Strapi }) => {
-      console.log('Running daily feedback email cron task', new Date().toISOString());
-
-      const today = moment().format('YYYY-MM-DD');
-
-      // Get all feedbacks created today with child and center relations
-      const feedbacks = await strapi.documents('api::feedback.feedback').findMany({
-        filters: {
-          createdDate: today,
-        },
-        populate: {
-          child: {
-            populate: {
-              parents: true,
-              center: true,
-            },
-          },
-        },
-      });
-
-      if (!feedbacks.length) {
-        console.log('No feedbacks found for today, skipping email send');
-        return;
-      }
-
-      console.log(`Found ${feedbacks.length} feedbacks for today`);
-
-      // Group feedbacks by parent email
-      const parentFeedbacks: Map<
-        string,
-        {
-          parentName: string;
-          email: string;
-          feedbacks: Array<{
-            childName: string;
-            mathScore?: number;
-            englishScore?: number;
-            mathTime?: string;
-            englishTime?: string;
-            feedback?: string;
-            date: string;
-            centerName: string;
-          }>;
-        }
-      > = new Map();
-
-      for (const feedback of feedbacks) {
-        const child = feedback.child;
-        if (!child) continue;
-
-        const parents = child.parents || [];
-        const center = child.center;
-        const centerName = center?.displayName || center?.name || 'Kumon Centre';
-
-        for (const parent of parents) {
-          if (!parent.email) continue;
-
-          const existingEntry = parentFeedbacks.get(parent.email);
-          const feedbackData = {
-            childName: `${child.firstName} ${child.lastName || ''}`.trim(),
-            mathScore: feedback.mathScore,
-            englishScore: feedback.englishScore,
-            mathTime: feedback.mathTime,
-            englishTime: feedback.englishTime,
-            feedback: feedback.feedback,
-            date: today,
-            centerName,
-          };
-
-          if (existingEntry) {
-            // Check if we already have feedback for this child (avoid duplicates)
-            const existingChild = existingEntry.feedbacks.find((f) => f.childName === feedbackData.childName);
-            if (!existingChild) {
-              existingEntry.feedbacks.push(feedbackData);
-            }
-          } else {
-            parentFeedbacks.set(parent.email, {
-              parentName: `${parent.firstName} ${parent.lastName || ''}`.trim(),
-              email: parent.email,
-              feedbacks: [feedbackData],
-            });
-          }
-        }
-      }
-
-      console.log(`Sending feedback emails to ${parentFeedbacks.size} parents`);
-
-      // Send emails to each parent
-      let successCount = 0;
-      let failCount = 0;
-
-      for (const [email, data] of parentFeedbacks) {
-        const subject = `Daily Learning Update - ${moment().format('MMMM D, YYYY')}`;
-        const html = generateFeedbackEmailHtml(data.parentName, data.feedbacks);
-        const text = generateFeedbackEmailText(data.parentName, data.feedbacks);
-
-        const success = await sendEmail({
-          to: email,
-          subject,
-          html,
-          text,
-        });
-
-        if (success) {
-          successCount++;
-          console.log(`Email sent successfully to ${email}`);
-        } else {
-          failCount++;
-          console.log(`Failed to send email to ${email}`);
-        }
-      }
-
-      console.log(`Daily feedback email task completed: ${successCount} sent, ${failCount} failed`);
+      await sendFeedbackEmails(strapi);
     },
     options: {
-      // Run at 6:00 PM every day
-      rule: '0 18 * * *',
+      // Run at 1:00 PM every day
+      rule: '0 13 * * *',
+    },
+  },
+  feedbackEmail7pm: {
+    task: async ({ strapi }: { strapi: Strapi }) => {
+      await sendFeedbackEmails(strapi);
+    },
+    options: {
+      // Run at 7:00 PM every day
+      rule: '0 19 * * *',
     },
   },
   trialChecker: {
