@@ -43,8 +43,7 @@ const navItems = computed(() => {
     { to: '/calendar', icon: 'fa-calendar-week', label: 'Calendar', show: isMainApp },
     { to: '/attendance-report', icon: 'fa-clipboard-user', label: 'Attendance', show: isMainApp },
     { to: '/payments', icon: 'fa-money-check-dollar', label: 'Payments', show: isMainApp },
-    { to: '/qr', icon: 'fa-qrcode', label: 'QR Codes', show: isMainApp },
-    { to: '/upload', icon: 'fa-upload', label: 'Upload', show: isMainApp }
+    { to: '/qr', icon: 'fa-qrcode', label: 'QR Codes', show: isMainApp }
   ];
   return items.filter((item) => item.show);
 });
@@ -55,6 +54,7 @@ const adminNavItems = computed(() => {
     { to: '/admin/users', icon: 'fa-users', label: 'Users' },
     { to: '/admin/children', icon: 'fa-children', label: 'Children' },
     { to: '/admin/slots', icon: 'fa-clock', label: 'Slots' },
+    { to: '/admin/upload', icon: 'fa-upload', label: 'Upload' },
     { to: '/admin/settings', icon: 'fa-gear', label: 'Settings' }
   ];
 });

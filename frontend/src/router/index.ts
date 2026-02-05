@@ -118,17 +118,6 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/upload',
-    name: 'Upload',
-    component: Upload,
-    meta: {
-      auth: true,
-      layout: DashboardLayout,
-      title: 'Upload',
-      app: ['app-main']
-    }
-  },
-  {
     path: '/zoho-books/token',
     name: 'ZohoBooksToken',
     component: ZohoToken,
@@ -184,6 +173,18 @@ const routes: RouteRecordRaw[] = [
       admin: true,
       layout: DashboardLayout,
       title: 'Center Settings',
+      app: ['app-main']
+    }
+  },
+  {
+    path: '/admin/upload',
+    name: 'AdminUpload',
+    component: Upload,
+    meta: {
+      auth: true,
+      admin: true,
+      layout: DashboardLayout,
+      title: 'Upload',
       app: ['app-main']
     }
   }
