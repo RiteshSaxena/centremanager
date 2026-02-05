@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch, computed, onMounted } from 'vue';
 import { Modal, Input, Select, Checkbox, Button, Textarea } from '@/components/ui';
-import type { Student, ChildStatus, Subject, Parent } from '@/types';
+import type { Student, ChildStatus, Subject, Parent, School } from '@/types';
 import type { Slot } from '@/types/slot';
 import type { SelectOption } from '@/components/ui/Select.vue';
 import { useStudentStore, useSlotStore } from '@/stores';
@@ -28,6 +28,7 @@ const isEdit = ref(false);
 const activeTab = ref<'basic' | 'address' | 'enrollment' | 'parents' | 'subjects'>('basic');
 const subjects = ref<Subject[]>([]);
 const availableSlots = ref<Slot[]>([]);
+const schools = ref<School[]>([]);
 
 // Parent management
 const showAddParentForm = ref(false);
@@ -69,7 +70,8 @@ const formData = reactive({
   notes: '',
   // Relations
   subjects: [] as number[],
-  slots: [] as number[]
+  slots: [] as number[],
+  school: '' as number | ''
 });
 
 const errors = ref({
@@ -93,27 +95,18 @@ const genderOptions: SelectOption[] = [
   { value: 'Others', label: 'Others' }
 ];
 
-const schoolYearOptions: SelectOption[] = [
-  { value: 'Reception', label: 'Reception' },
-  { value: 'Year 1', label: 'Year 1' },
-  { value: 'Year 2', label: 'Year 2' },
-  { value: 'Year 3', label: 'Year 3' },
-  { value: 'Year 4', label: 'Year 4' },
-  { value: 'Year 5', label: 'Year 5' },
-  { value: 'Year 6', label: 'Year 6' },
-  { value: 'Year 7', label: 'Year 7' },
-  { value: 'Year 8', label: 'Year 8' },
-  { value: 'Year 9', label: 'Year 9' },
-  { value: 'Year 10', label: 'Year 10' },
-  { value: 'Year 11', label: 'Year 11' },
-  { value: 'Year 12', label: 'Year 12' },
-  { value: 'Year 13', label: 'Year 13' }
-];
 
 const paymentDateOptions: SelectOption[] = Array.from({ length: 31 }, (_, i) => ({
   value: i + 1,
   label: `${i + 1}`
 }));
+
+const schoolOptions = computed<SelectOption[]>(() =>
+  schools.value.map((s) => ({
+    value: s.id,
+    label: s.city ? `${s.name} (${s.city})` : s.name
+  }))
+);
 
 const tabs = [
   { id: 'basic', label: 'Basic Info', icon: 'fa-user' },
@@ -145,6 +138,7 @@ const resetForm = () => {
   formData.notes = '';
   formData.subjects = [];
   formData.slots = [];
+  formData.school = '';
   errors.value = { firstName: '' };
   activeTab.value = 'basic';
   resetParentForm();
@@ -181,6 +175,7 @@ const loadFormData = () => {
     formData.notes = props.child.notes || '';
     formData.subjects = props.child.subjects?.map((s) => s.id) || [];
     formData.slots = props.child.slots?.map((s) => s.id) || [];
+    formData.school = props.child.school || '';
   } else {
     isEdit.value = false;
     resetForm();
@@ -192,13 +187,19 @@ watch(
   async (newVal) => {
     if (newVal) {
       loadFormData();
-      // Fetch subjects and slots
+      // Fetch subjects, slots, and schools
       try {
-        subjects.value = await studentStore.fetchSubjects();
-        availableSlots.value = await studentStore.fetchSlots();
+        const [subjectsData, slotsData, schoolsData] = await Promise.all([
+          studentStore.fetchSubjects(),
+          studentStore.fetchSlots(),
+          studentStore.fetchSchools()
+        ]);
+        subjects.value = subjectsData;
+        availableSlots.value = slotsData;
+        schools.value = schoolsData;
       } catch (e) {
-        // If subjects/slots fetch fails, continue with empty arrays
-        console.warn('Failed to fetch subjects/slots:', e);
+        // If fetch fails, continue with empty arrays
+        console.warn('Failed to fetch data:', e);
       }
     }
   }
@@ -271,6 +272,11 @@ const onSubmit = () => {
   if (formData.formType) payload.formType = formData.formType.trim();
   if (formData.referralCode) payload.referralCode = formData.referralCode.trim();
   if (formData.notes) payload.notes = formData.notes.trim();
+  if (formData.school) {
+    payload.school = Number(formData.school);
+  } else {
+    payload.school = null;
+  }
 
   emit('submit', payload);
 };
@@ -386,15 +392,21 @@ const close = () => {
           />
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Select
+          <Input
             v-model="formData.schoolYear"
-            :options="schoolYearOptions"
+            type="text"
+            placeholder="e.g. Year 5, Reception"
             label="School Year"
-            placeholder="Select school year"
           />
-          <div class="flex items-end pb-1">
-            <Checkbox v-model="formData.isEarlyLearner" label="Early Learner" />
-          </div>
+          <Select
+            v-model="formData.school"
+            :options="schoolOptions"
+            label="School"
+            placeholder="Select school"
+          />
+        </div>
+        <div>
+          <Checkbox v-model="formData.isEarlyLearner" label="Early Learner" />
         </div>
       </div>
 

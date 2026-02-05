@@ -1,11 +1,10 @@
 export interface Center {
   id: number;
   name: string;
-  displayName?: string;
-  address?: string;
-  phone?: string;
-  email?: string;
-  booksEnabled?: boolean;
+  displayName?: string | null;
+  region?: string | null;
+  email?: string | null;
+  phoneNumber?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -13,8 +12,7 @@ export interface Center {
 export interface UpdateCenterPayload {
   name?: string;
   displayName?: string;
-  address?: string;
-  phone?: string;
-  email?: string;
-  booksEnabled?: boolean;
+  region?: string;
+  email?: string | null;
+  phoneNumber?: string | null;
 }

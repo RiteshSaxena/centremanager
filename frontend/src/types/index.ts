@@ -1,4 +1,4 @@
-export type { Student, Parent, Subject, ChildStatus, CreateChildPayload, UpdateChildPayload } from './student';
+export type { Student, Parent, Subject, School, ChildStatus, CreateChildPayload, UpdateChildPayload } from './student';
 export type { Staff } from './staff';
 export type { SearchResult } from './search';
 export type { LogRecord } from './log-book';

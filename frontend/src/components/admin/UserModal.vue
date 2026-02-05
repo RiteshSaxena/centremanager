@@ -26,6 +26,7 @@ const formData = reactive({
   lastName: '',
   email: '',
   password: '',
+  phoneNumber: '',
   type: 'staff' as 'admin' | 'staff'
 });
 
@@ -34,6 +35,7 @@ const errors = ref({
   lastName: '',
   email: '',
   password: '',
+  phoneNumber: '',
   type: ''
 });
 
@@ -47,12 +49,14 @@ const resetForm = () => {
   formData.lastName = '';
   formData.email = '';
   formData.password = '';
+  formData.phoneNumber = '';
   formData.type = 'staff';
   errors.value = {
     firstName: '',
     lastName: '',
     email: '',
     password: '',
+    phoneNumber: '',
     type: ''
   };
 };
@@ -67,6 +71,7 @@ watch(
         formData.lastName = props.user.lastName || '';
         formData.email = props.user.email || '';
         formData.password = '';
+        formData.phoneNumber = props.user.phoneNumber || '';
         formData.type = props.user.type || 'staff';
       } else {
         isEdit.value = false;
@@ -83,6 +88,7 @@ const validate = () => {
     lastName: '',
     email: '',
     password: '',
+    phoneNumber: '',
     type: ''
   };
 
@@ -102,8 +108,8 @@ const validate = () => {
   if (!isEdit.value && !formData.password.trim()) {
     errors.value.password = 'Password is required';
     isValid = false;
-  } else if (formData.password && formData.password.length < 6) {
-    errors.value.password = 'Password must be at least 6 characters';
+  } else if (formData.password && formData.password.length < 8) {
+    errors.value.password = 'Password must be at least 8 characters';
     isValid = false;
   }
 
@@ -133,6 +139,10 @@ const onSubmit = () => {
 
   if (formData.password) {
     payload.password = formData.password;
+  }
+
+  if (formData.phoneNumber.trim()) {
+    payload.phoneNumber = formData.phoneNumber.trim();
   }
 
   emit('submit', payload);
@@ -178,6 +188,14 @@ const close = () => {
           :label="isEdit ? 'Password (optional)' : 'Password *'"
           :error="errors.password"
           @input="clearError('password')"
+        />
+        <Input
+          v-model="formData.phoneNumber"
+          type="tel"
+          placeholder="Phone Number"
+          label="Phone Number"
+          :error="errors.phoneNumber"
+          @input="clearError('phoneNumber')"
         />
         <Select
           v-model="formData.type"

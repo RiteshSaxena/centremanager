@@ -50,7 +50,7 @@ const handleChange = (event: Event) => {
       {{ label }}
     </label>
     <div class="relative">
-      <select :value="modelValue" :disabled="disabled" :class="classes" @change="handleChange">
+      <select :value="modelValue" :disabled="disabled" :class="classes" class="select-hide-arrow" @change="handleChange">
         <option value="" disabled>{{ placeholder }}</option>
         <option
           v-for="option in options"
@@ -82,3 +82,15 @@ const handleChange = (event: Event) => {
     </p>
   </div>
 </template>
+
+<style scoped>
+.select-hide-arrow {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none;
+}
+.select-hide-arrow::-ms-expand {
+  display: none;
+}
+</style>

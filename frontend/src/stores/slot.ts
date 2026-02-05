@@ -33,6 +33,15 @@ export const slotStore = defineStore('slot', {
     async deleteSlot(id: number) {
       await axios.delete(`/slots/${id}`);
       this.slots = this.slots.filter((s) => s.id !== id);
+    },
+    async fetchSlot(id: number) {
+      const res = await axios.get<Slot>(`/slots/${id}`);
+      // Update local state
+      const index = this.slots.findIndex((s) => s.id === id);
+      if (index !== -1) {
+        this.slots[index] = res.data;
+      }
+      return res.data;
     }
   }
 });

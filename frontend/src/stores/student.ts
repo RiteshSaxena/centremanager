@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import QRCode from 'qrcode';
 import axios from '@/axios';
-import type { Student, CreateChildPayload, UpdateChildPayload, Subject, Parent } from '@/types';
+import type { Student, CreateChildPayload, UpdateChildPayload, Subject, Parent, School } from '@/types';
 import type { Slot } from '@/types/slot';
 
 interface Books {
@@ -127,6 +127,10 @@ export const studentStore = defineStore('student', {
     async fetchSlots() {
       const res = await axios.get<Slot[]>('/slots');
       return res.data;
+    },
+    async fetchSchools() {
+      const res = await axios.get<{ data: School[] }>('/schools');
+      return res.data.data;
     }
   }
 });

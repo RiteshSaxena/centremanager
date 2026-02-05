@@ -20,6 +20,7 @@ const PERMISSIONS = [
   { action: 'api::payment.payment.create', role: 'authenticated' },
   { action: 'api::slot.slot.find', role: 'authenticated' },
   { action: 'api::subject.subject.find', role: 'authenticated' },
+  { action: 'api::school.school.find', role: 'authenticated' },
   { action: 'api::slot.slot.findOne', role: 'authenticated' },
   { action: 'api::slot.slot.create', role: 'authenticated' },
   { action: 'api::slot.slot.update', role: 'authenticated' },
