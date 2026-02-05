@@ -121,6 +121,14 @@ const handleDelete = async () => {
   }
 };
 
+const handleRefresh = async () => {
+  // Refresh slot data after student changes
+  if (selectedSlot.value) {
+    const updatedSlot = await slotStore.fetchSlot(selectedSlot.value.id);
+    selectedSlot.value = updatedSlot;
+  }
+};
+
 onMounted(() => {
   slotStore.fetchSlots();
 });
@@ -242,6 +250,7 @@ onMounted(() => {
       :slot="selectedSlot"
       :loading="saving"
       @submit="handleSubmit"
+      @refresh="handleRefresh"
     />
 
     <!-- Delete Confirm Modal -->

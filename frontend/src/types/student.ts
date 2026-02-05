@@ -17,6 +17,13 @@ export interface Subject {
   name: string;
 }
 
+export interface School {
+  id: number;
+  name: string;
+  city?: string;
+  postcode?: string;
+}
+
 export interface Student {
   id: number;
   firstName: string;
@@ -46,6 +53,7 @@ export interface Student {
   formType?: string;
   referralCode?: string;
   notes?: string;
+  school?: number | null;
 }
 
 export type ChildStatus =
@@ -84,6 +92,7 @@ export interface CreateChildPayload {
   subjects?: number[];
   parents?: number[];
   slots?: number[];
+  school?: number | null;
 }
 
 export interface UpdateChildPayload extends Partial<CreateChildPayload> {}

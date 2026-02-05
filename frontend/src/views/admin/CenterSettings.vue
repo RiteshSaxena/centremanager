@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
-import { Input, Checkbox, Button } from '@/components/ui';
+import { Input, Button } from '@/components/ui';
 import { useCenterStore } from '@/stores';
 
 const centerStore = useCenterStore();
@@ -8,17 +8,16 @@ const centerStore = useCenterStore();
 const formData = reactive({
   name: '',
   displayName: '',
-  address: '',
-  phone: '',
-  email: '',
-  booksEnabled: false
+  region: '',
+  phoneNumber: '',
+  email: ''
 });
 
 const errors = ref({
   name: '',
   displayName: '',
-  address: '',
-  phone: '',
+  region: '',
+  phoneNumber: '',
   email: ''
 });
 
@@ -29,10 +28,9 @@ const loadCenter = () => {
   if (centerStore.center) {
     formData.name = centerStore.center.name || '';
     formData.displayName = centerStore.center.displayName || '';
-    formData.address = centerStore.center.address || '';
-    formData.phone = centerStore.center.phone || '';
+    formData.region = centerStore.center.region || '';
+    formData.phoneNumber = centerStore.center.phoneNumber || '';
     formData.email = centerStore.center.email || '';
-    formData.booksEnabled = centerStore.center.booksEnabled || false;
   }
 };
 
@@ -43,13 +41,16 @@ const validate = () => {
   errors.value = {
     name: '',
     displayName: '',
-    address: '',
-    phone: '',
+    region: '',
+    phoneNumber: '',
     email: ''
   };
 
   if (!formData.name.trim()) {
     errors.value.name = 'Center name is required';
+    isValid = false;
+  } else if (formData.name.trim().length < 2 || formData.name.trim().length > 64) {
+    errors.value.name = 'Name must be between 2 and 64 characters';
     isValid = false;
   }
 
@@ -78,10 +79,9 @@ const onSubmit = async () => {
     await centerStore.updateCenter({
       name: formData.name.trim(),
       displayName: formData.displayName.trim() || undefined,
-      address: formData.address.trim() || undefined,
-      phone: formData.phone.trim() || undefined,
-      email: formData.email.trim() || undefined,
-      booksEnabled: formData.booksEnabled
+      region: formData.region.trim() || undefined,
+      phoneNumber: formData.phoneNumber.trim() || null,
+      email: formData.email.trim() || null
     });
 
     success.value = true;
@@ -157,21 +157,21 @@ onMounted(() => {
               @input="clearError('displayName')"
             />
             <Input
-              v-model="formData.address"
+              v-model="formData.region"
               type="text"
               placeholder="Region"
-              label="Address"
-              :error="errors.address"
-              @input="clearError('address')"
+              label="Region"
+              :error="errors.region"
+              @input="clearError('region')"
             />
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                v-model="formData.phone"
+                v-model="formData.phoneNumber"
                 type="tel"
                 placeholder="Phone Number"
-                label="Phone"
-                :error="errors.phone"
-                @input="clearError('phone')"
+                label="Phone Number"
+                :error="errors.phoneNumber"
+                @input="clearError('phoneNumber')"
               />
               <Input
                 v-model="formData.email"
