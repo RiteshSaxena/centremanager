@@ -5,7 +5,6 @@
 import { factories } from '@strapi/strapi';
 import utils from '@strapi/utils';
 import schema from '../schema';
-import newCenterPermissions from '../new-center-permissions';
 
 const { ValidationError } = utils.errors;
 
@@ -55,20 +54,14 @@ export default factories.createCoreController('api::center.center', ({ strapi })
       throw new ValidationError('Invite code already used');
     }
 
-    const adminUserAlreadyExists = await strapi.documents('admin::user').count({
-      filters: {
-        email: payload.email,
-      },
-    });
-
     const appUserAlreadyExists = await strapi.documents('plugin::users-permissions.user').count({
       filters: {
         email: payload.email,
       },
     });
 
-    if (adminUserAlreadyExists > 0 || appUserAlreadyExists > 0) {
-      throw new ValidationError('Email already taken');
+    if (appUserAlreadyExists > 0) {
+      throw new ValidationError('Email already registered');
     }
 
     const roles = await strapi.documents('plugin::users-permissions.role').findMany({
@@ -100,24 +93,6 @@ export default factories.createCoreController('api::center.center', ({ strapi })
           trialExpiryDate: new Date().setDate(new Date().getDate() + 60),
         },
       },
-    });
-
-    const newRole = await strapi.service('admin::role').create({
-      name: `${payload.centerName} Role`,
-      description: `${newCenter.id}`,
-    });
-
-    await strapi.service('admin::role').assignPermissions(newRole.id, newCenterPermissions.permissions);
-
-    await strapi.service('admin::user').create({
-      firstname: payload.firstName,
-      lastname: payload.lastName,
-      email: payload.email,
-      username: payload.email,
-      password: payload.password,
-      registrationToken: null,
-      isActive: true,
-      roles: [newRole.id],
     });
 
     await strapi.documents('plugin::users-permissions.user').create({
