@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { Input, Button, Table, Badge, Pagination } from '@/components/ui';
+import { Input, Button, Table, Badge, Pagination, Select } from '@/components/ui';
 import type { TableColumn } from '@/components/ui/Table.vue';
-import type { Student } from '@/types';
+import type { SelectOption } from '@/components/ui/Select.vue';
+import type { Student, ChildStatus } from '@/types';
 
 import ChildModal from '@/components/admin/ChildModal.vue';
 import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal.vue';
@@ -11,6 +12,7 @@ import { useStudentStore } from '@/stores';
 const studentStore = useStudentStore();
 
 const search = ref('');
+const statusFilter = ref('');
 const showChildModal = ref(false);
 const showDeleteModal = ref(false);
 const selectedChild = ref<Student | null>(null);
@@ -26,43 +28,76 @@ const columns: TableColumn[] = [
   { key: 'name', header: 'Name' },
   { key: 'status', header: 'Status' },
   { key: 'schoolYear', header: 'Year', hideOnMobile: true },
-  { key: 'gender', header: 'Gender', hideOnMobile: true },
+  { key: 'enrollmentDate', header: 'Enrolment', hideOnMobile: true },
   { key: 'actions', header: 'Actions', hideOnMobile: true }
 ];
 
-const filteredChildren = computed(() => {
-  let children = studentStore.students;
+const statusOptions: SelectOption[] = [
+  { value: 'New', label: 'New' },
+  { value: 'No Further Contact', label: 'No Further Contact' },
+  { value: 'Future Follow Up', label: 'Future Follow Up' },
+  { value: 'Enrolment meeting no show', label: 'Enrolment meeting no show' },
+  { value: "Attended enrolment meeting but didn't enrol", label: "Attended enrolment meeting but didn't enrol" },
+  { value: 'Send to KSiS', label: 'Send to KSiS' },
+  { value: 'Send to KSiS (Free Trial)', label: 'Send to KSiS (Free Trial)' },
+  { value: 'Exited', label: 'Exited' }
+];
+
+const filteredStudents = computed(() => {
+  let students = [...studentStore.students];
+
+  // Sort by enrollment date descending (most recent first), nulls last
+  students.sort((a, b) => {
+    const dateA = a.enrollmentDate || '';
+    const dateB = b.enrollmentDate || '';
+    if (!dateA && !dateB) return 0;
+    if (!dateA) return 1;
+    if (!dateB) return -1;
+    return dateB.localeCompare(dateA);
+  });
+
+  if (statusFilter.value) {
+    students = students.filter((s) => s.status === statusFilter.value);
+  }
+
   if (search.value.trim()) {
     const term = search.value.toLowerCase();
-    children = children.filter(
-      (c) =>
-        c.firstName?.toLowerCase().includes(term) ||
-        c.lastName?.toLowerCase().includes(term) ||
-        c.status?.toLowerCase().includes(term)
+    students = students.filter(
+      (s) =>
+        s.firstName?.toLowerCase().includes(term) ||
+        s.lastName?.toLowerCase().includes(term)
     );
   }
-  return children;
+
+  return students;
 });
 
-const totalPages = computed(() => Math.ceil(filteredChildren.value.length / pageSize));
+const totalPages = computed(() => Math.ceil(filteredStudents.value.length / pageSize));
 
-const paginatedChildren = computed(() => {
+const paginatedStudents = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
   const end = start + pageSize;
-  return filteredChildren.value.slice(start, end);
+  return filteredStudents.value.slice(start, end);
 });
+
+const formatDate = (date: string | undefined) => {
+  if (!date) return '-';
+  const d = new Date(date);
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+};
 
 const tableData = computed(() => {
   const startIndex = (currentPage.value - 1) * pageSize;
-  return paginatedChildren.value.map((child, index) => ({
+  return paginatedStudents.value.map((child, index) => ({
     ...child,
     index: startIndex + index + 1,
-    name: `${child.firstName || ''} ${child.lastName || ''}`.trim() || '-'
+    name: `${child.firstName || ''} ${child.lastName || ''}`.trim() || '-',
+    enrollmentDateFormatted: formatDate(child.enrollmentDate)
   }));
 });
 
-// Reset page when search changes
-watch(search, () => {
+// Reset page when search or filter changes
+watch([search, statusFilter], () => {
   currentPage.value = 1;
 });
 
@@ -83,6 +118,12 @@ const getStatusVariant = (
     return 'info';
   }
   return 'neutral';
+};
+
+const getGenderIcon = (gender: string | null) => {
+  if (gender === 'Male') return { icon: 'fa-mars', color: 'text-blue-500', bg: 'bg-blue-100' };
+  if (gender === 'Female') return { icon: 'fa-venus', color: 'text-pink-500', bg: 'bg-pink-100' };
+  return { icon: 'fa-child', color: 'text-secondary-500', bg: 'bg-secondary-100' };
 };
 
 const openCreateModal = () => {
@@ -111,7 +152,7 @@ const handleSubmit = async (payload: any) => {
     showChildModal.value = false;
     selectedChild.value = null;
   } catch (error: any) {
-    alert(error?.response?.data?.error?.message || 'Failed to save child');
+    alert(error?.response?.data?.error?.message || 'Failed to save student');
   } finally {
     saving.value = false;
   }
@@ -126,14 +167,13 @@ const handleDelete = async () => {
     showDeleteModal.value = false;
     selectedChild.value = null;
   } catch (error: any) {
-    alert(error?.response?.data?.error?.message || 'Failed to delete child');
+    alert(error?.response?.data?.error?.message || 'Failed to delete student');
   } finally {
     deleting.value = false;
   }
 };
 
 const handleRefresh = async () => {
-  // Refresh selected child data after parent changes
   if (selectedChild.value) {
     const updatedChild = await studentStore.fetchStudent(selectedChild.value.id);
     selectedChild.value = { ...updatedChild, qrCode: selectedChild.value.qrCode };
@@ -151,11 +191,11 @@ onMounted(() => {
     <div class="mb-6">
       <div class="flex items-center gap-3">
         <div class="w-12 h-12 rounded-xl bg-primary-500 flex items-center justify-center shadow-xs">
-          <i class="fa-solid fa-children text-white text-xl"></i>
+          <i class="fa-solid fa-user-graduate text-white text-xl"></i>
         </div>
         <div>
-          <h2 class="text-xl font-bold text-secondary-900">Children Management</h2>
-          <p class="text-sm text-secondary-500">Manage students and children</p>
+          <h2 class="text-xl font-bold text-secondary-900">Student Management</h2>
+          <p class="text-sm text-secondary-500">Manage students and enrolments</p>
         </div>
       </div>
     </div>
@@ -171,25 +211,32 @@ onMounted(() => {
               <i class="fa-solid fa-user-graduate text-white text-lg"></i>
             </div>
             <div>
-              <h3 class="text-base font-bold text-primary-900">All Children</h3>
-              <p class="text-xs text-primary-600">{{ filteredChildren.length }} total</p>
+              <h3 class="text-base font-bold text-primary-900">All Students</h3>
+              <p class="text-xs text-primary-600">{{ filteredStudents.length }} total</p>
             </div>
           </div>
           <Button @click="openCreateModal">
             <i class="fa-solid fa-plus mr-1"></i>
-            Add Child
+            Add Student
           </Button>
         </div>
       </div>
 
       <div class="p-5">
-        <!-- Search -->
+        <!-- Search & Filter -->
         <div class="bg-secondary-50 rounded-xl border border-secondary-200 p-4 mb-4">
           <div class="flex items-center gap-2 mb-3">
             <i class="fa-solid fa-magnifying-glass text-primary-600"></i>
-            <label class="text-sm font-semibold text-secondary-700">Search Children</label>
+            <label class="text-sm font-semibold text-secondary-700">Search & Filter</label>
           </div>
-          <Input v-model="search" type="search" placeholder="Search by name or status..." />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Input v-model="search" type="search" placeholder="Search by name..." />
+            <Select
+              v-model="statusFilter"
+              :options="statusOptions"
+              placeholder="All statuses"
+            />
+          </div>
         </div>
 
         <!-- Table -->
@@ -198,7 +245,7 @@ onMounted(() => {
           :data="tableData"
           :loading="studentStore.loading"
           header-class="bg-white border-b border-secondary-200"
-          empty-text="No children found"
+          empty-text="No students found"
         >
           <template #cell-index="{ value }">
             <span class="text-secondary-400 text-xs font-medium">{{ value }}</span>
@@ -206,9 +253,12 @@ onMounted(() => {
           <template #cell-name="{ row }">
             <div class="flex items-center gap-2">
               <div
-                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center shrink-0"
+                class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                :class="getGenderIcon(row.gender).bg"
               >
-                <i class="fa-solid fa-child text-primary-600 text-xs"></i>
+                <i
+                  :class="['fa-solid', getGenderIcon(row.gender).icon, getGenderIcon(row.gender).color, 'text-xs']"
+                ></i>
               </div>
               <div>
                 <span class="font-semibold text-secondary-900">{{ row.name }}</span>
@@ -226,8 +276,8 @@ onMounted(() => {
           <template #cell-schoolYear="{ row }">
             <span class="text-secondary-600">{{ row.schoolYear || '-' }}</span>
           </template>
-          <template #cell-gender="{ row }">
-            <span class="text-secondary-600">{{ row.gender || '-' }}</span>
+          <template #cell-enrollmentDate="{ row }">
+            <span class="text-secondary-600">{{ row.enrollmentDateFormatted }}</span>
           </template>
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-2">
@@ -244,13 +294,18 @@ onMounted(() => {
           <template #mobile-card="{ row }">
             <div class="flex items-center justify-between py-3 border-b border-secondary-100">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
-                  <i class="fa-solid fa-child text-primary-600"></i>
+                <div
+                  class="w-10 h-10 rounded-full flex items-center justify-center"
+                  :class="getGenderIcon(row.gender).bg"
+                >
+                  <i
+                    :class="['fa-solid', getGenderIcon(row.gender).icon, getGenderIcon(row.gender).color]"
+                  ></i>
                 </div>
                 <div>
                   <p class="font-semibold text-secondary-900">{{ row.name }}</p>
                   <p class="text-xs text-secondary-500">
-                    {{ row.schoolYear || 'No year' }} | {{ row.gender || 'No gender' }}
+                    {{ row.schoolYear || 'No year' }} | {{ row.enrollmentDateFormatted }}
                   </p>
                 </div>
               </div>
@@ -273,7 +328,7 @@ onMounted(() => {
             <Pagination
               v-model:currentPage="currentPage"
               :totalPages="totalPages"
-              :totalItems="filteredChildren.length"
+              :totalItems="filteredStudents.length"
               :pageSize="pageSize"
             />
           </template>
@@ -294,8 +349,8 @@ onMounted(() => {
     <DeleteConfirmModal
       v-model:show="showDeleteModal"
       :loading="deleting"
-      title="Delete Child"
-      message="Are you sure you want to delete this child? All related data including attendance records will be deleted."
+      title="Delete Student"
+      message="Are you sure you want to delete this student? All related data including attendance records will be deleted."
       :item-name="selectedChild ? `${selectedChild.firstName} ${selectedChild.lastName}` : ''"
       @confirm="handleDelete"
     />
