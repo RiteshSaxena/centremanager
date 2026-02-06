@@ -112,4 +112,36 @@ export default factories.createCoreController('api::payment.payment', ({ strapi 
       message: 'Payment added successfully',
     };
   },
+  async update(ctx) {
+    const { id } = ctx.params;
+    const payload = await schema.updatePayment(ctx.request.body);
+
+    // Find the payment and verify it belongs to this center
+    const payment = await strapi.documents('api::payment.payment').findFirst({
+      filters: {
+        id,
+        center: {
+          id: ctx.state.center.id,
+        },
+      },
+    });
+
+    if (!payment) {
+      throw new ValidationError('Payment not found');
+    }
+
+    if (payload.paymentDate) {
+      const paymentDate = moment(payload.paymentDate, 'YYYY-MM-DD', true);
+      if (!paymentDate.isValid()) {
+        throw new ValidationError('Invalid payment date');
+      }
+    }
+
+    const updated = await strapi.documents('api::payment.payment').update({
+      documentId: payment.documentId,
+      data: payload,
+    });
+
+    return updated;
+  },
 }));

@@ -17,7 +17,7 @@ import Payment from '@/views/Payment.vue';
 
 // Admin views
 import UsersManagement from '@/views/admin/UsersManagement.vue';
-import ChildrenManagement from '@/views/admin/ChildrenManagement.vue';
+import StudentManagement from '@/views/admin/StudentManagement.vue';
 import SlotsManagement from '@/views/admin/SlotsManagement.vue';
 import CenterSettings from '@/views/admin/CenterSettings.vue';
 
@@ -141,14 +141,14 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/admin/children',
-    name: 'AdminChildren',
-    component: ChildrenManagement,
+    path: '/admin/students',
+    name: 'AdminStudents',
+    component: StudentManagement,
     meta: {
       auth: true,
       admin: true,
       layout: DashboardLayout,
-      title: 'Children Management',
+      title: 'Student Management',
       app: ['app-main']
     }
   },

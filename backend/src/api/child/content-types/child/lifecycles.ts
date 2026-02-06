@@ -1,14 +1,4 @@
-import utils from '@strapi/utils';
-
-const { ValidationError } = utils.errors;
-
 export default {
-  beforeCreate(event) {
-    const { data } = event.params;
-    if (!(typeof data.center === 'number' || data.center?.connect?.length)) {
-      throw new ValidationError('Center is required');
-    }
-  },
   async afterUpdate(event) {
     if (event.result && event.result.documentId) {
       if (event.result.statusLog && event.result.statusLog.length > 0) {

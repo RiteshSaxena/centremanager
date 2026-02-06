@@ -9,6 +9,15 @@ const addPaymentSchema = z
   })
   .strict();
 
+const updatePaymentSchema = z
+  .object({
+    amount: z.number().optional(),
+    notes: z.string().trim().max(250).optional().nullable(),
+    paymentDate: z.string().optional(),
+  })
+  .strict();
+
 export default {
   addPayment: validateSchema(addPaymentSchema),
+  updatePayment: validateSchema(updatePaymentSchema),
 };

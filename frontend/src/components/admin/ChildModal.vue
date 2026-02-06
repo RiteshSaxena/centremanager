@@ -25,7 +25,7 @@ const studentStore = useStudentStore();
 const slotStore = useSlotStore();
 
 const isEdit = ref(false);
-const activeTab = ref<'basic' | 'address' | 'enrollment' | 'parents' | 'subjects'>('basic');
+const activeTab = ref<'basic' | 'enrollment' | 'slots' | 'parents' | 'address'>('basic');
 const subjects = ref<Subject[]>([]);
 const availableSlots = ref<Slot[]>([]);
 const schools = ref<School[]>([]);
@@ -131,10 +131,10 @@ const sortedSlots = computed(() => {
 
 const tabs = [
   { id: 'basic', label: 'Basic Info', icon: 'fa-user' },
-  { id: 'address', label: 'Address', icon: 'fa-location-dot' },
-  { id: 'enrollment', label: 'Enrollment', icon: 'fa-calendar' },
+  { id: 'enrollment', label: 'Enrolment & Subjects', icon: 'fa-calendar' },
+  { id: 'slots', label: 'Slots', icon: 'fa-clock' },
   { id: 'parents', label: 'Parents', icon: 'fa-users' },
-  { id: 'subjects', label: 'Subjects & Slots', icon: 'fa-book' }
+  { id: 'address', label: 'Address', icon: 'fa-location-dot' }
 ];
 
 const currentParents = computed(() => props.child?.parents || []);
@@ -359,7 +359,7 @@ const close = () => {
 </script>
 
 <template>
-  <Modal :open="show" :title="isEdit ? 'Edit Child' : 'Add Child'" size="xl" @close="close">
+  <Modal :open="show" :title="isEdit ? 'Edit Student' : 'Add Student'" size="xl" @close="close">
     <!-- Tabs -->
     <div class="flex border-b border-secondary-200 -mx-6 -mt-5 px-6 mb-4 overflow-x-auto">
       <button
@@ -453,11 +453,11 @@ const close = () => {
         </div>
       </div>
 
-      <!-- Enrollment Tab -->
+      <!-- Enrolment & Subjects Tab -->
       <div v-show="activeTab === 'enrollment'" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input v-model="formData.enquiryDate" type="date" label="Enquiry Date" />
-          <Input v-model="formData.enrollmentDate" type="date" label="Enrollment Date" />
+          <Input v-model="formData.enrollmentDate" type="date" label="Enrolment Date" />
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
@@ -496,13 +496,44 @@ const close = () => {
           placeholder="Additional notes..."
           :rows="3"
         />
+
+        <!-- Subjects -->
+        <div class="border-t border-secondary-200 pt-4">
+          <h4 class="text-sm font-semibold text-secondary-700 mb-3">Subjects</h4>
+          <div
+            v-if="subjects.length === 0"
+            class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg"
+          >
+            No subjects available
+          </div>
+          <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div
+              v-for="subject in subjects"
+              :key="subject.id"
+              class="flex items-center p-3 rounded-lg border cursor-pointer transition-colors"
+              :class="
+                formData.subjects.includes(subject.id)
+                  ? 'bg-primary-50 border-primary-300'
+                  : 'bg-white border-secondary-200 hover:border-secondary-300'
+              "
+              @click="toggleSubject(subject.id)"
+            >
+              <Checkbox
+                :model-value="formData.subjects.includes(subject.id)"
+                :label="subject.name"
+                @click.stop
+                @update:model-value="toggleSubject(subject.id)"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Parents Tab -->
       <div v-show="activeTab === 'parents'" class="space-y-4">
         <div v-if="!isEdit" class="text-center py-8 text-secondary-500">
           <i class="fa-solid fa-info-circle text-2xl mb-2"></i>
-          <p>Save the child first, then you can add parents.</p>
+          <p>Save the student first, then you can add parents.</p>
         </div>
 
         <template v-else>
@@ -597,72 +628,38 @@ const close = () => {
         </template>
       </div>
 
-      <!-- Subjects & Slots Tab -->
-      <div v-show="activeTab === 'subjects'" class="space-y-6">
-        <!-- Subjects -->
-        <div>
-          <h4 class="text-sm font-semibold text-secondary-700 mb-3">Subjects</h4>
-          <div
-            v-if="subjects.length === 0"
-            class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg"
-          >
-            No subjects available
-          </div>
-          <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <div
-              v-for="subject in subjects"
-              :key="subject.id"
-              class="flex items-center p-3 rounded-lg border cursor-pointer transition-colors"
-              :class="
-                formData.subjects.includes(subject.id)
-                  ? 'bg-primary-50 border-primary-300'
-                  : 'bg-white border-secondary-200 hover:border-secondary-300'
-              "
-              @click="toggleSubject(subject.id)"
-            >
-              <Checkbox
-                :model-value="formData.subjects.includes(subject.id)"
-                :label="subject.name"
-                @click.stop
-                @update:model-value="toggleSubject(subject.id)"
-              />
-            </div>
-          </div>
+      <!-- Slots Tab -->
+      <div v-show="activeTab === 'slots'" class="space-y-4">
+        <h4 class="text-sm font-semibold text-secondary-700 mb-3">Class Slots</h4>
+        <div
+          v-if="sortedSlots.length === 0"
+          class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg"
+        >
+          No slots available
         </div>
-
-        <!-- Slots -->
-        <div class="border-t border-secondary-200 pt-4">
-          <h4 class="text-sm font-semibold text-secondary-700 mb-3">Class Slots</h4>
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div
-            v-if="sortedSlots.length === 0"
-            class="text-sm text-secondary-500 py-4 text-center bg-secondary-50 rounded-lg"
+            v-for="slot in sortedSlots"
+            :key="slot.id"
+            class="flex items-center p-3 rounded-lg border cursor-pointer transition-colors"
+            :class="
+              formData.slots.includes(slot.id)
+                ? 'bg-primary-50 border-primary-300'
+                : 'bg-white border-secondary-200 hover:border-secondary-300'
+            "
+            @click="toggleSlot(slot.id)"
           >
-            No slots available
-          </div>
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div
-              v-for="slot in sortedSlots"
-              :key="slot.id"
-              class="flex items-center p-3 rounded-lg border cursor-pointer transition-colors"
-              :class="
-                formData.slots.includes(slot.id)
-                  ? 'bg-primary-50 border-primary-300'
-                  : 'bg-white border-secondary-200 hover:border-secondary-300'
-              "
-              @click="toggleSlot(slot.id)"
-            >
-              <div class="flex items-center gap-3 flex-1">
-                <Checkbox
-                  :model-value="formData.slots.includes(slot.id)"
-                  @click.stop
-                  @update:model-value="toggleSlot(slot.id)"
-                />
-                <div>
-                  <p class="font-medium text-secondary-900">{{ slot.name }}</p>
-                  <p class="text-xs text-secondary-500">
-                    {{ slot.day }} {{ slot.startTime }} - {{ slot.endTime }}
-                  </p>
-                </div>
+            <div class="flex items-center gap-3 flex-1">
+              <Checkbox
+                :model-value="formData.slots.includes(slot.id)"
+                @click.stop
+                @update:model-value="toggleSlot(slot.id)"
+              />
+              <div>
+                <p class="font-medium text-secondary-900">{{ slot.name }}</p>
+                <p class="text-xs text-secondary-500">
+                  {{ slot.day }} {{ slot.startTime }} - {{ slot.endTime }}
+                </p>
               </div>
             </div>
           </div>

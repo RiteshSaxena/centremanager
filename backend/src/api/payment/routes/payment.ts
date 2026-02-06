@@ -12,5 +12,8 @@ export default factories.createCoreRouter('api::payment.payment', {
     create: {
       middlewares: ['global::centre'],
     },
+    update: {
+      middlewares: ['global::centre'],
+    },
   },
 });

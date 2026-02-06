@@ -8,10 +8,13 @@ import type { TableColumn } from '@/components/ui/Table.vue';
 import SearchResults from '@/components/SearchResults.vue';
 import AddPaymentModal from '@/components/AddPaymentModal.vue';
 
-import { useSearchStore, useStudentStore } from '@/stores';
+import { useSearchStore, useStudentStore, useUserStore } from '@/stores';
 
 const searchStore = useSearchStore();
 const studentStore = useStudentStore();
+const userStoreInstance = useUserStore();
+
+const isAdmin = computed(() => userStoreInstance.user?.type === 'admin');
 
 const search = ref<string>('');
 const dueSearch = ref<string>('');
@@ -22,6 +25,7 @@ const selectedAmount = ref<string | number>('');
 const paymentHistory = ref<any[]>([]);
 const loading = ref(false);
 const showAddPaymentModal = ref(false);
+const editingPayment = ref<any | null>(null);
 
 // Pagination state
 const currentPage = ref(1);
@@ -35,13 +39,19 @@ const dueColumns: TableColumn[] = [
   { key: 'action', header: 'Action', hideOnMobile: true }
 ];
 
-const historyColumns: TableColumn[] = [
-  { key: 'index', header: '#', width: '60px' },
-  { key: 'name', header: 'Name' },
-  { key: 'amount', header: 'Amount' },
-  { key: 'date', header: 'Date' },
-  { key: 'notes', header: 'Notes', hideOnMobile: true }
-];
+const historyColumns = computed<TableColumn[]>(() => {
+  const cols: TableColumn[] = [
+    { key: 'index', header: '#', width: '60px' },
+    { key: 'name', header: 'Name' },
+    { key: 'amount', header: 'Amount' },
+    { key: 'date', header: 'Date' },
+    { key: 'notes', header: 'Notes', hideOnMobile: true }
+  ];
+  if (isAdmin.value) {
+    cols.push({ key: 'action', header: '', width: '80px', hideOnMobile: true });
+  }
+  return cols;
+});
 
 const debouncedSearch = debounce((value: string) => {
   searchStore.search(value, true);
@@ -144,18 +154,25 @@ const openPaymentModal = (child: any) => {
   selectedAmount.value = child.dueAmount || '';
 };
 
+const openEditModal = (payment: any) => {
+  editingPayment.value = payment;
+  studentId.value = payment.child?.id || null;
+  selectedName.value = `${payment.child?.firstName || ''} ${payment.child?.lastName || ''}`;
+  selectedAmount.value = '';
+  showAddPaymentModal.value = true;
+};
+
 watch(showAddPaymentModal, () => {
   if (!showAddPaymentModal.value) {
     studentId.value = null;
+    editingPayment.value = null;
   }
 });
 
 const addPayment = async () => {
-  if (studentId.value) {
-    studentId.value = null;
-    await fetchPayments();
-    await studentStore.dueStudents();
-  }
+  editingPayment.value = null;
+  await fetchPayments(searchedId.value || undefined);
+  await studentStore.dueStudents();
 };
 
 onMounted(async () => {
@@ -380,6 +397,11 @@ onMounted(async () => {
             <template #cell-notes="{ row }">
               <span class="text-sm text-secondary-500 italic">{{ row.notesDisplay }}</span>
             </template>
+            <template v-if="isAdmin" #cell-action="{ row }">
+              <Button size="sm" variant="ghost" @click="openEditModal(row)">
+                <i class="fa-solid fa-pen text-secondary-500"></i>
+              </Button>
+            </template>
 
             <!-- Mobile card view -->
             <template #mobile-card="{ row }">
@@ -403,8 +425,12 @@ onMounted(async () => {
                     {{ row.amountFormatted }}
                   </span>
                 </div>
-                <div v-if="row.notes" class="pt-2 border-t border-secondary-100">
-                  <p class="text-xs text-secondary-500 italic">{{ row.notes }}</p>
+                <div class="flex items-center justify-between" :class="row.notes || isAdmin ? 'pt-2 border-t border-secondary-100' : ''">
+                  <p v-if="row.notes" class="text-xs text-secondary-500 italic">{{ row.notes }}</p>
+                  <Button v-if="isAdmin" size="sm" variant="ghost" @click="openEditModal(row)">
+                    <i class="fa-solid fa-pen text-xs text-secondary-500 mr-1"></i>
+                    Edit
+                  </Button>
                 </div>
               </div>
             </template>
@@ -429,6 +455,7 @@ onMounted(async () => {
       :child-id="studentId"
       :name="selectedName"
       :amount="selectedAmount"
+      :payment="editingPayment"
       @onSuccess="addPayment"
     />
   </div>

@@ -51,7 +51,7 @@ const navItems = computed(() => {
 const adminNavItems = computed(() => {
   if (!isAdmin.value || !isMainApp) return [];
   return [
-    { to: '/admin/children', icon: 'fa-children', label: 'Children' },
+    { to: '/admin/students', icon: 'fa-user-graduate', label: 'Students' },
     { to: '/admin/slots', icon: 'fa-clock', label: 'Slots' },
     { to: '/admin/users', icon: 'fa-users', label: 'Users' },
     { to: '/admin/settings', icon: 'fa-gear', label: 'Settings' },

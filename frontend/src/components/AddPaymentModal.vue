@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, watch, computed } from 'vue';
 
 import { Modal, Input, Button } from '@/components/ui';
 
@@ -11,13 +11,17 @@ const props = withDefaults(
     childId: number | null;
     name: string;
     amount: string | number | null;
+    payment?: any | null;
   }>(),
   {
-    show: false
+    show: false,
+    payment: null
   }
 );
 
-const guestData = reactive({
+const isEdit = computed(() => !!props.payment);
+
+const formData = reactive({
   amount: '',
   paymentDate: '',
   notes: ''
@@ -31,9 +35,17 @@ watch(
   () => props.show,
   (val) => {
     if (val) {
-      guestData.amount = props.amount ? props.amount.toString() : '';
-      guestData.paymentDate = new Date().toISOString().split('T')[0];
-      guestData.notes = '';
+      if (props.payment) {
+        // Edit mode - populate from existing payment
+        formData.amount = props.payment.amount?.toString() || '';
+        formData.paymentDate = props.payment.paymentDate || '';
+        formData.notes = props.payment.notes || '';
+      } else {
+        // Create mode
+        formData.amount = props.amount ? props.amount.toString() : '';
+        formData.paymentDate = new Date().toISOString().split('T')[0];
+        formData.notes = '';
+      }
     }
   }
 );
@@ -42,12 +54,20 @@ const onSubmit = async () => {
   try {
     loading.value = true;
 
-    await studentStore.addPayment({
-      child: props.childId,
-      amount: parseFloat(guestData.amount),
-      paymentDate: guestData.paymentDate,
-      notes: guestData.notes
-    });
+    if (isEdit.value) {
+      await studentStore.updatePayment(props.payment.id, {
+        amount: parseFloat(formData.amount),
+        paymentDate: formData.paymentDate,
+        notes: formData.notes || undefined
+      });
+    } else {
+      await studentStore.addPayment({
+        child: props.childId,
+        amount: parseFloat(formData.amount),
+        paymentDate: formData.paymentDate,
+        notes: formData.notes
+      });
+    }
     emit('update:show', false);
     emit('onSuccess');
   } finally {
@@ -62,31 +82,32 @@ const emit = defineEmits(['update:show', 'onSuccess']);
   <Modal
     :open="show"
     :closable="true"
-    :title="`Add Payment - ${name}`"
+    :title="isEdit ? `Edit Payment - ${name}` : `Add Payment - ${name}`"
     @close="emit('update:show', false)"
   >
     <form id="add-guardian-form" @submit.prevent="onSubmit">
       <div class="space-y-3">
         <Input
-          v-model="guestData.amount"
+          v-model="formData.amount"
           type="number"
           placeholder="Amount"
           label="Amount"
           required
         />
         <Input
-          v-model="guestData.paymentDate"
+          v-model="formData.paymentDate"
           type="date"
           placeholder="Payment Date"
           label="Payment Date"
           required
         />
-        <Input v-model="guestData.notes" type="text" placeholder="Notes (Optional)" label="Notes" />
+        <Input v-model="formData.notes" type="text" placeholder="Notes (Optional)" label="Notes" />
       </div>
     </form>
     <template #footer>
+      <Button variant="outline" @click="emit('update:show', false)">Cancel</Button>
       <Button type="submit" form="add-guardian-form" :disabled="loading">
-        {{ loading ? '...' : 'Save' }}
+        {{ loading ? '...' : isEdit ? 'Update' : 'Save' }}
       </Button>
     </template>
   </Modal>

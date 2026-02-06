@@ -79,6 +79,10 @@ export const studentStore = defineStore('student', {
       const res = await axios.post(`/payments`, payload);
       return res.data;
     },
+    async updatePayment(id: number, payload: { amount?: number; paymentDate?: string; notes?: string | null }) {
+      const res = await axios.put(`/payments/${id}`, payload);
+      return res.data;
+    },
     async dueStudents() {
       const res = await axios.get('/children/due-students');
       this.books.enabled = res.data.booksEnabled;
