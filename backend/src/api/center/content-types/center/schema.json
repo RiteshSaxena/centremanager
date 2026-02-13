@@ -60,6 +60,10 @@
     },
     "phoneNumber": {
       "type": "string"
+    },
+    "isFeedbackNotification": {
+      "type": "boolean",
+      "default": true
     }
   }
 }
