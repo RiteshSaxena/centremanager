@@ -49,6 +49,15 @@ export const studentStore = defineStore('student', {
       try {
         this.loading = true;
         const res = await axios.get<Student[]>('/children');
+        this.students = res.data;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async fetchStudentsAndQr() {
+      try {
+        this.loading = true;
+        const res = await axios.get<Student[]>('/children');
         const students = await Promise.all(
           res.data.map(async (student) => {
             const qrCode = await generateQR(`student-${student.id}`);
@@ -58,7 +67,7 @@ export const studentStore = defineStore('student', {
             };
           })
         );
-        this.students = students as any;
+        this.students = students as any[];
       } finally {
         this.loading = false;
       }

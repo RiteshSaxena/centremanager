@@ -37,7 +37,10 @@ const statusOptions: SelectOption[] = [
   { value: 'No Further Contact', label: 'No Further Contact' },
   { value: 'Future Follow Up', label: 'Future Follow Up' },
   { value: 'Enrolment meeting no show', label: 'Enrolment meeting no show' },
-  { value: "Attended enrolment meeting but didn't enrol", label: "Attended enrolment meeting but didn't enrol" },
+  {
+    value: "Attended enrolment meeting but didn't enrol",
+    label: "Attended enrolment meeting but didn't enrol"
+  },
   { value: 'Send to KSiS', label: 'Send to KSiS' },
   { value: 'Send to KSiS (Free Trial)', label: 'Send to KSiS (Free Trial)' },
   { value: 'Exited', label: 'Exited' }

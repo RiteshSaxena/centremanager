@@ -401,6 +401,7 @@ export interface ApiCenterCenter extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<1>;
     displayName: Schema.Attribute.String;
     email: Schema.Attribute.Email;
+    isFeedbackNotification: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     lastImportDate: Schema.Attribute.DateTime;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::center.center'> & Schema.Attribute.Private;

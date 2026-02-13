@@ -75,7 +75,7 @@ const studentText = (student: Student) => {
 const loading = computed(() => studentStore.loading);
 
 onMounted(async () => {
-  await studentStore.fetchStudents();
+  await studentStore.fetchStudentsAndQr();
 });
 </script>
 
