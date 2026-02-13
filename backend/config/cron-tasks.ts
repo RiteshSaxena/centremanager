@@ -48,6 +48,13 @@ const sendFeedbackEmails = async (strapi: Strapi) => {
 
     const parents = child.parents || [];
     const center = child.center;
+
+    // Check if center has feedback notifications enabled
+    if (center && center.isFeedbackNotification === false) {
+      console.log(`Center ${center.name} has feedback notifications disabled, skipping feedback for child ${child.firstName}`);
+      continue;
+    }
+
     const centerName = center?.displayName || center?.name || 'Kumon Centre';
     const childName = `${child.firstName} ${child.lastName || ''}`.trim();
     const feedbackAuthor = feedback.createdByUser

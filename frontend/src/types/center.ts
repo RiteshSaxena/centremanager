@@ -5,6 +5,7 @@ export interface Center {
   region?: string | null;
   email?: string | null;
   phoneNumber?: string | null;
+  isFeedbackNotification?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -15,4 +16,5 @@ export interface UpdateCenterPayload {
   region?: string;
   email?: string | null;
   phoneNumber?: string | null;
+  isFeedbackNotification?: boolean;
 }

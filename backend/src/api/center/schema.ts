@@ -19,6 +19,7 @@ const centreUpdateSchema = z
     region: z.string().trim().max(64).optional(),
     email: z.string().email().trim().max(250).optional().nullable(),
     phoneNumber: z.string().trim().max(20).optional().nullable(),
+    isFeedbackNotification: z.boolean().optional(),
   })
   .strict();
 

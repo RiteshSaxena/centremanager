@@ -24,6 +24,7 @@ export default factories.createCoreController('api::center.center', ({ strapi })
         region: payload.region,
         email: payload.email,
         phoneNumber: payload.phoneNumber,
+        isFeedbackNotification: payload.isFeedbackNotification,
       },
     });
 

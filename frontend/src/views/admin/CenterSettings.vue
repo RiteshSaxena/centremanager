@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
-import { Input, Button } from '@/components/ui';
+import { Input, Button, Checkbox } from '@/components/ui';
 import { useCenterStore } from '@/stores';
 
 const centerStore = useCenterStore();
@@ -10,7 +10,8 @@ const formData = reactive({
   displayName: '',
   region: '',
   phoneNumber: '',
-  email: ''
+  email: '',
+  isFeedbackNotification: true
 });
 
 const errors = ref({
@@ -31,6 +32,7 @@ const loadCenter = () => {
     formData.region = centerStore.center.region || '';
     formData.phoneNumber = centerStore.center.phoneNumber || '';
     formData.email = centerStore.center.email || '';
+    formData.isFeedbackNotification = centerStore.center.isFeedbackNotification ?? true;
   }
 };
 
@@ -81,7 +83,8 @@ const onSubmit = async () => {
       displayName: formData.displayName.trim() || undefined,
       region: formData.region.trim() || undefined,
       phoneNumber: formData.phoneNumber.trim() || null,
-      email: formData.email.trim() || null
+      email: formData.email.trim() || null,
+      isFeedbackNotification: formData.isFeedbackNotification
     });
 
     success.value = true;
@@ -187,13 +190,16 @@ onMounted(() => {
               />
             </div>
 
-            <!-- <div class="pt-4 border-t border-secondary-100">
-              <h4 class="text-sm font-semibold text-secondary-700 mb-3">Features</h4>
+            <div class="pt-4 border-t border-secondary-100">
+              <h4 class="text-sm font-semibold text-secondary-700 mb-3">Notifications</h4>
               <Checkbox
-                v-model="formData.booksEnabled"
-                label="Enable Books/Payments Tracking"
+                v-model="formData.isFeedbackNotification"
+                label="Enable Feedback Email Notifications"
               />
-            </div> -->
+              <p class="text-xs text-secondary-500 mt-1 ml-6">
+                When enabled, parents will automatically receive daily feedback emails at 1 PM and 7 PM
+              </p>
+            </div>
 
             <div class="pt-4 flex justify-end">
               <Button type="submit" :disabled="saving || centerStore.loading">
