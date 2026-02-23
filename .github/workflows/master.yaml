@@ -32,5 +32,5 @@ jobs:
             cd /home/app/centre-manager-prod/backend
             git pull origin master
             npm install
-            npm run build
+            bash build.sh
             pm2 restart 1
