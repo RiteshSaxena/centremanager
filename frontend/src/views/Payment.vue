@@ -338,6 +338,7 @@ onMounted(async () => {
                 <div class="col-span-4 flex items-center gap-1.5">
                   <p class="font-semibold text-secondary-900 truncate">{{ row.name }}</p>
                   <button
+                    v-if="isAdmin"
                     class="w-6 h-6 rounded-md bg-secondary-100 hover:bg-primary-100 text-secondary-400 hover:text-primary-600 transition-colors flex items-center justify-center shrink-0"
                     @click="openStudentModal(row)"
                   >
