@@ -6,31 +6,13 @@ import { Button, Spinner, Pagination } from '@/components/ui';
 
 import { useStudentStore } from '@/stores';
 
-import type { Student } from '@/types';
-
 const studentStore = useStudentStore();
 
 const currentPage = ref(1);
 
-const itemsPerPage = ref(21);
+const itemsPerPage = ref(20);
 
 const search = ref('');
-
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-  }
-};
-
-const previousPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-  }
-};
-
-const changePage = (page: number) => {
-  currentPage.value = page;
-};
 
 const enrolledStudents = computed(() => {
   const list = studentStore.students.filter(
@@ -62,15 +44,6 @@ const students = computed(() => {
 
   return enrolledStudents.value.slice(start, end);
 });
-
-const studentText = (student: Student) => {
-  let name = `${student.firstName} ${student.lastName}`;
-  if (student.schoolYear) {
-    const schoolYear = student.schoolYear.trim().split('/')[0];
-    name += ` - ${schoolYear}`;
-  }
-  return name;
-};
 
 const loading = computed(() => studentStore.loading);
 

@@ -43,7 +43,7 @@ watch(
       } else {
         // Create mode
         formData.amount = props.amount ? props.amount.toString() : '';
-        formData.paymentDate = new Date().toISOString().split('T')[0];
+        formData.paymentDate = new Date().toISOString().split('T')[0]!;
         formData.notes = '';
       }
     }

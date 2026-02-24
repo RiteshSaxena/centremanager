@@ -94,7 +94,7 @@ onMounted(async () => {
 
     <!-- Navigation -->
     <nav
-      class="flex flex-col flex-1 py-4 space-y-1 overflow-y-auto"
+      class="flex flex-col flex-1 py-4 space-y-1 overflow-y-auto overflow-x-hidden [scrollbar-width:none]"
       :class="sidebarExpanded ? 'px-3' : 'px-2 md:px-2'"
     >
       <div

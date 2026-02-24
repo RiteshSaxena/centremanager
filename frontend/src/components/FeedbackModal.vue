@@ -161,7 +161,7 @@ const submitFeedback = async () => {
       mathTime: getTimePayload(hasMaths.value, form.mathTime),
       englishTime: getTimePayload(hasEnglish.value, form.englishTime),
       isPercentFeedbackRequired: form.isPercentFeedbackRequired,
-      createdDate: new Date().toISOString().split('T')[0],
+      createdDate: new Date().toISOString().split('T')[0]!,
       child: props.item.student.id,
       feedback: form.feedback
     };

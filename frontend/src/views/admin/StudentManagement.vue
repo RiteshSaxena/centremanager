@@ -23,6 +23,9 @@ const deleting = ref(false);
 const currentPage = ref(1);
 const pageSize = 50;
 
+// Debounce timer
+let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
 const columns: TableColumn[] = [
   { key: 'index', header: '#', width: '60px' },
   { key: 'name', header: 'Name' },
@@ -46,42 +49,17 @@ const statusOptions: SelectOption[] = [
   { value: 'Exited', label: 'Exited' }
 ];
 
-const filteredStudents = computed(() => {
-  let students = [...studentStore.students];
+const totalItems = computed(() => studentStore.paginationMeta?.total ?? 0);
+const totalPages = computed(() => studentStore.paginationMeta?.totalPages ?? 0);
 
-  // Sort by enrollment date descending (most recent first), nulls last
-  students.sort((a, b) => {
-    const dateA = a.enrollmentDate || '';
-    const dateB = b.enrollmentDate || '';
-    if (!dateA && !dateB) return 0;
-    if (!dateA) return 1;
-    if (!dateB) return -1;
-    return dateB.localeCompare(dateA);
+const loadStudents = () => {
+  studentStore.fetchStudentsPaginated({
+    page: currentPage.value,
+    pageSize,
+    search: search.value.trim() || undefined,
+    status: statusFilter.value || undefined,
   });
-
-  if (statusFilter.value) {
-    students = students.filter((s) => s.status === statusFilter.value);
-  }
-
-  if (search.value.trim()) {
-    const term = search.value.toLowerCase();
-    students = students.filter(
-      (s) =>
-        s.firstName?.toLowerCase().includes(term) ||
-        s.lastName?.toLowerCase().includes(term)
-    );
-  }
-
-  return students;
-});
-
-const totalPages = computed(() => Math.ceil(filteredStudents.value.length / pageSize));
-
-const paginatedStudents = computed(() => {
-  const start = (currentPage.value - 1) * pageSize;
-  const end = start + pageSize;
-  return filteredStudents.value.slice(start, end);
-});
+};
 
 const formatDate = (date: string | undefined) => {
   if (!date) return '-';
@@ -91,7 +69,7 @@ const formatDate = (date: string | undefined) => {
 
 const tableData = computed(() => {
   const startIndex = (currentPage.value - 1) * pageSize;
-  return paginatedStudents.value.map((child, index) => ({
+  return studentStore.paginatedStudents.map((child, index) => ({
     ...child,
     index: startIndex + index + 1,
     name: `${child.firstName || ''} ${child.lastName || ''}`.trim() || '-',
@@ -99,9 +77,24 @@ const tableData = computed(() => {
   }));
 });
 
-// Reset page when search or filter changes
-watch([search, statusFilter], () => {
+// Debounced search watcher
+watch(search, () => {
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    currentPage.value = 1;
+    loadStudents();
+  }, 500);
+});
+
+// Immediate reload on status filter change
+watch(statusFilter, () => {
   currentPage.value = 1;
+  loadStudents();
+});
+
+// Immediate reload on page change
+watch(currentPage, () => {
+  loadStudents();
 });
 
 const getStatusVariant = (
@@ -139,11 +132,6 @@ const openEditModal = (child: Student) => {
   showChildModal.value = true;
 };
 
-const openDeleteModal = (child: Student) => {
-  selectedChild.value = child;
-  showDeleteModal.value = true;
-};
-
 const handleSubmit = async (payload: any) => {
   try {
     saving.value = true;
@@ -154,11 +142,17 @@ const handleSubmit = async (payload: any) => {
     }
     showChildModal.value = false;
     selectedChild.value = null;
+    loadStudents();
   } catch (error: any) {
     alert(error?.response?.data?.error?.message || 'Failed to save student');
   } finally {
     saving.value = false;
   }
+};
+
+const handleDeleteFromModal = () => {
+  showChildModal.value = false;
+  showDeleteModal.value = true;
 };
 
 const handleDelete = async () => {
@@ -169,6 +163,7 @@ const handleDelete = async () => {
     await studentStore.deleteChild(selectedChild.value.id);
     showDeleteModal.value = false;
     selectedChild.value = null;
+    loadStudents();
   } catch (error: any) {
     alert(error?.response?.data?.error?.message || 'Failed to delete student');
   } finally {
@@ -184,7 +179,7 @@ const handleRefresh = async () => {
 };
 
 onMounted(() => {
-  studentStore.fetchStudents();
+  loadStudents();
 });
 </script>
 
@@ -215,7 +210,7 @@ onMounted(() => {
             </div>
             <div>
               <h3 class="text-base font-bold text-primary-900">All Students</h3>
-              <p class="text-xs text-primary-600">{{ filteredStudents.length }} total</p>
+              <p class="text-xs text-primary-600">{{ totalItems }} total</p>
             </div>
           </div>
           <Button @click="openCreateModal">
@@ -283,46 +278,38 @@ onMounted(() => {
             <span class="text-secondary-600">{{ row.enrollmentDateFormatted }}</span>
           </template>
           <template #cell-actions="{ row }">
-            <div class="flex items-center gap-2">
-              <Button size="sm" variant="ghost" @click="openEditModal(row)">
-                <i class="fa-solid fa-pen"></i>
-              </Button>
-              <Button size="sm" variant="ghost" @click="openDeleteModal(row)">
-                <i class="fa-solid fa-trash text-danger-500"></i>
-              </Button>
-            </div>
+            <Button size="sm" variant="ghost" @click="openEditModal(row)">
+              <i class="fa-solid fa-pen"></i>
+            </Button>
           </template>
 
           <!-- Mobile card view -->
           <template #mobile-card="{ row }">
-            <div class="flex items-center justify-between py-3 border-b border-secondary-100">
-              <div class="flex items-center gap-3">
+            <div class="flex items-center justify-between py-3 border-b border-secondary-100 gap-2">
+              <div class="flex items-center gap-3 min-w-0">
                 <div
-                  class="w-10 h-10 rounded-full flex items-center justify-center"
+                  class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
                   :class="getGenderIcon(row.gender).bg"
                 >
                   <i
                     :class="['fa-solid', getGenderIcon(row.gender).icon, getGenderIcon(row.gender).color]"
                   ></i>
                 </div>
-                <div>
-                  <p class="font-semibold text-secondary-900">{{ row.name }}</p>
-                  <p class="text-xs text-secondary-500">
-                    {{ row.schoolYear || 'No year' }} | {{ row.enrollmentDateFormatted }}
-                  </p>
+                <div class="min-w-0">
+                  <p class="font-semibold text-secondary-900 truncate">{{ row.name }}</p>
+                  <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                    <Badge :variant="getStatusVariant(row.status)" class="truncate">
+                      {{ row.status || '-' }}
+                    </Badge>
+                    <Badge v-if="row.enrollmentDate" variant="neutral" class="text-xs truncate">
+                      {{ row.enrollmentDateFormatted }}
+                    </Badge>
+                  </div>
                 </div>
               </div>
-              <div class="flex items-center gap-2">
-                <Badge :variant="getStatusVariant(row.status)" class="mr-2">
-                  {{ row.status || '-' }}
-                </Badge>
-                <Button size="sm" variant="ghost" @click="openEditModal(row)">
-                  <i class="fa-solid fa-pen"></i>
-                </Button>
-                <Button size="sm" variant="ghost" @click="openDeleteModal(row)">
-                  <i class="fa-solid fa-trash text-danger-500"></i>
-                </Button>
-              </div>
+              <Button size="sm" variant="ghost" class="shrink-0" @click="openEditModal(row)">
+                <i class="fa-solid fa-pen"></i>
+              </Button>
             </div>
           </template>
 
@@ -331,7 +318,7 @@ onMounted(() => {
             <Pagination
               v-model:currentPage="currentPage"
               :totalPages="totalPages"
-              :totalItems="filteredStudents.length"
+              :totalItems="totalItems"
               :pageSize="pageSize"
             />
           </template>
@@ -346,6 +333,7 @@ onMounted(() => {
       :loading="saving"
       @submit="handleSubmit"
       @refresh="handleRefresh"
+      @delete="handleDeleteFromModal"
     />
 
     <!-- Delete Confirm Modal -->

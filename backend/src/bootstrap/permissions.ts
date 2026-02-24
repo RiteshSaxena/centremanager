@@ -11,6 +11,7 @@ const PERMISSIONS = [
   { action: 'api::log-book.log-book.list', role: 'authenticated' },
   { action: 'api::child.child.find', role: 'authenticated' },
   { action: 'api::child.child.findOne', role: 'authenticated' },
+  { action: 'api::child.child.findWithPagination', role: 'authenticated' },
   { action: 'api::child.child.create', role: 'authenticated' },
   { action: 'api::child.child.update', role: 'authenticated' },
   { action: 'api::child.child.delete', role: 'authenticated' },

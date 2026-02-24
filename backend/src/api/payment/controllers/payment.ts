@@ -13,12 +13,19 @@ const { ValidationError } = utils.errors;
 export default factories.createCoreController('api::payment.payment', ({ strapi }) => ({
   async find(ctx) {
     const childId = parseInt(ctx.query.child as string);
+    const fromDate = ctx.query.fromDate as string;
 
     const filters: any = {
       center: {
         id: ctx.state.center.id,
       },
     };
+
+    if (fromDate) {
+      filters.paymentDate = {
+        $gte: fromDate,
+      };
+    }
 
     if (childId) {
       const child = await strapi.documents('api::child.child').findMany({

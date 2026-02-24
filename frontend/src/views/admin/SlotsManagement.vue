@@ -58,7 +58,7 @@ const filteredSlots = computed(() => {
 
 const formatTime = (time: string) => {
   if (!time) return '-';
-  const [hours, minutes] = time.split(':');
+  const [hours, minutes] = time.split(':') as [string, string];
   const h = parseInt(hours, 10);
   const ampm = h >= 12 ? 'PM' : 'AM';
   const hour12 = h % 12 || 12;

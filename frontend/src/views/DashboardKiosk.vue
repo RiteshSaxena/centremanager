@@ -201,7 +201,7 @@ const searchStudents = async () => {
   qrMode.value = '';
   await searchStore.searchByLastName(studentLastName.value.trim());
   if (searchStore.results.length === 1) {
-    onSelectFromSearch(searchStore.results[0]);
+    onSelectFromSearch(searchStore.results[0]!);
   }
   isSearched.value = true;
 };

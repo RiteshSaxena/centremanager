@@ -32,7 +32,7 @@ const onScanCompleted = async (result: QrScanner.ScanResult) => {
     }
 
     if (dataArr[0] === 'student') {
-      emit('student', parseInt(dataArr[1]));
+      emit('student', parseInt(dataArr[1]!));
     }
     emit('update:show', false);
   }

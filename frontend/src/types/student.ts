@@ -95,4 +95,16 @@ export interface CreateChildPayload {
   school?: number | null;
 }
 
-export interface UpdateChildPayload extends Partial<CreateChildPayload> {}
+export type UpdateChildPayload = Partial<CreateChildPayload>
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface PaginatedStudentResponse {
+  data: Student[];
+  meta: PaginationMeta;
+}

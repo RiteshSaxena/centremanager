@@ -147,6 +147,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
           $eqi: lastName,
         },
       },
+      sort: ['firstName:asc', 'lastName:asc'],
       populate: ['parents'],
     });
 
@@ -198,6 +199,7 @@ export default factories.createCoreController('api::log-book.log-book', ({ strap
           $eqi: lastName,
         },
       },
+      sort: ['firstName:asc', 'lastName:asc'],
     });
 
     const staffArr = staff.map((s) => {

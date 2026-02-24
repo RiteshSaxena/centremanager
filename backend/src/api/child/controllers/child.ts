@@ -158,6 +158,66 @@ export default factories.createCoreController('api::child.child', ({ strapi }) =
     return { success: true };
   },
 
+  async findWithPagination(ctx) {
+    const centerId = ctx.state.center.id;
+    const page = Math.max(1, parseInt(ctx.query.page as string) || 1);
+    const pageSize = Math.min(100, Math.max(1, parseInt(ctx.query.pageSize as string) || 50));
+    const searchTerm = ((ctx.query.search as string) || '').trim();
+    const status = ((ctx.query.status as string) || '').trim();
+
+    const filters: any = {
+      center: { id: centerId },
+    };
+
+    if (status) {
+      filters.status = status;
+    }
+
+    if (searchTerm) {
+      // Search parents by name to get matching parent IDs
+      const matchingParents = await strapi.documents('api::parent.parent').findMany({
+        filters: {
+          $or: [{ firstName: { $containsi: searchTerm } }, { lastName: { $containsi: searchTerm } }],
+        },
+        limit: 1000,
+      });
+      const parentIds = matchingParents.map((p) => p.id);
+
+      if (parentIds.length > 0) {
+        filters.$or = [
+          { firstName: { $containsi: searchTerm } },
+          { lastName: { $containsi: searchTerm } },
+          { parents: { id: { $in: parentIds } } },
+        ];
+      } else {
+        filters.$or = [{ firstName: { $containsi: searchTerm } }, { lastName: { $containsi: searchTerm } }];
+      }
+    }
+
+    const offset = (page - 1) * pageSize;
+
+    const [entries, total] = await Promise.all([
+      strapi.documents('api::child.child').findMany({
+        filters,
+        populate: ['center', 'subjects', 'parents', 'school', 'slots'],
+        sort: ['enrollmentDate:desc', 'firstName:asc'],
+        limit: pageSize,
+        offset,
+      }),
+      strapi.documents('api::child.child').count({ filters }),
+    ]);
+
+    return {
+      data: entries.map((entry) => sanitizeChild(entry)),
+      meta: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
+  },
+
   async dueStudents(ctx) {
     const center = await strapi.documents('api::center.center').findFirst({
       filters: {

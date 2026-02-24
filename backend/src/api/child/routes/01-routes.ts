@@ -2,6 +2,14 @@ export default {
   routes: [
     {
       method: 'GET',
+      path: '/children/paginated',
+      handler: 'child.findWithPagination',
+      config: {
+        middlewares: ['global::centre'],
+      },
+    },
+    {
+      method: 'GET',
       path: '/children/due-students',
       handler: 'child.dueStudents',
       config: {

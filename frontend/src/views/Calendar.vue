@@ -76,7 +76,7 @@ const getStudents = computed(() => {
     );
 
     if (slot.length) {
-      return slot[0].children.map((child) => {
+      return slot[0]!.children.map((child) => {
         let dueAmount = -1;
 
         if (books.enabled) {

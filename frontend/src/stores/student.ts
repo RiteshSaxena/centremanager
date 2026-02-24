@@ -7,7 +7,9 @@ import type {
   UpdateChildPayload,
   Subject,
   Parent,
-  School
+  School,
+  PaginationMeta,
+  PaginatedStudentResponse
 } from '@/types';
 import type { Slot } from '@/types/slot';
 
@@ -38,6 +40,8 @@ const generateQR = async (text: string) => {
 export const studentStore = defineStore('student', {
   state: () => ({
     students: [] as Student[],
+    paginatedStudents: [] as Student[],
+    paginationMeta: null as PaginationMeta | null,
     books: {
       enabled: false,
       dueStudents: []
@@ -50,6 +54,22 @@ export const studentStore = defineStore('student', {
         this.loading = true;
         const res = await axios.get<Student[]>('/children');
         this.students = res.data;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async fetchStudentsPaginated(params: { page?: number; pageSize?: number; search?: string; status?: string } = {}) {
+      try {
+        this.loading = true;
+        const query = new URLSearchParams();
+        if (params.page) query.set('page', String(params.page));
+        if (params.pageSize) query.set('pageSize', String(params.pageSize));
+        if (params.search) query.set('search', params.search);
+        if (params.status) query.set('status', params.status);
+        const queryString = query.toString() ? `?${query.toString()}` : '';
+        const res = await axios.get<PaginatedStudentResponse>(`/children/paginated${queryString}`);
+        this.paginatedStudents = res.data.data;
+        this.paginationMeta = res.data.meta;
       } finally {
         this.loading = false;
       }
@@ -76,11 +96,11 @@ export const studentStore = defineStore('student', {
       const res = await axios.get<Student>(`/children/${id}`);
       return res.data;
     },
-    async fetchPayments(childId?: number) {
-      let query = '';
-      if (childId) {
-        query = `?child=${childId}`;
-      }
+    async fetchPayments(childId?: number, fromDate?: string) {
+      const params = new URLSearchParams();
+      if (childId) params.set('child', String(childId));
+      if (fromDate) params.set('fromDate', fromDate);
+      const query = params.toString() ? `?${params.toString()}` : '';
       const res = await axios.get(`/payments${query}`);
       return res.data;
     },
@@ -109,8 +129,8 @@ export const studentStore = defineStore('student', {
       const res = await axios.put<Student>(`/children/${id}`, payload);
       const index = this.students.findIndex((s) => s.id === id);
       if (index !== -1) {
-        const qrCode = this.students[index].qrCode;
-        this.students[index] = { ...res.data, qrCode };
+        const existing = this.students[index]!;
+        this.students[index] = { ...res.data, qrCode: existing.qrCode };
       }
       return res.data;
     },
@@ -123,10 +143,11 @@ export const studentStore = defineStore('student', {
       // Update the child in local state
       const childIndex = this.students.findIndex((s) => s.id === payload.child);
       if (childIndex !== -1) {
-        if (!this.students[childIndex].parents) {
-          this.students[childIndex].parents = [];
+        const child = this.students[childIndex]!;
+        if (!child.parents) {
+          child.parents = [];
         }
-        this.students[childIndex].parents.push(res.data);
+        child.parents.push(res.data);
       }
       return res.data;
     },

@@ -19,13 +19,13 @@ const props = withDefaults(
   }
 );
 
-const emit = defineEmits(['update:show', 'submit', 'refresh']);
+const emit = defineEmits(['update:show', 'submit', 'refresh', 'delete']);
 
 const studentStore = useStudentStore();
 const slotStore = useSlotStore();
 
 const isEdit = ref(false);
-const activeTab = ref<'basic' | 'enrollment' | 'slots' | 'parents' | 'address'>('basic');
+const activeTab = ref<'basic' | 'enrollment' | 'slots' | 'parents' | 'address' | 'danger'>('basic');
 const subjects = ref<Subject[]>([]);
 const availableSlots = ref<Slot[]>([]);
 const schools = ref<School[]>([]);
@@ -61,6 +61,8 @@ const formData = reactive({
   // Payment
   paymentDate: '' as string | number,
   paymentAmount: '' as string | number,
+  isDue: false,
+  dueAmount: '' as string | number,
   // Dates
   enrollmentDate: '',
   enquiryDate: '',
@@ -129,13 +131,19 @@ const sortedSlots = computed(() => {
   });
 });
 
-const tabs = [
-  { id: 'basic', label: 'Basic Info', icon: 'fa-user' },
-  { id: 'enrollment', label: 'Enrolment & Subjects', icon: 'fa-calendar' },
-  { id: 'slots', label: 'Slots', icon: 'fa-clock' },
-  { id: 'parents', label: 'Parents', icon: 'fa-users' },
-  { id: 'address', label: 'Address', icon: 'fa-location-dot' }
-];
+const tabs = computed(() => {
+  const list = [
+    { id: 'basic', label: 'Basic Info', icon: 'fa-user' },
+    { id: 'enrollment', label: 'Enrolment & Subjects', icon: 'fa-calendar' },
+    { id: 'slots', label: 'Slots', icon: 'fa-clock' },
+    { id: 'parents', label: 'Parents', icon: 'fa-users' },
+    { id: 'address', label: 'Address', icon: 'fa-location-dot' }
+  ];
+  if (isEdit.value) {
+    list.push({ id: 'danger', label: 'Delete', icon: 'fa-trash' });
+  }
+  return list;
+});
 
 const currentParents = computed(() => props.child?.parents || []);
 
@@ -152,6 +160,8 @@ const resetForm = () => {
   formData.postcode = '';
   formData.paymentDate = '';
   formData.paymentAmount = '';
+  formData.isDue = false;
+  formData.dueAmount = '';
   formData.enrollmentDate = '';
   formData.enquiryDate = '';
   formData.formType = '';
@@ -189,6 +199,8 @@ const loadFormData = () => {
     formData.postcode = props.child.postcode || '';
     formData.paymentDate = props.child.paymentDate || '';
     formData.paymentAmount = props.child.paymentAmount || '';
+    formData.isDue = props.child.isDue || false;
+    formData.dueAmount = props.child.dueAmount || '';
     formData.enrollmentDate = props.child.enrollmentDate?.split('T')[0] || '';
     formData.enquiryDate = props.child.enquiryDate?.split('T')[0] || '';
     formData.formType = props.child.formType || '';
@@ -222,6 +234,15 @@ watch(
         // If fetch fails, continue with empty arrays
         console.warn('Failed to fetch data:', e);
       }
+    }
+  }
+);
+
+watch(
+  () => formData.isDue,
+  (val) => {
+    if (!val) {
+      formData.dueAmount = '';
     }
   }
 );
@@ -288,6 +309,8 @@ const onSubmit = () => {
   if (formData.postcode) payload.postcode = formData.postcode.trim();
   if (formData.paymentDate) payload.paymentDate = Number(formData.paymentDate);
   if (formData.paymentAmount) payload.paymentAmount = Number(formData.paymentAmount);
+  payload.isDue = formData.isDue;
+  payload.dueAmount = formData.dueAmount ? Number(formData.dueAmount) : null;
   if (formData.enrollmentDate) payload.enrollmentDate = formData.enrollmentDate;
   if (formData.enquiryDate) payload.enquiryDate = formData.enquiryDate;
   if (formData.formType) payload.formType = formData.formType.trim();
@@ -428,6 +451,18 @@ const close = () => {
         </div>
         <div>
           <Checkbox v-model="formData.isEarlyLearner" label="Early Learner" />
+        </div>
+        <div class="border-t border-secondary-200 pt-4 mt-2">
+          <div class="mb-3">
+            <Checkbox v-model="formData.isDue" label="Payment Due" />
+          </div>
+          <Input
+            v-model="formData.dueAmount"
+            type="number"
+            placeholder="0.00"
+            label="Due Amount"
+            :disabled="!formData.isDue"
+          />
         </div>
       </div>
 
@@ -661,6 +696,32 @@ const close = () => {
                   {{ slot.day }} {{ slot.startTime }} - {{ slot.endTime }}
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger Zone Tab -->
+      <div v-if="isEdit" v-show="activeTab === 'danger'" class="space-y-4">
+        <div class="rounded-lg border border-danger-200 bg-danger-50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-lg bg-danger-100 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-trash text-danger-600"></i>
+            </div>
+            <div class="flex-1">
+              <h4 class="text-sm font-semibold text-danger-900">Delete Student</h4>
+              <p class="text-sm text-danger-700 mt-1">
+                Permanently delete this student and all related data including attendance records. This action cannot be undone.
+              </p>
+              <Button
+                variant="danger"
+                size="sm"
+                class="mt-3"
+                @click="emit('delete')"
+              >
+                <i class="fa-solid fa-trash mr-1"></i>
+                Delete Student
+              </Button>
             </div>
           </div>
         </div>

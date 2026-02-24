@@ -14,7 +14,7 @@ const loading = ref(false);
 const onSelect = (e: Event) => {
   const target = e.target as HTMLInputElement;
   if (target.files) {
-    file.value = target.files[0];
+    file.value = target.files[0] ?? null;
   }
 };
 

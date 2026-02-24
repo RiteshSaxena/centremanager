@@ -64,14 +64,14 @@ const sizeClasses = {
           >
             <DialogPanel
               :class="[
-                'w-full transform overflow-hidden rounded-2xl bg-white shadow-modal transition-all',
+                'w-full transform rounded-2xl bg-white shadow-modal transition-all flex flex-col max-h-[90vh]',
                 sizeClasses[size]
               ]"
             >
               <!-- Header -->
               <div
                 v-if="title || $slots.title"
-                class="flex items-center justify-between px-6 py-4 border-b border-secondary-100"
+                class="flex items-center justify-between px-6 py-4 border-b border-secondary-100 shrink-0"
               >
                 <DialogTitle as="div" class="text-lg font-semibold text-secondary-900">
                   <slot name="title">{{ title }}</slot>
@@ -94,14 +94,14 @@ const sizeClasses = {
               </div>
 
               <!-- Body -->
-              <div class="px-6 py-5">
+              <div class="px-6 py-5 overflow-y-auto">
                 <slot />
               </div>
 
               <!-- Footer -->
               <div
                 v-if="$slots.footer"
-                class="flex items-center justify-end gap-3 px-6 py-4 border-t border-secondary-100 bg-secondary-50/50"
+                class="flex items-center justify-end gap-3 px-6 py-4 border-t border-secondary-100 bg-secondary-50/50 shrink-0"
               >
                 <slot name="footer" />
               </div>

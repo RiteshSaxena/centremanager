@@ -5,7 +5,9 @@ export type {
   School,
   ChildStatus,
   CreateChildPayload,
-  UpdateChildPayload
+  UpdateChildPayload,
+  PaginationMeta,
+  PaginatedStudentResponse
 } from './student';
 export type { Staff } from './staff';
 export type { SearchResult } from './search';

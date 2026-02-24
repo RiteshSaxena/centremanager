@@ -58,7 +58,7 @@ const getStudents = computed(() => {
     );
 
     if (slot.length) {
-      return slot[0].children.map((child) => {
+      return slot[0]!.children.map((child) => {
         let attendance = '';
         const timeLog: string[] = [];
         const studentFilteredList = logRecords.value.filter((log) => log.student?.id === child.id);

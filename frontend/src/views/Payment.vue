@@ -3,10 +3,13 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { debounce } from 'lodash';
 import type { SearchResult } from '@/types';
 
-import { Input, Button, Table, Pagination } from '@/components/ui';
+import { Input, Button, Table, Pagination, Select } from '@/components/ui';
 import type { TableColumn } from '@/components/ui/Table.vue';
+import type { SelectOption } from '@/components/ui/Select.vue';
 import SearchResults from '@/components/SearchResults.vue';
 import AddPaymentModal from '@/components/AddPaymentModal.vue';
+import ChildModal from '@/components/admin/ChildModal.vue';
+import type { Student } from '@/types';
 
 import { useSearchStore, useStudentStore, useUserStore } from '@/stores';
 
@@ -26,6 +29,23 @@ const paymentHistory = ref<any[]>([]);
 const loading = ref(false);
 const showAddPaymentModal = ref(false);
 const editingPayment = ref<any | null>(null);
+const showChildModal = ref(false);
+const selectedStudent = ref<Student | null>(null);
+const savingStudent = ref(false);
+const timeRange = ref('3');
+
+const timeRangeOptions: SelectOption[] = [
+  { value: '3', label: 'Last 3 months' },
+  { value: '6', label: 'Last 6 months' },
+  { value: '', label: 'All time' }
+];
+
+const getFromDate = (months: string) => {
+  if (!months) return undefined;
+  const d = new Date();
+  d.setMonth(d.getMonth() - parseInt(months));
+  return d.toISOString().split('T')[0];
+};
 
 // Pagination state
 const currentPage = ref(1);
@@ -141,7 +161,7 @@ const onSelectFromSearch = (item: SearchResult) => {
 const fetchPayments = async (childId?: number) => {
   try {
     loading.value = true;
-    paymentHistory.value = await studentStore.fetchPayments(childId);
+    paymentHistory.value = await studentStore.fetchPayments(childId, getFromDate(timeRange.value));
   } finally {
     loading.value = false;
   }
@@ -161,6 +181,42 @@ const openEditModal = (payment: any) => {
   selectedAmount.value = '';
   showAddPaymentModal.value = true;
 };
+
+const openStudentModal = async (row: any) => {
+  try {
+    const student = await studentStore.fetchStudent(row.id);
+    selectedStudent.value = student;
+    showChildModal.value = true;
+  } catch {
+    alert('Failed to load student');
+  }
+};
+
+const handleStudentSubmit = async (payload: any) => {
+  if (!selectedStudent.value) return;
+  try {
+    savingStudent.value = true;
+    await studentStore.updateChild(selectedStudent.value.id, payload);
+    showChildModal.value = false;
+    selectedStudent.value = null;
+    await studentStore.dueStudents();
+  } catch (error: any) {
+    alert(error?.response?.data?.error?.message || 'Failed to save student');
+  } finally {
+    savingStudent.value = false;
+  }
+};
+
+const handleStudentRefresh = async () => {
+  if (selectedStudent.value) {
+    selectedStudent.value = await studentStore.fetchStudent(selectedStudent.value.id);
+  }
+};
+
+watch(timeRange, () => {
+  currentPage.value = 1;
+  fetchPayments(searchedId.value || undefined);
+});
 
 watch(showAddPaymentModal, () => {
   if (!showAddPaymentModal.value) {
@@ -254,6 +310,12 @@ onMounted(async () => {
                   <i class="fa-solid fa-user text-danger-600 text-xs"></i>
                 </div>
                 <span class="font-semibold text-secondary-900">{{ row.name }}</span>
+                <button
+                  class="w-6 h-6 rounded-md bg-secondary-100 hover:bg-primary-100 text-secondary-400 hover:text-primary-600 transition-colors flex items-center justify-center"
+                  @click="openStudentModal(row)"
+                >
+                  <i class="fa-solid fa-pen text-[10px]"></i>
+                </button>
               </div>
             </template>
             <template #cell-dueAmount="{ row }">
@@ -273,8 +335,14 @@ onMounted(async () => {
             <!-- Mobile card view -->
             <template #mobile-card="{ row }">
               <div class="grid grid-cols-7 border-b py-2 border-secondary-100">
-                <div class="col-span-4 flex items-center">
-                  <p class="font-semibold text-secondary-900">{{ row.name }}</p>
+                <div class="col-span-4 flex items-center gap-1.5">
+                  <p class="font-semibold text-secondary-900 truncate">{{ row.name }}</p>
+                  <button
+                    class="w-6 h-6 rounded-md bg-secondary-100 hover:bg-primary-100 text-secondary-400 hover:text-primary-600 transition-colors flex items-center justify-center shrink-0"
+                    @click="openStudentModal(row)"
+                  >
+                    <i class="fa-solid fa-pen text-[10px]"></i>
+                  </button>
                 </div>
                 <div class="col-span-3 gap-2 flex flex-row items-center justify-between">
                   <div class="flex items-center justify-between gap-2">
@@ -313,22 +381,29 @@ onMounted(async () => {
         </div>
 
         <div class="p-5">
-          <!-- Search Section -->
+          <!-- Search & Filter Section -->
           <div class="bg-secondary-50 rounded-xl border border-secondary-200 p-4 mb-4">
             <div class="flex items-center gap-2 mb-3">
               <i class="fa-solid fa-magnifying-glass text-primary-600"></i>
-              <label class="text-sm font-semibold text-secondary-700"> Search by Student </label>
+              <label class="text-sm font-semibold text-secondary-700">Search & Filter</label>
             </div>
-            <div class="flex gap-2 items-center">
-              <Input
-                v-model="search"
-                type="search"
-                placeholder="Enter student name..."
-                class="flex-1"
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="flex gap-2 items-center">
+                <Input
+                  v-model="search"
+                  type="search"
+                  placeholder="Enter student name..."
+                  class="flex-1"
+                />
+                <Button v-if="search.trim().length" variant="ghost" size="sm" @click="clearSearch">
+                  <i class="fa-solid fa-xmark"></i>
+                </Button>
+              </div>
+              <Select
+                v-model="timeRange"
+                :options="timeRangeOptions"
+                placeholder="Time range"
               />
-              <Button v-if="search.trim().length" variant="ghost" size="sm" @click="clearSearch">
-                <i class="fa-solid fa-xmark"></i>
-              </Button>
             </div>
           </div>
 
@@ -457,6 +532,14 @@ onMounted(async () => {
       :amount="selectedAmount"
       :payment="editingPayment"
       @onSuccess="addPayment"
+    />
+    <!-- Student Edit Modal -->
+    <ChildModal
+      v-model:show="showChildModal"
+      :child="selectedStudent"
+      :loading="savingStudent"
+      @submit="handleStudentSubmit"
+      @refresh="handleStudentRefresh"
     />
   </div>
 </template>

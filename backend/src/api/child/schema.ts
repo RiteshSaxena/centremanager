@@ -34,6 +34,8 @@ const createChildSchema = z
     parents: z.array(z.number()).optional(),
     school: z.number().optional().nullable(),
     slots: z.array(z.number()).optional(),
+    isDue: z.boolean().optional(),
+    dueAmount: z.number().optional().nullable(),
   })
   .strict();
 
