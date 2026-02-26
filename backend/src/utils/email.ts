@@ -119,10 +119,10 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             background-color: #ffffff !important;
         }
         table {
-            background-color: transparent !important;
+            background-color: transparent;
         }
         td {
-            background-color: transparent !important;
+            background-color: transparent;
         }
         .header {
             background-color: #667eea;
@@ -329,7 +329,7 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             color: #667eea;
             text-decoration: none;
         }
-
+       
         /* Mobile Responsive Styles */
         @media only screen and (max-width: 600px) {
             .email-container {
@@ -373,17 +373,20 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             .performance-card {
                 padding: 12px !important;
             }
-            table[width="100%"][cellpadding="20"] td {
-                padding: 4px 10px !important;
+         
+        }
+         @media only screen and (min-width: 600px) {
+               table[width="100%"][cellpadding="20"] td {
+                padding: 10px 10px !important;
             }
             table[width="100%"][cellpadding="12"] td {
-                padding: 4px 0 !important;
+                padding: 10px !important;
             }
             table[width="100%"][cellpadding="0"] td table[cellpadding="0"] td {
-                padding: 4px 0 !important;
+                padding: 0 !important;
             }
             table[style*="margin-bottom: 15px"] {
-                margin-bottom: 0px !important;
+                margin-bottom: 20px !important;
             }
         }
     </style>
@@ -428,14 +431,14 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                         <td width="48%" style="vertical-align: top;">
                             <table width="100%" cellpadding="20" cellspacing="0" border="0" style="border: 2px solid #e5e7eb; border-top: 3px solid #3b82f6; border-radius: 12px; background-color: #ffffff;">
                                 <tr>
-                                    <td style="padding: 20px;">
+                                    <td style="padding: 10px;">
                                         <!-- Subject Header -->
-                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 15px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 0px;">
                                             <tr>
-                                                <td class="subject-icon math" style="width: 36px; height: 36px; background-color: #dbeafe; color: #3b82f6; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; vertical-align: middle;">
+                                                <td class="subject-icon math" style="width: 36px;padding:4px; height: 36px; background-color: #dbeafe; color: #3b82f6; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; vertical-align: middle;">
                                                     M
                                                 </td>
-                                                <td style="padding-left: 10px; font-size: 16px; font-weight: 700; color: #1f2937; vertical-align: middle;">
+                                                <td style="padding-left: 10px; font-size: 16px;padding:4px; font-weight: 700; color: #1f2937; vertical-align: middle;">
                                                     Mathematics
                                                 </td>
                                             </tr>
@@ -444,10 +447,10 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                                         <!-- Score Row -->
                                         <table width="100%" cellpadding="12" cellspacing="0" border="0" style="border-bottom: 1px solid #f3f4f6;">
                                             <tr>
-                                                <td style="font-size: 16px; color: #6b7280; font-weight: 500; width: 60px;">
+                                                <td style="font-size: 16px; color: #6b7280;padding:4px; font-weight: 500; width: 60px;">
                                                     Score:
                                                 </td>
-                                                <td style="text-align: right; font-size: 24px; font-weight: 700; color: ${mathScoreClass === 'success' ? '#10b981' : mathScoreClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
+                                                <td style="text-align: right; font-size: 24px;padding:4px; font-weight: 700; color: ${mathScoreClass === 'success' ? '#10b981' : mathScoreClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
                                                     ${formatScore(mathScore)}
                                                 </td>
                                             </tr>
@@ -456,10 +459,10 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                                         <!-- Time Row -->
                                         <table width="100%" cellpadding="12" cellspacing="0" border="0">
                                             <tr>
-                                                <td style="font-size: 16px; color: #6b7280; font-weight: 500; width: 60px;">
+                                                <td style="font-size: 16px; color: #6b7280;padding:4px; font-weight: 500; width: 60px;">
                                                     Time:
                                                 </td>
-                                                <td style="text-align: right; font-size: 18px; font-weight: 600; color: ${mathTimeClass === 'success' ? '#10b981' : mathTimeClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
+                                                <td style="text-align: right; font-size: 18px;padding:4px; font-weight: 600; color: ${mathTimeClass === 'success' ? '#10b981' : mathTimeClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
                                                     ${formatTime(mathTime)}
                                                 </td>
                                             </tr>
@@ -476,14 +479,14 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                         <td width="48%" style="vertical-align: top;">
                             <table width="100%" cellpadding="20" cellspacing="0" border="0" style="border: 2px solid #e5e7eb; border-top: 3px solid #8b5cf6; border-radius: 12px; background-color: #ffffff;">
                                 <tr>
-                                    <td style="padding: 20px;">
+                                    <td style="padding: 10px;">
                                         <!-- Subject Header -->
-                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 15px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 0px;">
                                             <tr>
-                                                <td class="subject-icon english" style="width: 36px; height: 36px; background-color: #ede9fe; color: #8b5cf6; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; vertical-align: middle;">
+                                                <td class="subject-icon english" style="width: 36px;padding:4px; height: 36px; background-color: #ede9fe; color: #8b5cf6; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; vertical-align: middle;">
                                                     E
                                                 </td>
-                                                <td style="padding-left: 10px; font-size: 16px; font-weight: 700; color: #1f2937; vertical-align: middle;">
+                                                <td style="padding-left: 10px; font-size: 16px;padding:4px; font-weight: 700; color: #1f2937; vertical-align: middle;">
                                                     English
                                                 </td>
                                             </tr>
@@ -492,10 +495,10 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                                         <!-- Score Row -->
                                         <table width="100%" cellpadding="12" cellspacing="0" border="0" style="border-bottom: 1px solid #f3f4f6;">
                                             <tr>
-                                                <td style="font-size: 16px; color: #6b7280; font-weight: 500; width: 60px;">
+                                                <td style="font-size: 16px; color: #6b7280;padding:4px; font-weight: 500; width: 60px;">
                                                     Score:
                                                 </td>
-                                                <td style="text-align: right; font-size: 24px; font-weight: 700; color: ${englishScoreClass === 'success' ? '#10b981' : englishScoreClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
+                                                <td style="text-align: right; font-size: 24px;padding:4px; font-weight: 700; color: ${englishScoreClass === 'success' ? '#10b981' : englishScoreClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
                                                     ${formatScore(englishScore)}
                                                 </td>
                                             </tr>
@@ -504,10 +507,10 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                                         <!-- Time Row -->
                                         <table width="100%" cellpadding="12" cellspacing="0" border="0">
                                             <tr>
-                                                <td style="font-size: 16px; color: #6b7280; font-weight: 500; width: 60px;">
+                                                <td style="font-size: 16px; color: #6b7280;padding:4px; font-weight: 500; width: 60px;">
                                                     Time:
                                                 </td>
-                                                <td style="text-align: right; font-size: 18px; font-weight: 600; color: ${englishTimeClass === 'success' ? '#10b981' : englishTimeClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
+                                                <td style="text-align: right; font-size: 18px;padding:4px; font-weight: 600; color: ${englishTimeClass === 'success' ? '#10b981' : englishTimeClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
                                                     ${formatTime(englishTime)}
                                                 </td>
                                             </tr>
