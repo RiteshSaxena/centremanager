@@ -24,21 +24,5 @@ export default {
         auth: {},
       },
     },
-    {
-      method: 'POST',
-      path: '/feedback/send-emails',
-      handler: 'feedback.sendFeedbackEmails',
-      config: {
-        auth: {},
-      },
-    },
-    {
-      method: 'POST',
-      path: '/feedback/test-email',
-      handler: 'feedback.testEmail',
-      config: {
-        auth: {},
-      },
-    },
   ],
 };
