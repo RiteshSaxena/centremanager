@@ -2,8 +2,6 @@
 import { onMounted, reactive, ref, watch } from 'vue';
 import { Input, Button, Checkbox } from '@/components/ui';
 import { useCenterStore } from '@/stores';
-import axios from '@/axios';
-import { useToast } from 'vue-toastification';
 
 const centerStore = useCenterStore();
 
@@ -26,8 +24,6 @@ const errors = ref({
 
 const saving = ref(false);
 const success = ref(false);
-const sendingEmails = ref(false);
-const toast = useToast();
 
 const loadCenter = () => {
   if (centerStore.center) {
@@ -96,32 +92,6 @@ const onSubmit = async () => {
     alert(error?.response?.data?.error?.message || 'Failed to update settings');
   } finally {
     saving.value = false;
-  }
-};
-
-const sendFeedbackEmails = async () => {
-  const confirmed = window.confirm(
-    'This will send all pending feedback emails to hemant.kumar@techcurl.com. Continue?'
-  );
-  if (!confirmed) return;
-
-  try {
-    sendingEmails.value = true;
-    const response = await axios.post('/feedback/send-emails');
-    const data = response.data;
-
-    if (data.success) {
-      toast.success(
-        `Emails sent successfully! Sent: ${data.sent}, Failed: ${data.failed}, Total: ${data.total}`
-      );
-    } else {
-      toast.warning('No pending feedback emails to send');
-    }
-  } catch (error: any) {
-    console.error('Failed to send feedback emails:', error);
-    toast.error(error?.response?.data?.error?.message || 'Failed to send feedback emails');
-  } finally {
-    sendingEmails.value = false;
   }
 };
 
@@ -221,7 +191,7 @@ onMounted(() => {
             </div>
 
             <div class="pt-4 border-t border-secondary-100">
-              <h4 class="text-sm font-semibold text-secondary-700 mb-3">Email Notifications</h4>
+              <h4 class="text-sm font-semibold text-secondary-700 mb-3">Notifications</h4>
               <Checkbox
                 v-model="formData.isFeedbackNotification"
                 label="Enable Feedback Email Notifications"
@@ -229,32 +199,6 @@ onMounted(() => {
               <p class="text-xs text-secondary-500 mt-1 ml-6">
                 When enabled, parents will automatically receive daily feedback emails at 1 PM and 7 PM
               </p>
-
-              <!-- Manual Email Trigger -->
-              <div class="mt-4 p-4 bg-secondary-50 rounded-xl border border-secondary-200">
-                <div class="flex items-start justify-between gap-4">
-                  <div class="flex-1">
-                    <h5 class="text-sm font-semibold text-secondary-900 mb-1">
-                      <i class="fa-solid fa-paper-plane text-primary-500 mr-2"></i>
-                      Send Pending Feedback Emails Now
-                    </h5>
-                    <p class="text-xs text-secondary-600">
-                      Manually trigger sending all completed feedback emails that haven't been sent yet.
-                      Emails will be sent to hemant.kumar@techcurl.com for testing.
-                    </p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    :disabled="sendingEmails"
-                    @click="sendFeedbackEmails"
-                  >
-                    <i v-if="sendingEmails" class="fa-solid fa-spinner fa-spin mr-1"></i>
-                    <i v-else class="fa-solid fa-paper-plane mr-1"></i>
-                    {{ sendingEmails ? 'Sending...' : 'Send Now' }}
-                  </Button>
-                </div>
-              </div>
             </div>
 
             <div class="pt-4 flex justify-end">
