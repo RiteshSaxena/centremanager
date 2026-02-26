@@ -107,10 +107,10 @@ onMounted(async () => {
         <span class="text-xs text-white/40">{{ shortDate }}</span>
       </div>
       <div v-else class="hidden md:block w-30 py-2 mb-3">
-        <h1 class="text-xl font-bold text-white leading-tight fade-in">
+        <h1 class="text-xl font-bold whitespace-nowrap text-white leading-tight fade-in">
           {{ centre?.displayName || centre?.name }}
         </h1>
-        <span class="text-sm text-white/40 fade-in">{{ date }}</span>
+        <span class="text-sm text-white/40 fade-in whitespace-nowrap">{{ date }}</span>
       </div>
       <router-link
         v-for="item in navItems"
