@@ -362,7 +362,6 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             .time-value {
                 font-size: 16px !important;
             }
-            /* Stack cards vertically on mobile */
             table[width="100%"] > tbody > tr > td[width="48%"] {
                 width: 100% !important;
                 display: block !important;
@@ -371,9 +370,20 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             table[width="100%"] > tbody > tr > td[width="4%"] {
                 display: none !important;
             }
-            /* Maintain card padding on mobile */
             .performance-card {
-                padding: 15px !important;
+                padding: 12px !important;
+            }
+            table[width="100%"][cellpadding="20"] td {
+                padding: 4px 10px !important;
+            }
+            table[width="100%"][cellpadding="12"] td {
+                padding: 4px 0 !important;
+            }
+            table[width="100%"][cellpadding="0"] td table[cellpadding="0"] td {
+                padding: 4px 0 !important;
+            }
+            table[style*="margin-bottom: 15px"] {
+                margin-bottom: 0px !important;
             }
         }
     </style>
@@ -418,7 +428,7 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                         <td width="48%" style="vertical-align: top;">
                             <table width="100%" cellpadding="20" cellspacing="0" border="0" style="border: 2px solid #e5e7eb; border-top: 3px solid #3b82f6; border-radius: 12px; background-color: #ffffff;">
                                 <tr>
-                                    <td style="padding: 20px !important;">
+                                    <td style="padding: 20px;">
                                         <!-- Subject Header -->
                                         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 15px;">
                                             <tr>
@@ -466,7 +476,7 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                         <td width="48%" style="vertical-align: top;">
                             <table width="100%" cellpadding="20" cellspacing="0" border="0" style="border: 2px solid #e5e7eb; border-top: 3px solid #8b5cf6; border-radius: 12px; background-color: #ffffff;">
                                 <tr>
-                                    <td style="padding: 20px !important;">
+                                    <td style="padding: 20px;">
                                         <!-- Subject Header -->
                                         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 15px;">
                                             <tr>
