@@ -12,6 +12,8 @@ interface FeedbackData {
   feedbackAuthor?: string;
   date: string;
   centerName: string;
+  centerEmail?: string;
+  centerPhone?: string;
   isFollowUpRequired?: boolean;
 }
 
@@ -56,6 +58,8 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
     feedbackAuthor,
     date,
     centerName,
+    centerEmail,
+    centerPhone,
     isFollowUpRequired,
   } = feedback;
 
@@ -80,25 +84,48 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
   const englishTimeClass = getEnglishTimeClass();
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
+    <meta name="supported-color-schemes" content="light">
+    <!--[if gte mso 9]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:AllowPNG/>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+    </xml>
+    <![endif]-->
     <title>Student Feedback Report</title>
     <style>
+        :root {
+            color-scheme: light only;
+        }
         body {
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: #333333;
+            background-color: #f5f5f5 !important;
+            color: #333333 !important;
         }
         .email-container {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #ffffff;
+            background-color: #ffffff !important;
+        }
+        .content {
+            background-color: #ffffff !important;
+        }
+        table {
+            background-color: transparent;
+        }
+        td {
+            background-color: transparent;
         }
         .header {
+            background-color: #667eea;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 10px 20px;
             text-align: center;
@@ -118,16 +145,15 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             padding: 30px 20px;
         }
         .info-card {
-            background: linear-gradient(to right, #f0f4ff, #e8f0ff);
-            border-left: 4px solid #667eea;
+            background: #e8f0ff !important;
+            background-color: #e8f0ff !important;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 25px;
         }
         .info-row {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
+            justify-content: center;
         }
         .info-row:last-child {
             margin-bottom: 0;
@@ -158,7 +184,7 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             border: 2px solid #e5e7eb;
             border-radius: 12px;
             padding: 20px;
-            background-color: #ffffff;
+            background-color: #ffffff !important;
             margin-bottom: 15px;
         }
         .performance-card.math {
@@ -181,12 +207,12 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             font-size: 16px;
         }
         .subject-icon.math {
-            background-color: #dbeafe;
-            color: #3b82f6;
+            background-color: #dbeafe !important;
+            color: #3b82f6 !important;
         }
         .subject-icon.english {
-            background-color: #ede9fe;
-            color: #8b5cf6;
+            background-color: #ede9fe !important;
+            color: #8b5cf6 !important;
         }
         .subject-name {
             font-size: 16px;
@@ -238,7 +264,7 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             color: #9ca3af;
         }
         .feedback-card {
-            background-color: #f9fafb;
+            background-color: #f9fafb !important;
             border: 2px solid #e5e7eb;
             border-radius: 12px;
             padding: 20px;
@@ -249,7 +275,7 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
         }
         .feedback-icon {
             color: #6b7280;
-            margin-right: 10px;
+            margin-right: 5px;
             font-size: 18px;
         }
         .feedback-title {
@@ -261,13 +287,14 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             font-size: 14px;
             color: #6b7280;
             font-weight: 400;
-            margin-left: 8px;
         }
         .feedback-text {
             font-size: 15px;
             line-height: 1.6;
             color: #374151;
             margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
         .feedback-empty {
             font-size: 14px;
@@ -275,7 +302,7 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             font-style: italic;
         }
         .alert-card {
-            background-color: #fef2f2;
+            background-color: #fef2f2 !important;
             border-left: 4px solid #ef4444;
             border-radius: 8px;
             padding: 15px 20px;
@@ -288,7 +315,7 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             font-weight: 600;
         }
         .footer {
-            background-color: #f9fafb;
+            background-color: #f9fafb !important;
             padding: 20px;
             text-align: center;
             border-top: 1px solid #e5e7eb;
@@ -302,19 +329,89 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             color: #667eea;
             text-decoration: none;
         }
+       
+        /* Mobile Responsive Styles */
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+            }
+            .content {
+                padding: 20px 15px !important;
+            }
+            .header {
+                padding: 15px !important;
+            }
+            .header h1 {
+                font-size: 18px !important;
+            }
+            .subject-icon {
+                display: none !important;
+            }
+            .subject-name {
+                font-size: 14px !important;
+            }
+            .info-card {
+                padding: 15px !important;
+            }
+            .feedback-card {
+                padding: 15px !important;
+            }
+            .score-value {
+                font-size: 20px !important;
+            }
+            .time-value {
+                font-size: 16px !important;
+            }
+            table[width="100%"] > tbody > tr > td[width="48%"] {
+                width: 100% !important;
+                display: block !important;
+                margin-bottom: 15px !important;
+            }
+            table[width="100%"] > tbody > tr > td[width="4%"] {
+                display: none !important;
+            }
+            .performance-card {
+                padding: 12px !important;
+            }
+         
+        }
+         @media only screen and (min-width: 600px) {
+               table[width="100%"][cellpadding="20"] td {
+                padding: 10px 10px !important;
+            }
+            table[width="100%"][cellpadding="12"] td {
+                padding: 10px !important;
+            }
+            table[width="100%"][cellpadding="0"] td table[cellpadding="0"] td {
+                padding: 0 !important;
+            }
+            table[style*="margin-bottom: 15px"] {
+                margin-bottom: 20px !important;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="email-container">
         <div class="header">
-            <h1>${childName}'s Performance Report</h1>
-            <p>${centerName}</p>
+            <!--[if gte mso 9]>
+            <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:90px;">
+            <v:fill type="gradient" color="#667eea" color2="#764ba2" angle="135" />
+            <v:textbox style="mso-fit-shape-to-text:true" inset="0,0,0,0">
+            <![endif]-->
+            <div>
+                <h1>${childName}'s Performance Report</h1>
+                <p>${centerName}</p>
+            </div>
+            <!--[if gte mso 9]>
+            </v:textbox>
+            </v:rect>
+            <![endif]-->
         </div>
 
         <div class="content">
             <div class="info-card">
                 <div class="info-row">
-                    <span class="info-label">Performance Date:</span>
                     <span class="info-value"><b>${formattedDate}</b></span>
                 </div>
             </div>
@@ -328,22 +425,20 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             }
 
             <div>
-                <h2 class="section-title">Performance - ${formattedDate}</h2>
-
                 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 25px;">
                     <tr>
                         <!-- Mathematics Card -->
                         <td width="48%" style="vertical-align: top;">
                             <table width="100%" cellpadding="20" cellspacing="0" border="0" style="border: 2px solid #e5e7eb; border-top: 3px solid #3b82f6; border-radius: 12px; background-color: #ffffff;">
                                 <tr>
-                                    <td>
+                                    <td style="padding: 10px;">
                                         <!-- Subject Header -->
-                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 15px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 0px;">
                                             <tr>
-                                                <td style="width: 36px; height: 36px; background-color: #dbeafe; color: #3b82f6; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; vertical-align: middle;">
+                                                <td class="subject-icon math" style="width: 36px;padding:4px; height: 36px; background-color: #dbeafe; color: #3b82f6; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; vertical-align: middle;">
                                                     M
                                                 </td>
-                                                <td style="padding-left: 10px; font-size: 16px; font-weight: 700; color: #1f2937; vertical-align: middle;">
+                                                <td style="padding-left: 10px; font-size: 16px;padding:4px; font-weight: 700; color: #1f2937; vertical-align: middle;">
                                                     Mathematics
                                                 </td>
                                             </tr>
@@ -352,10 +447,10 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                                         <!-- Score Row -->
                                         <table width="100%" cellpadding="12" cellspacing="0" border="0" style="border-bottom: 1px solid #f3f4f6;">
                                             <tr>
-                                                <td style="font-size: 24px; color: #6b7280; font-weight: 500; width: 60px;">
+                                                <td style="font-size: 16px; color: #6b7280;padding:4px; font-weight: 500; width: 60px;">
                                                     Score:
                                                 </td>
-                                                <td style="text-align: right; font-size: 24px; font-weight: 700; color: ${mathScoreClass === 'success' ? '#10b981' : mathScoreClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
+                                                <td style="text-align: right; font-size: 24px;padding:4px; font-weight: 700; color: ${mathScoreClass === 'success' ? '#10b981' : mathScoreClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
                                                     ${formatScore(mathScore)}
                                                 </td>
                                             </tr>
@@ -364,10 +459,10 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                                         <!-- Time Row -->
                                         <table width="100%" cellpadding="12" cellspacing="0" border="0">
                                             <tr>
-                                                <td style="font-size: 18px; color: #6b7280; font-weight: 500; width: 60px;">
+                                                <td style="font-size: 16px; color: #6b7280;padding:4px; font-weight: 500; width: 60px;">
                                                     Time:
                                                 </td>
-                                                <td style="text-align: right; font-size: 18px; font-weight: 600; color: ${mathTimeClass === 'success' ? '#10b981' : mathTimeClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
+                                                <td style="text-align: right; font-size: 18px;padding:4px; font-weight: 600; color: ${mathTimeClass === 'success' ? '#10b981' : mathTimeClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
                                                     ${formatTime(mathTime)}
                                                 </td>
                                             </tr>
@@ -384,14 +479,14 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                         <td width="48%" style="vertical-align: top;">
                             <table width="100%" cellpadding="20" cellspacing="0" border="0" style="border: 2px solid #e5e7eb; border-top: 3px solid #8b5cf6; border-radius: 12px; background-color: #ffffff;">
                                 <tr>
-                                    <td>
+                                    <td style="padding: 10px;">
                                         <!-- Subject Header -->
-                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 15px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 0px;">
                                             <tr>
-                                                <td style="width: 36px; height: 36px; background-color: #ede9fe; color: #8b5cf6; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; vertical-align: middle;">
+                                                <td class="subject-icon english" style="width: 36px;padding:4px; height: 36px; background-color: #ede9fe; color: #8b5cf6; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; vertical-align: middle;">
                                                     E
                                                 </td>
-                                                <td style="padding-left: 10px; font-size: 16px; font-weight: 700; color: #1f2937; vertical-align: middle;">
+                                                <td style="padding-left: 10px; font-size: 16px;padding:4px; font-weight: 700; color: #1f2937; vertical-align: middle;">
                                                     English
                                                 </td>
                                             </tr>
@@ -400,10 +495,10 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                                         <!-- Score Row -->
                                         <table width="100%" cellpadding="12" cellspacing="0" border="0" style="border-bottom: 1px solid #f3f4f6;">
                                             <tr>
-                                                <td style="font-size: 24px; color: #6b7280; font-weight: 500; width: 60px;">
+                                                <td style="font-size: 16px; color: #6b7280;padding:4px; font-weight: 500; width: 60px;">
                                                     Score:
                                                 </td>
-                                                <td style="text-align: right; font-size: 24px; font-weight: 700; color: ${englishScoreClass === 'success' ? '#10b981' : englishScoreClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
+                                                <td style="text-align: right; font-size: 24px;padding:4px; font-weight: 700; color: ${englishScoreClass === 'success' ? '#10b981' : englishScoreClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
                                                     ${formatScore(englishScore)}
                                                 </td>
                                             </tr>
@@ -412,10 +507,10 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                                         <!-- Time Row -->
                                         <table width="100%" cellpadding="12" cellspacing="0" border="0">
                                             <tr>
-                                                <td style="font-size: 18px; color: #6b7280; font-weight: 500; width: 60px;">
+                                                <td style="font-size: 16px; color: #6b7280;padding:4px; font-weight: 500; width: 60px;">
                                                     Time:
                                                 </td>
-                                                <td style="text-align: right; font-size: 18px; font-weight: 600; color: ${englishTimeClass === 'success' ? '#10b981' : englishTimeClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
+                                                <td style="text-align: right; font-size: 18px;padding:4px; font-weight: 600; color: ${englishTimeClass === 'success' ? '#10b981' : englishTimeClass === 'warning' ? '#f59e0b' : '#9ca3af'};">
                                                     ${formatTime(englishTime)}
                                                 </td>
                                             </tr>
@@ -432,21 +527,24 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
               feedbackText
                 ? `<div class="feedback-card">
                 <div class="feedback-header">
-                    <span class="feedback-icon">&#128172;</span>
-                    <span class="feedback-title">Instructor Feedback</span>
-                    ${feedbackAuthor ? `<span class="feedback-author"><b>by ${feedbackAuthor}</span></b>` : ''}
+                    <div>
+                        <span class="feedback-icon">&#128172;</span>
+                        <span class="feedback-title">Instructor Feedback</span>
+                    </div>
+                    ${feedbackAuthor ? `<div class="feedback-author" style="margin-top: 5px;"><b>by ${feedbackAuthor}</b></div>` : ''}
                 </div>
-                <p class="feedback-text">${feedbackText}</p>
+                <p class="feedback-text" style="white-space: pre-wrap; word-wrap: break-word;">${feedbackText.replace(/\n/g, '<br>')}</p>
             </div>`
                 : ''
             }
         </div>
         <div class="footer">
-            <p>Contact Us at </p>
-            <p style="margin-top: 10px;">
-                <a href="tel:+6494461709">+6494461709</a> |
-                <a href="mailto:info@techlearning.com">info@email.com</a>
-            </p>
+            <p>Contact Us</p>
+            ${centerPhone || centerEmail ? `<p style="margin-top: 10px;">
+                ${centerPhone ? `<a href="tel:${centerPhone}">${centerPhone}</a>` : ''}
+                ${centerPhone && centerEmail ? ' | ' : ''}
+                ${centerEmail ? `<a href="mailto:${centerEmail}">${centerEmail}</a>` : ''}
+            </p>` : ''}
         </div>
     </div>
 </body>
@@ -466,6 +564,8 @@ export const generateFeedbackEmailText = (feedback: FeedbackData): string => {
     feedbackAuthor,
     date,
     centerName,
+    centerEmail,
+    centerPhone,
     isFollowUpRequired,
   } = feedback;
 
@@ -508,6 +608,12 @@ ${feedbackText}`;
 ---
 This is an automated report from ${centerName}
 Generated with Centre Manager`;
+
+  if (centerPhone || centerEmail) {
+    text += `\n\nContact Us:`;
+    if (centerPhone) text += `\nPhone: ${centerPhone}`;
+    if (centerEmail) text += `\nEmail: ${centerEmail}`;
+  }
 
   return text;
 };
