@@ -147,10 +147,6 @@ const getTimePayload = (hasSubject: boolean, time: string) => {
   return time ? Number(time) : null;
 };
 
-const needsFormatting = computed(() => {
-  return feedbackForm.value.feedback.trim().length > 0 && !feedbackFormatted.value;
-});
-
 let isAIFormatting = false;
 
 const formatFeedbackText = async () => {
@@ -539,6 +535,7 @@ watch(
         <Textarea
           v-model="feedbackForm.feedback"
           :rows="6"
+          :disabled="formatting"
           placeholder="Enter any additional feedback..."
           :tabindex="hasMaths && hasEnglish ? 6 : hasMaths || hasEnglish ? 4 : 2"
           class="text-sm"
@@ -581,7 +578,7 @@ watch(
         <Button
           size="sm"
           @click="submitFeedback"
-          :disabled="loading || needsFormatting"
+          :disabled="loading || formatting"
           class="flex-1 md:px-4! md:py-2!"
         >
           <i v-if="!loading" class="fa-solid fa-check mr-1 md:mr-2"></i>
