@@ -22,6 +22,8 @@ const props = withDefaults(
 const emit = defineEmits(['update:show', 'onSuccess']);
 
 const loading = ref(false);
+const formatting = ref(false);
+const feedbackFormatted = ref(false);
 const originalFeedback = ref<any>(null);
 const previousScores = ref({ math: '', english: '' });
 const modalRef = ref<HTMLElement | null>(null);
@@ -49,6 +51,7 @@ const errors = ref({
 const resetForm = () => {
   feedbackForm.value = getInitialForm();
   originalFeedback.value = null;
+  feedbackFormatted.value = false;
 };
 
 const resetErrors = () => {
@@ -144,6 +147,28 @@ const getTimePayload = (hasSubject: boolean, time: string) => {
   return time ? Number(time) : null;
 };
 
+const needsFormatting = computed(() => {
+  return feedbackForm.value.feedback.trim().length > 0 && !feedbackFormatted.value;
+});
+
+let isAIFormatting = false;
+
+const formatFeedbackText = async () => {
+  const text = feedbackForm.value.feedback.trim();
+  if (!text) return;
+  try {
+    formatting.value = true;
+    const formatted = await feedbackStore.formatFeedback(text);
+    isAIFormatting = true;
+    feedbackForm.value.feedback = formatted;
+    feedbackFormatted.value = true;
+  } catch {
+    toast.error('Failed to format feedback');
+  } finally {
+    formatting.value = false;
+  }
+};
+
 const submitFeedback = async () => {
   if (!props.item?.student?.id) return;
 
@@ -166,11 +191,11 @@ const submitFeedback = async () => {
       feedback: form.feedback
     };
 
+    await feedbackStore.createOrUpdateFeedback(payload);
+
     if (props.item.feedback) {
-      await feedbackStore.updateFeedback(props.item.student.id, payload);
       toast.success('Feedback updated successfully');
     } else {
-      await feedbackStore.createFeedback(payload);
       toast.success('Feedback submitted successfully');
     }
     await logBookStore.fetchList();
@@ -249,6 +274,17 @@ const createCheckedWatcher = (
     }
   };
 };
+
+watch(
+  () => feedbackForm.value.feedback,
+  () => {
+    if (isAIFormatting) {
+      isAIFormatting = false;
+      return;
+    }
+    feedbackFormatted.value = false;
+  }
+);
 
 watch(
   () => feedbackForm.value.isMathChecked,
@@ -502,8 +538,22 @@ watch(
           :rows="6"
           placeholder="Enter any additional feedback..."
           :tabindex="hasMaths && hasEnglish ? 6 : hasMaths || hasEnglish ? 4 : 2"
-          class="mb-2 text-sm"
+          class="text-sm"
         />
+        <div v-if="feedbackForm.feedback.trim()" class="flex justify-end mt-1.5">
+          <Button
+            size="sm"
+            :variant="feedbackFormatted ? 'outline' : 'primary'"
+            :disabled="formatting || feedbackFormatted"
+            @click="formatFeedbackText"
+            class="text-xs! py-1! px-2!"
+          >
+            <i v-if="formatting" class="fa-solid fa-spinner fa-spin mr-1"></i>
+            <i v-else-if="feedbackFormatted" class="fa-solid fa-check mr-1"></i>
+            <i v-else class="fa-solid fa-wand-magic-sparkles mr-1"></i>
+            {{ formatting ? 'Formatting...' : feedbackFormatted ? 'Formatted' : 'Improve with AI' }}
+          </Button>
+        </div>
         <Checkbox
           v-model="feedbackForm.isPercentFeedbackRequired"
           :tabindex="hasMaths && hasEnglish ? 7 : hasMaths || hasEnglish ? 5 : 3"
@@ -527,7 +577,7 @@ watch(
         <Button
           size="sm"
           @click="submitFeedback"
-          :disabled="loading"
+          :disabled="loading || needsFormatting"
           class="flex-1 md:px-4! md:py-2!"
         >
           <i v-if="!loading" class="fa-solid fa-check mr-1 md:mr-2"></i>

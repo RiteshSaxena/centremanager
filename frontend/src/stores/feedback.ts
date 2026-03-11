@@ -37,14 +37,18 @@ export const useFeedbackStore = defineStore('feedback', {
   }),
 
   actions: {
-    async createFeedback(payload: FeedbackPayload) {
+    async createOrUpdateFeedback(payload: FeedbackPayload) {
       try {
         this.loading = true;
-        const res = await axios.post('/feedback/custom-create', payload);
+        const res = await axios.post('/feedbacks', payload);
         return res.data;
       } finally {
         this.loading = false;
       }
+    },
+    async formatFeedback(feedback: string): Promise<string> {
+      const res = await axios.post<{ data: string }>('/feedback/format-feedback', { feedback });
+      return res.data.data;
     },
     // ✅ NEW: fetch today's feedback by childId
     async fetchTodayFeedbackByChild(childId: number) {
@@ -52,15 +56,6 @@ export const useFeedbackStore = defineStore('feedback', {
         this.loading = true;
         const res = await axios.get(`/feedback/by-child/${childId}/today`);
         return res.data?.[0] || null;
-      } finally {
-        this.loading = false;
-      }
-    },
-    async updateFeedback(childId: number, payload: Partial<FeedbackPayload>) {
-      try {
-        this.loading = true;
-        const res = await axios.put(`/feedback/by-child/${childId}/today`, payload);
-        return res.data;
       } finally {
         this.loading = false;
       }
