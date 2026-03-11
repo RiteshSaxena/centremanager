@@ -64,6 +64,10 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
   } = feedback;
 
   const formattedDate = formatDate(date);
+
+  const hasMath = mathScore !== null && mathScore !== undefined;
+  const hasEnglish = englishScore !== null && englishScore !== undefined;
+
   const mathScoreClass = getScoreClass(mathScore);
   const englishScoreClass = getScoreClass(englishScore);
 
@@ -329,7 +333,7 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             color: #667eea;
             text-decoration: none;
         }
-       
+
         /* Mobile Responsive Styles */
         @media only screen and (max-width: 600px) {
             .email-container {
@@ -373,7 +377,7 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
             .performance-card {
                 padding: 12px !important;
             }
-         
+
         }
          @media only screen and (min-width: 600px) {
                table[width="100%"][cellpadding="20"] td {
@@ -424,10 +428,14 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                 : ''
             }
 
-            <div>
+            ${
+              hasMath || hasEnglish
+                ? `<div>
                 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 25px;">
                     <tr>
-                        <!-- Mathematics Card -->
+                        ${
+                          hasMath
+                            ? `<!-- Mathematics Card -->
                         <td width="48%" style="vertical-align: top;">
                             <table width="100%" cellpadding="20" cellspacing="0" border="0" style="border: 2px solid #e5e7eb; border-top: 3px solid #3b82f6; border-radius: 12px; background-color: #ffffff;">
                                 <tr>
@@ -470,12 +478,20 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                                     </td>
                                 </tr>
                             </table>
-                        </td>
+                        </td>`
+                            : ''
+                        }
 
-                        <!-- Spacer -->
-                        <td width="4%"></td>
+                        ${
+                          hasMath && hasEnglish
+                            ? `<!-- Spacer -->
+                        <td width="4%"></td>`
+                            : ''
+                        }
 
-                        <!-- English Card -->
+                        ${
+                          hasEnglish
+                            ? `<!-- English Card -->
                         <td width="48%" style="vertical-align: top;">
                             <table width="100%" cellpadding="20" cellspacing="0" border="0" style="border: 2px solid #e5e7eb; border-top: 3px solid #8b5cf6; border-radius: 12px; background-color: #ffffff;">
                                 <tr>
@@ -518,10 +534,14 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
                                     </td>
                                 </tr>
                             </table>
-                        </td>
+                        </td>`
+                            : ''
+                        }
                     </tr>
                 </table>
-            </div>
+            </div>`
+                : ''
+            }
 
             ${
               feedbackText
@@ -540,11 +560,15 @@ export const generateFeedbackEmailHtml = (feedback: FeedbackData): string => {
         </div>
         <div class="footer">
             <p>Contact Us</p>
-            ${centerPhone || centerEmail ? `<p style="margin-top: 10px;">
+            ${
+              centerPhone || centerEmail
+                ? `<p style="margin-top: 10px;">
                 ${centerPhone ? `<a href="tel:${centerPhone}">${centerPhone}</a>` : ''}
                 ${centerPhone && centerEmail ? ' | ' : ''}
                 ${centerEmail ? `<a href="mailto:${centerEmail}">${centerEmail}</a>` : ''}
-            </p>` : ''}
+            </p>`
+                : ''
+            }
         </div>
     </div>
 </body>
@@ -585,18 +609,31 @@ Date: ${formattedDate}`;
     text += `\n\n*** In-person follow-up required ***`;
   }
 
-  text += `
+  const hasMathText = mathScore !== null && mathScore !== undefined;
+  const hasEnglishText = englishScore !== null && englishScore !== undefined;
+
+  if (hasMathText || hasEnglishText) {
+    text += `
 
 Performance - ${formattedDate}
---------------------------------
+--------------------------------`;
+
+    if (hasMathText) {
+      text += `
 
 Mathematics:
   Score: ${formatScore(mathScore)}
-  Time: ${formatTime(mathTime)}
+  Time: ${formatTime(mathTime)}`;
+    }
+
+    if (hasEnglishText) {
+      text += `
 
 English:
   Score: ${formatScore(englishScore)}
   Time: ${formatTime(englishTime)}`;
+    }
+  }
 
   if (feedbackText) {
     text += `\n\nInstructor Feedback${feedbackAuthor ? ` (by ${feedbackAuthor})` : ''}:

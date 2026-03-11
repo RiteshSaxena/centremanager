@@ -158,7 +158,10 @@ const formatFeedbackText = async () => {
   if (!text) return;
   try {
     formatting.value = true;
-    const formatted = await feedbackStore.formatFeedback(text);
+    const student = props.item?.student;
+    const studentName = student ? `${student.firstName} ${student.lastName}`.trim() : '';
+    const subjects = (student?.subjects ?? []).map((s: any) => s.name);
+    const formatted = await feedbackStore.formatFeedback({ feedback: text, studentName, subjects });
     isAIFormatting = true;
     feedbackForm.value.feedback = formatted;
     feedbackFormatted.value = true;

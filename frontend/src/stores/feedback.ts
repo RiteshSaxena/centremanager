@@ -46,11 +46,10 @@ export const useFeedbackStore = defineStore('feedback', {
         this.loading = false;
       }
     },
-    async formatFeedback(feedback: string): Promise<string> {
-      const res = await axios.post<{ data: string }>('/feedback/format-feedback', { feedback });
+    async formatFeedback(payload: { feedback: string; studentName: string; subjects: string[] }): Promise<string> {
+      const res = await axios.post<{ data: string }>('/feedback/format-feedback', payload);
       return res.data.data;
     },
-    // ✅ NEW: fetch today's feedback by childId
     async fetchTodayFeedbackByChild(childId: number) {
       try {
         this.loading = true;

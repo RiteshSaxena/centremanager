@@ -4,41 +4,8 @@
 
 import { factories } from '@strapi/strapi';
 import OpenAI from 'openai';
-
-interface Subject {
-  name: string;
-}
-
-interface FeedbackInput {
-  mathScore?: number | null;
-  englishScore?: number | null;
-  mathTime?: string | null;
-  englishTime?: string | null;
-  feedback?: string | null;
-}
-
-const checkFeedbackComplete = (feedbackData: FeedbackInput, subjects: Subject[]): boolean => {
-  const hasFeedbackText = !!feedbackData.feedback?.trim();
-  const hasMaths = subjects.some((subj) => subj.name === 'Maths');
-  const hasEnglish = subjects.some((subj) => subj.name === 'English');
-  const mathFilled = feedbackData.mathScore !== null && feedbackData.mathScore !== undefined && feedbackData.mathTime;
-  const englishFilled =
-    feedbackData.englishScore !== null && feedbackData.englishScore !== undefined && feedbackData.englishTime;
-
-  if (!hasFeedbackText) {
-    return false;
-  }
-
-  if (hasMaths && hasEnglish) {
-    return !!(mathFilled && englishFilled);
-  } else if (hasMaths && !hasEnglish) {
-    return !!mathFilled;
-  } else if (!hasMaths && hasEnglish) {
-    return !!englishFilled;
-  }
-
-  return true;
-};
+import moment from 'moment';
+import { generateFeedbackEmailHtml, generateFeedbackEmailText } from '../../../utils/email';
 
 const isEmptyValue = (value: unknown): boolean => {
   return value === null || value === undefined || value === 0 || value === '';
@@ -49,10 +16,22 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 export default factories.createCoreController('api::feedback.feedback', ({ strapi }) => ({
   async formatFeedback(ctx) {
     try {
-      const { feedback } = ctx.request.body as { feedback?: string };
+      const { studentName, subjects, feedback } = ctx.request.body as {
+        studentName?: string;
+        subjects?: string[];
+        feedback?: string;
+      };
 
       if (!feedback?.trim()) {
         return ctx.badRequest('feedback is required');
+      }
+
+      if (!studentName?.trim()) {
+        return ctx.badRequest('studentName is required');
+      }
+
+      if (!subjects?.length) {
+        return ctx.badRequest('subjects is required');
       }
 
       const response = await openai.responses.create({
@@ -63,13 +42,32 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
             content: [
               {
                 type: 'input_text',
-                text: 'You are a helpful assistant that formats student feedback professionally. Take the raw feedback text and rewrite it with proper grammar, punctuation, and a professional tone suitable for parents to read. Keep the same meaning and details, but make it clear and well-structured. Return only the formatted feedback text with no additional commentary.',
+                text: `You are an expert Education Administrator at a Kumon Center. Your task is to transform rough staff notes into a formal, professional progress log for a student's session record.
+
+Core Requirements:
+- Tone: Formal, objective, and supportive. Use the student's first name only.
+- Structure: Every response must use the format [Subject]: [Feedback Text].
+- Logic for Missing Subjects: Compare the "Subjects Enrolled" to the "Rough Notes." If a subject is enrolled but entirely missing from the notes, prepend the response with a bold warning: [WARNING: Missing feedback for [Subject]] and include the subject heading with a "[No feedback provided]" placeholder.
+- Content Preservation:
+  * Keep all specific Kumon levels (e.g., Level BII, 5a) exactly as written.
+  * Do not include standard scores/times unless the notes specify a Milestone (e.g., "Passed Achievement Test") or exceptional volume (e.g., "Completed double work").
+- Feedback Content per Subject:
+  * What was achieved/worked on.
+  * A specific strength, observation, or "win."
+  * An area for focus or instruction for home study.
+
+Return only the formatted feedback text with no additional commentary.`,
               },
             ],
           },
           {
             role: 'user',
-            content: [{ type: 'input_text', text: feedback }],
+            content: [
+              {
+                type: 'input_text',
+                text: `Student Name: ${studentName}\nSubjects Enrolled: ${subjects.join(', ')}\nRough Notes: ${feedback}`,
+              },
+            ],
           },
         ],
       });
@@ -80,6 +78,90 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
     } catch (error) {
       strapi.log.error(error);
       return ctx.internalServerError('Failed to format feedback');
+    }
+  },
+
+  async sendEmail(ctx) {
+    try {
+      const testEmail = process.env.TEST_MODE_FEEDBACK_EMAIL;
+      if (!testEmail) {
+        return ctx.badRequest('TEST_MODE_FEEDBACK_EMAIL environment variable is not set');
+      }
+
+      const { id } = ctx.params;
+      if (!id) {
+        return ctx.badRequest('feedback id is required');
+      }
+
+      const feedback = await strapi.documents('api::feedback.feedback').findFirst({
+        filters: { id },
+        populate: {
+          child: {
+            populate: {
+              parents: true,
+              center: true,
+            },
+          },
+          updatedByUser: true,
+        },
+      });
+
+      if (!feedback) {
+        return ctx.notFound('Feedback not found');
+      }
+
+      const child = feedback.child;
+      if (!child) {
+        return ctx.badRequest('Feedback has no associated child');
+      }
+
+      const center = child.center;
+      const centerName = center?.displayName || center?.name || 'Kumon Centre';
+      const childName = `${child.firstName} ${child.lastName || ''}`.trim();
+      const feedbackAuthor = feedback.updatedByUser
+        ? `${feedback.updatedByUser.firstName || ''} ${feedback.updatedByUser.lastName || ''}`.trim()
+        : undefined;
+
+      const parents = child.parents || [];
+      const firstParent = parents.find((p) => p.email);
+      const parentName = firstParent ? `${firstParent.firstName} ${firstParent.lastName || ''}`.trim() : 'Parent';
+
+      const feedbackDate = feedback.createdDate
+        ? moment(feedback.createdDate).format('YYYY-MM-DD')
+        : moment().format('YYYY-MM-DD');
+
+      const feedbackData = {
+        childName,
+        parentName,
+        schoolYear: child.schoolYear,
+        mathScore: feedback.mathScore,
+        englishScore: feedback.englishScore,
+        mathTime: feedback.mathTime,
+        englishTime: feedback.englishTime,
+        feedback: feedback.feedback,
+        feedbackAuthor,
+        date: feedbackDate,
+        centerName,
+        centerEmail: center?.email,
+        centerPhone: center?.phoneNumber,
+        isFollowUpRequired: feedback.isPercentFeedbackRequired,
+      };
+
+      const subject = `[TEST] Performance Report for ${childName} - ${moment(feedbackDate).format('MMMM D, YYYY')}`;
+      const html = generateFeedbackEmailHtml(feedbackData);
+      const text = generateFeedbackEmailText(feedbackData);
+
+      await strapi.plugins['email'].services.email.send({
+        to: testEmail,
+        subject,
+        html,
+        text,
+      });
+
+      return ctx.send({ message: `Test email sent to ${testEmail}` });
+    } catch (error) {
+      strapi.log.error(error);
+      return ctx.internalServerError('Failed to send test email');
     }
   },
 
@@ -144,17 +226,15 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
         return ctx.badRequest('child is required');
       }
 
-      // Validate child and get subjects
+      // Validate child exists
       const childData = await strapi.documents('api::child.child').findFirst({
         filters: { id: child },
-        populate: { subjects: true },
       });
 
       if (!childData) {
         return ctx.badRequest(`Child with id ${child} does not exist`);
       }
 
-      const childSubjects: Subject[] = (childData.subjects as Subject[]) || [];
       const feedbackDate = createdDate || new Date().toISOString().split('T')[0];
 
       // Check if feedback already exists for this child on this date
@@ -172,72 +252,40 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
 
         const updateData: Record<string, unknown> = {
           isPercentFeedbackRequired: isPercentFeedbackRequired ?? feedbackEntry.isPercentFeedbackRequired ?? false,
-          updatedByUser: user?.id,
         };
 
         if (!isEmptyValue(mathScore)) updateData.mathScore = mathScore;
         if (!isEmptyValue(englishScore)) updateData.englishScore = englishScore;
         if (!isEmptyValue(mathTime)) updateData.mathTime = mathTime;
         if (!isEmptyValue(englishTime)) updateData.englishTime = englishTime;
-        if (!isEmptyValue(feedback)) updateData.feedback = feedback;
 
-        await strapi.documents('api::feedback.feedback').update({
+        // Only update feedback text and user attribution if feedback text actually changed
+        if (!isEmptyValue(feedback) && feedback !== feedbackEntry.feedback) {
+          updateData.feedback = feedback;
+          updateData.updatedByUser = user?.id;
+        }
+
+        const updatedFeedback = await strapi.documents('api::feedback.feedback').update({
           documentId: feedbackEntry.documentId,
           data: updateData,
         });
 
-        // Re-fetch updated feedback to check completion with merged values
-        const updatedEntries = await strapi.documents('api::feedback.feedback').findMany({
-          filters: {
-            child: { id: child },
-            createdDate: feedbackDate,
-          },
-          limit: 1,
-        });
-
-        const updated = updatedEntries[0];
-        const mergedData: FeedbackInput = {
-          mathScore: updated.mathScore as number | null,
-          englishScore: updated.englishScore as number | null,
-          mathTime: updated.mathTime as string | null,
-          englishTime: updated.englishTime as string | null,
-          feedback: updated.feedback as string | null,
-        };
-
-        const isFeedbackCompleted = checkFeedbackComplete(mergedData, childSubjects);
-
-        const finalFeedback = await strapi.documents('api::feedback.feedback').update({
-          documentId: updated.documentId,
-          data: { isFeedbackCompleted },
-        });
-
-        return ctx.send(finalFeedback);
+        return ctx.send(updatedFeedback);
       }
 
       // CREATE
-      const feedbackData: FeedbackInput = {
-        mathScore: mathScore ?? null,
-        englishScore: englishScore ?? null,
-        mathTime: mathTime ?? null,
-        englishTime: englishTime ?? null,
-        feedback: feedback ?? null,
-      };
-
-      const isFeedbackCompleted = checkFeedbackComplete(feedbackData, childSubjects);
-
       const createdFeedback = await strapi.documents('api::feedback.feedback').create({
         data: {
-          mathScore: feedbackData.mathScore,
-          englishScore: feedbackData.englishScore,
-          mathTime: feedbackData.mathTime,
-          englishTime: feedbackData.englishTime,
+          mathScore: mathScore ?? null,
+          englishScore: englishScore ?? null,
+          mathTime: mathTime ?? null,
+          englishTime: englishTime ?? null,
           isPercentFeedbackRequired: isPercentFeedbackRequired ?? false,
           createdDate: feedbackDate,
           child,
           feedback: feedback ?? '',
           createdByUser: user?.id,
-          updatedByUser: user?.id,
-          isFeedbackCompleted,
+          updatedByUser: feedback?.trim() ? user?.id : undefined,
         },
       });
       return ctx.created(createdFeedback);

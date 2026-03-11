@@ -16,5 +16,13 @@ export default {
         auth: {},
       },
     },
+    {
+      method: 'POST',
+      path: '/feedback/:id/send-email',
+      handler: 'feedback.sendEmail',
+      config: {
+        auth: {},
+      },
+    },
   ],
 };

@@ -10,10 +10,13 @@ const sendFeedbackEmails = async (strapi: Strapi) => {
     console.log(`Test mode enabled - all emails will be sent to: ${testModeEmail}`);
   }
 
-  // Get feedbacks where isFeedbackCompleted is true and isMailSent is not true
+  // Get feedbacks where feedback text is not empty and isMailSent is not true
   const feedbacks = await strapi.documents('api::feedback.feedback').findMany({
     filters: {
-      isFeedbackCompleted: true,
+      feedback: {
+        $notNull: true,
+        $ne: '',
+      },
       isMailSent: {
         $ne: true,
       },
@@ -25,7 +28,7 @@ const sendFeedbackEmails = async (strapi: Strapi) => {
           center: true,
         },
       },
-      createdByUser: true,
+      updatedByUser: true,
     },
   });
 
@@ -57,8 +60,8 @@ const sendFeedbackEmails = async (strapi: Strapi) => {
 
     const centerName = center?.displayName || center?.name || 'Kumon Centre';
     const childName = `${child.firstName} ${child.lastName || ''}`.trim();
-    const feedbackAuthor = feedback.createdByUser
-      ? `${feedback.createdByUser.firstName || ''} ${feedback.createdByUser.lastName || ''}`.trim()
+    const feedbackAuthor = feedback.updatedByUser
+      ? `${feedback.updatedByUser.firstName || ''} ${feedback.updatedByUser.lastName || ''}`.trim()
       : undefined;
 
     // Get all parent emails
