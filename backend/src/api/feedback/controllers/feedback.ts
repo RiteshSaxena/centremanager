@@ -55,22 +55,26 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
         return ctx.badRequest('feedback is required');
       }
 
-      const response = await openai.chat.completions.create({
+      const response = await openai.responses.create({
         model: 'gpt-5-mini',
-        messages: [
+        input: [
           {
             role: 'system',
-            content:
-              'You are a helpful assistant that formats student feedback professionally. Take the raw feedback text and rewrite it with proper grammar, punctuation, and a professional tone suitable for parents to read. Keep the same meaning and details, but make it clear and well-structured. Return only the formatted feedback text with no additional commentary.',
+            content: [
+              {
+                type: 'input_text',
+                text: 'You are a helpful assistant that formats student feedback professionally. Take the raw feedback text and rewrite it with proper grammar, punctuation, and a professional tone suitable for parents to read. Keep the same meaning and details, but make it clear and well-structured. Return only the formatted feedback text with no additional commentary.',
+              },
+            ],
           },
           {
             role: 'user',
-            content: feedback,
+            content: [{ type: 'input_text', text: feedback }],
           },
         ],
       });
 
-      const formattedFeedback = response.choices[0]?.message?.content?.trim() || feedback;
+      const formattedFeedback = response.output_text.trim() || feedback;
 
       return ctx.send({ data: formattedFeedback });
     } catch (error) {

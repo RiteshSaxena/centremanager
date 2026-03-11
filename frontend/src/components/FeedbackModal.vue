@@ -540,13 +540,20 @@ watch(
           :tabindex="hasMaths && hasEnglish ? 6 : hasMaths || hasEnglish ? 4 : 2"
           class="text-sm"
         />
-        <div v-if="feedbackForm.feedback.trim()" class="flex justify-end mt-1.5">
+        <div class="flex items-center justify-between mt-2">
+          <Checkbox
+            v-model="feedbackForm.isPercentFeedbackRequired"
+            :tabindex="hasMaths && hasEnglish ? 7 : hasMaths || hasEnglish ? 5 : 3"
+            label="Requires in-person follow-up"
+            class="text-xs md:text-sm"
+          />
           <Button
+            v-if="feedbackForm.feedback.trim()"
             size="sm"
             :variant="feedbackFormatted ? 'outline' : 'primary'"
             :disabled="formatting || feedbackFormatted"
             @click="formatFeedbackText"
-            class="text-xs! py-1! px-2!"
+            class="text-xs! py-1! px-2! shrink-0"
           >
             <i v-if="formatting" class="fa-solid fa-spinner fa-spin mr-1"></i>
             <i v-else-if="feedbackFormatted" class="fa-solid fa-check mr-1"></i>
@@ -554,12 +561,6 @@ watch(
             {{ formatting ? 'Formatting...' : feedbackFormatted ? 'Formatted' : 'Improve with AI' }}
           </Button>
         </div>
-        <Checkbox
-          v-model="feedbackForm.isPercentFeedbackRequired"
-          :tabindex="hasMaths && hasEnglish ? 7 : hasMaths || hasEnglish ? 5 : 3"
-          label="Requires in-person follow-up"
-          class="text-xs md:text-sm"
-        />
       </div>
     </div>
 
