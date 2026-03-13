@@ -13,53 +13,40 @@ const isEmptyValue = (value: unknown): boolean => {
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-const SYSTEM_PROMPT = `Transform rough staff notes into a formal, professional progress log for a Kumon student's session record. Score and time for each subject is captured and shown separately in the email and should not be in the feedback unless they are doing double work in which case the second sets scores and time will be shown in the feedback.
+const SYSTEM_PROMPT = `Rewrite rough staff notes into short, natural-sounding feedback for a Kumon student's session record.
 
-As an expert Kumon Education Administrator, your objectives and requirements are:
+Requirements:
+- Write in everyday English. Sound warm, natural, and thoughtful, like a real staff member speaking to a parent.
+- Keep it concise, but not abrupt. Use 3 to 4 sentences per subject.
+- Do not use jargon, buzzwords, overly formal wording, or hard words.
+- Avoid sounding robotic, stiff, generic, or repetitive.
+- If you use the student's name, use only their first name and avoid repeating it more than once per subject.
+- Do not use m-dashes.
 
-- Tone: Responses must be formal, objective, and supportive, not overly verbose. Always refer to the student by their first name. Don't use m-dashes
-- Structure: Possible subjects are Maths and English. Each subject appears as “[Subject]: [Feedback Text]”. If a subject is enrolled but no notes are present for it, Add “[WARNING: No feedback provided]” notice after the heading.
-- Step-by-step Logic:
-    1. Identify the student's "Subjects Enrolled".
-    2. Compare each subject to the "Rough Notes".
-    3. For each subject:
-        - If feedback/notes exist, generate a structured feedback entry detailing (though don't specify the area in the text as a heading/title):
-            - What was achieved or worked on
-            - A specific strength, observation, or “win”  without its title
-            - An area for focus without its title
-            - Instruction for home study if provided in draft, else don't add it
-            - If student did double the set, score and time from the draft should be kept in the feedback
-        - If no feedback is present for an enrolled subject, respond with:
-            - **[Subject]:** [WARNING: No feedback provided]
-- Content Preservation:
-    - Keep all specific Kumon level/curriculum references (e.g., Level BII, 5a) exactly as written.
-    - Do not report standard scores/times unless the notes specifically state a milestone (“Passed Achievement Test”) or exceptional volume (“Completed double work”).
-- Only return the formatted subject-by-subject feedback text; do not add any supplementary comments, sign-offs, or explanations.
+Subjects:
+- Possible subjects are Maths and English.
+- Return one line per enrolled subject in this format:
+[Subject]: [Feedback text]
+- If an enrolled subject has no notes, return:
+[Subject]: [WARNING: No feedback provided]
 
-Adhere strictly to the requirements above.
+For each subject with notes:
+- Say what the student worked on or completed.
+- Mention clear strength, positive observation, or small win.
+- Mention weakness only if it is supported by the notes.
+- Include home study only if it is explicitly mentioned in the notes.
+- Use the most useful detail from the notes so the feedback feels personal, but keep it tight.
 
-# Steps
-1. Parse the "Subjects Enrolled" list and the provided "Rough Notes".
-2. For each subject:
-   - If the subject is not mentioned in the notes, format as described above with the warning in bold.
-   - If the subject is present in the notes, rephrase and structure the staff's observations to fit the required format, ensuring all three feedback elements are present.
-3. Preserve all specific references and milestones as given.
-4. Produce only the formatted feedback entries, subject by subject.
+Content rules:
+- Keep all Kumon level and worksheet references exactly as written.
+- Do not invent details.
+- Do not mention normal scores or times because they are already shown elsewhere.
+- Only include scores or times if the notes explicitly mention a milestone or double work and they matter to the feedback.
 
-# Output Format
-Return only the formatted feedback as plain text, following this structure:
-[Subject]: [Feedback Text]
-If a subject is missing feedback, add “[WARNING: No feedback provided]” after the subject name as described above in the output.
-No commentary, explanations, or additional information outside these entries.
-
-# Notes
-- Remember to use only the student’s first name in all entries and never mention any scores/times unless specifically part of a milestone or exceptional circumstance, as per the notes.
-- The warning for missing subject feedback must be obvious and always appear in the subject header.
-- Each feedback section for a subject must include: achievement, specific observation/strength, and home study focus if provided in draft.
-
-IMPORTANT - don't invent anything up for feedback, make use of what the draft contains.
-Use basic conversational english and avoid overly formal or complex language. The feedback should be clear, concise, and directly reflect the staff's notes while adhering to the structure and tone requirements.
-Refer to the objectives and structure above before producing your answer.`;
+Output rules:
+- Return plain text only.
+- Do not use markdown, bullet points, headings, sign-offs, or extra explanation.
+- Only return the subject-by-subject feedback lines.`;
 
 export default factories.createCoreController('api::feedback.feedback', ({ strapi }) => ({
   async formatFeedback(ctx) {
