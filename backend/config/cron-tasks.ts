@@ -1,7 +1,6 @@
 import { Strapi } from '../types';
 import moment from 'moment';
 import { generateFeedbackEmailHtml, generateFeedbackEmailText } from '../src/utils/email';
-import * as console from 'node:console';
 
 const sendFeedbackEmails = async (strapi: Strapi) => {
   console.log('Running feedback email cron task', new Date().toISOString());
