@@ -104,9 +104,9 @@ export default factories.createCoreController('api::feedback.feedback', ({ strap
 
   async sendEmail(ctx) {
     try {
-      const testEmail = process.env.TEST_MODE_FEEDBACK_EMAIL;
+      const testEmail = process.env.FEEDBACK_EMAIL_COPY;
       if (!testEmail) {
-        return ctx.badRequest('TEST_MODE_FEEDBACK_EMAIL environment variable is not set');
+        return ctx.badRequest('FEEDBACK_EMAIL_COPY environment variable is not set');
       }
 
       const { id } = ctx.params;

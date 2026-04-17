@@ -5,10 +5,7 @@ import { generateFeedbackEmailHtml, generateFeedbackEmailText } from '../src/uti
 const sendFeedbackEmails = async (strapi: Strapi) => {
   console.log('Running feedback email cron task', new Date().toISOString());
 
-  const testModeEmail = process.env.TEST_MODE_FEEDBACK_EMAIL;
-  if (testModeEmail) {
-    console.log(`Test mode enabled - all emails will be sent to: ${testModeEmail}`);
-  }
+  const copyEmail = process.env.FEEDBACK_EMAIL_COPY;
 
   // Get feedbacks where feedback text is not empty and isMailSent is not true
   const feedbacks = await strapi.documents('api::feedback.feedback').findMany({
@@ -54,7 +51,9 @@ const sendFeedbackEmails = async (strapi: Strapi) => {
 
     // Check if center has feedback notifications enabled
     if (center && center.isFeedbackNotification === false) {
-      console.log(`Center ${center.name} has feedback notifications disabled, skipping feedback for child ${child.firstName}`);
+      console.log(
+        `Center ${center.name} has feedback notifications disabled, skipping feedback for child ${child.firstName}`
+      );
       continue;
     }
 
@@ -103,7 +102,7 @@ const sendFeedbackEmails = async (strapi: Strapi) => {
     const html = generateFeedbackEmailHtml(feedbackData);
     const text = generateFeedbackEmailText(feedbackData);
 
-    const recipientEmails = testModeEmail || parentEmails.join(', ');
+    const recipientEmails = parentEmails.join(', ');
 
     try {
       const fromEmail = process.env.FEEDBACK_EMAIL_FROM;
@@ -111,13 +110,12 @@ const sendFeedbackEmails = async (strapi: Strapi) => {
       await strapi.plugins['email'].services.email.send({
         from: fromAddress,
         to: recipientEmails,
-        subject: testModeEmail ? `[TEST - ${parentEmails.join(', ')}] ${subject}` : subject,
+        subject: subject,
+        bcc: copyEmail ?? undefined,
         html,
         text,
       });
-      console.log(
-        `Email sent to ${recipientEmails} for ${childName}${testModeEmail ? ` (original: ${parentEmails.join(', ')})` : ''}`
-      );
+      console.log(`Email sent to ${recipientEmails} for ${childName} to ${parentEmails.join(', ')})`);
       successCount++;
 
       await strapi.documents('api::feedback.feedback').update({
