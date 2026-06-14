@@ -8,6 +8,7 @@ const props = withDefaults(
     title?: string;
     size?: 'sm' | 'md' | 'lg' | 'xl';
     closable?: boolean;
+    dimissable?: boolean;
     initialFocus?: Ref<HTMLElement | null>;
   }>(),
   {
@@ -16,6 +17,13 @@ const props = withDefaults(
     closable: true
   }
 );
+
+
+const handleOutsideClose = () => {
+  if (props.dismissible) {
+    close();
+  }
+}; 
 
 const emit = defineEmits(['update:open', 'close']);
 
@@ -36,7 +44,7 @@ const sizeClasses = {
 
 <template>
   <TransitionRoot appear :show="open" as="template">
-    <Dialog as="div" class="relative z-50" :initial-focus="initialFocus as any" @close="close">
+    <Dialog as="div" class="relative z-50" :initial-focus="initialFocus as any" @close="handleOutsideClose">
       <!-- Backdrop -->
       <TransitionChild
         as="template"

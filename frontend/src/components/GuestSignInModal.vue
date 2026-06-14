@@ -141,6 +141,7 @@ const emit = defineEmits(['update:show']);
     :open="show"
     :size="step === 2 ? 'xl' : 'md'"
     :closable="step === 1"
+    :dismissible="false"
     title="Guest Sign In"
     @close="emit('update:show', false)"
   >
