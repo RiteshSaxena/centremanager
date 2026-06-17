@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch, computed, onMounted } from 'vue';
-import { Modal, Input, Select, Checkbox, Button, Textarea } from '@/components/ui';
+import { Modal, Input, Select, Checkbox, Button, Textarea, Spinner } from '@/components/ui';
 import type { Student, ChildStatus, Subject, Parent, School } from '@/types';
 import type { Slot } from '@/types/slot';
 import type { SelectOption } from '@/components/ui/Select.vue';
@@ -29,6 +29,7 @@ const activeTab = ref<'basic' | 'enrollment' | 'slots' | 'parents' | 'address' |
 const subjects = ref<Subject[]>([]);
 const availableSlots = ref<Slot[]>([]);
 const schools = ref<School[]>([]);
+const removingParentId = ref<number | null>(null);
 
 // Parent management
 const showAddParentForm = ref(false);
@@ -351,10 +352,18 @@ const removeParent = async (parent: Parent) => {
   if (!confirm(`Remove ${parent.firstName} ${parent.lastName} as a parent?`)) return;
 
   try {
+    removingParentId.value = parent.id;
+
     await studentStore.removeParent(props.child.id, parent.id);
+
     emit('refresh');
+   
   } catch (error: any) {
     alert(error?.response?.data?.error?.message || 'Failed to remove parent');
+  } finally {
+     setTimeout(() => {
+      removingParentId.value = null
+      }, 1000)
   }
 };
 
@@ -599,9 +608,19 @@ const close = () => {
                   </p>
                 </div>
               </div>
-              <Button size="sm" variant="ghost" @click="removeParent(parent)">
-                <i class="fa-solid fa-trash text-danger-500"></i>
-              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                :disabled="removingParentId === parent.id"
+                @click="removeParent(parent)"
+              >
+                <Spinner v-if="removingParentId === parent.id" />
+
+                <i
+                  v-else
+                  class="fa-solid fa-trash text-danger-500"
+                ></i>
+                </Button>
             </div>
           </div>
 

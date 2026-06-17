@@ -153,7 +153,7 @@ export const studentStore = defineStore('student', {
     },
     async removeParent(childId: number, parentId: number) {
       // Update child to remove parent from the relation
-      const child = this.students.find((s) => s.id === childId);
+      const child = this.paginatedStudents.find((s) => s.id === childId);
       if (child && child.parents) {
         const parentIds = child.parents.filter((p) => p.id !== parentId).map((p) => p.id);
         await this.updateChild(childId, { parents: parentIds } as any);
